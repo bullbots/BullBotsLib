@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'frc.team1891'
-version '2023.0.0'
+version '2023.0.1'
 
 repositories {
     mavenCentral()
@@ -21,7 +21,7 @@ repositories {
 //    maven { url = uri("https://jitpack.io")}
 
     // KauaiLabs
-    maven { url = uri("https://repo1.maven.org/maven2/")}
+    maven { url = uri("https://dev.studica.com/maven/release/2023/")}
 }
 
 dependencies {
@@ -34,17 +34,17 @@ dependencies {
     implementation 'edu.wpi.first.ntcore:ntcore-java:2023.1.1'
 
     // CTRE is implementation because it is not a hard requirement
-    implementation 'com.ctre.phoenix:api-java:5.20.2'
-    implementation 'com.ctre.phoenix:wpiapi-java:5.20.2'
+    implementation 'com.ctre.phoenix:api-java:5.30.2'
+    implementation 'com.ctre.phoenix:wpiapi-java:5.30.2'
 
     // REV is implementation because it is not a hard requirement
-    implementation 'com.revrobotics.frc:REVLib-java:2022.1.0'
+    implementation 'com.revrobotics.frc:REVLib-java:2023.1.1'
 
     // SDS
 //    implementation 'com.github.SwerveDriveSpecialties:swerve-lib:1.1.0'
 
     // KauaiLabs
-    implementation 'com.kauailabs.navx.frc:navx-java:4.0.447'
+    implementation 'com.kauailabs.navx.frc:navx-frc-java:2023.0.1'
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'

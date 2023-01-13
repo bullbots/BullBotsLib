@@ -5,81 +5,124 @@
 package frc.team1891.common.drivetrains;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Encoder;
-import frc.team1891.common.drivetrains.DrivetrainConfig;
 
-public class SwerveModule {
-    private final WPI_TalonFX m_driveMotor;
-    private final WPI_TalonFX m_turningMotor;
+public abstract class SwerveModule {
+    public static SwerveModule createFromDriveFalconAndSteerFalcon(WPI_TalonFX driveFalcon,
+                                                                   WPI_TalonFX steeringFalcon,
+                                                                   CANCoder encoder,
+                                                                   DrivetrainConfig config,
+                                                                   double driveP,
+                                                                   double driveI,
+                                                                   double driveD,
+                                                                   double steerP,
+                                                                   double steerI,
+                                                                   double steerD) {
+        return new SwerveModule(encoder, driveP, driveI, driveD, steerP, steerI, steerD) {
+            @Override
+            public SwerveModuleState getState() {
+                return new SwerveModuleState(driveFalcon.getSelectedSensorVelocity(), getCANCoderRotation2d());
+            }
 
-    private final Encoder m_driveEncoder;
-    private final Encoder m_turningEncoder;
+            @Override
+            public SwerveModulePosition getPosition() {
+                return new SwerveModulePosition(driveFalcon.getSelectedSensorPosition(), getCANCoderRotation2d());
+            }
 
-    private final PIDController m_drivePIDController =
-            new PIDController(1, 0, 0); // TODO: tune PID
+            @Override
+            public void setDesiredState(SwerveModuleState desiredState) {
+                // Optimize the reference state to avoid spinning further than 90 degrees
+                SwerveModuleState state =
+                        SwerveModuleState.optimize(desiredState, getCANCoderRotation2d());
+
+                // Calculate the drive output from the drive PID controller.
+                final double driveOutput =
+                        drivePIDController.calculate(config.nativeUnitsToVelocityMeters(driveFalcon.getSelectedSensorVelocity()), state.speedMetersPerSecond);
+
+                // Calculate the turning motor output from the turning PID controller.
+                final double turnOutput =
+                        turningPIDController.calculate(getAbsoluteCANCoderRadians(), state.angle.getRadians());
+
+                // Calculate the turning motor output from the turning PID controller.
+                driveFalcon.set(driveOutput);
+                steeringFalcon.set(turnOutput);
+            }
+        };
+    }
+
+    public static SwerveModule createFromDriveFalconAndSteeringNeo(WPI_TalonFX driveFalcon,
+                                                                   CANSparkMax steeringNeo,
+                                                                   CANCoder encoder,
+                                                                   DrivetrainConfig config,
+                                                                   double driveP,
+                                                                   double driveI,
+                                                                   double driveD,
+                                                                   double steerP,
+                                                                   double steerI,
+                                                                   double steerD) {
+        return new SwerveModule(encoder, driveP, driveI, driveD, steerP, steerI, steerD) {
+            @Override
+            public SwerveModuleState getState() {
+                return new SwerveModuleState(driveFalcon.getSelectedSensorVelocity(), getCANCoderRotation2d());
+            }
+
+            @Override
+            public SwerveModulePosition getPosition() {
+                return new SwerveModulePosition(driveFalcon.getSelectedSensorPosition(), getCANCoderRotation2d());
+            }
+
+            @Override
+            public void setDesiredState(SwerveModuleState desiredState) {
+                // Optimize the reference state to avoid spinning further than 90 degrees
+                SwerveModuleState state =
+                        SwerveModuleState.optimize(desiredState, getCANCoderRotation2d());
+
+                // Calculate the drive output from the drive PID controller.
+                final double driveOutput =
+                        drivePIDController.calculate(config.nativeUnitsToVelocityMeters(driveFalcon.getSelectedSensorVelocity()), state.speedMetersPerSecond);
+
+                // Calculate the turning motor output from the turning PID controller.
+                final double turnOutput =
+                        turningPIDController.calculate(getAbsoluteCANCoderRadians(), state.angle.getRadians());
+
+                // Calculate the turning motor output from the turning PID controller.
+                driveFalcon.set(driveOutput);
+                steeringNeo.set(turnOutput);
+            }
+        };
+    }
+
+    private CANCoder encoder;
+
+    protected PIDController drivePIDController;
 
     // Using a TrapezoidProfile PIDController to allow for smooth turning
-    private final ProfiledPIDController m_turningPIDController;
+    protected ProfiledPIDController turningPIDController;
 
-    /**
-     * Constructs a SwerveModule.
-     *
-     * @param driveMotorChannel      The channel of the drive motor.
-     * @param turningMotorChannel    The channel of the turning motor.
-     * @param driveEncoderChannels   The channels of the drive encoder.
-     * @param turningEncoderChannels The channels of the turning encoder.
-     * @param driveEncoderReversed   Whether the drive encoder is reversed.
-     * @param turningEncoderReversed Whether the turning encoder is reversed.
-     */
-    public SwerveModule(
-            int driveMotorChannel,
-            int turningMotorChannel,
-            int[] driveEncoderChannels,
-            int[] turningEncoderChannels,
-            boolean driveEncoderReversed,
-            boolean turningEncoderReversed,
-            DrivetrainConfig config) {
-        m_turningPIDController =
+    private SwerveModule(CANCoder encoder, double driveP, double driveI, double driveD, double steerP, double steerI, double steerD) {
+        this.encoder = encoder;
+
+        drivePIDController =
+                new PIDController(driveP, driveI, driveD);
+        turningPIDController =
                 new ProfiledPIDController(
-                        1, 0, 0, // TODO: tune PID
+                        steerP, steerI, steerD,
                         new TrapezoidProfile.Constraints(
-                                config.chassisMaxAngularVelocityRadiansPerSecond,
-                                config.chassisMaxAngularAccelerationRadiansPerSecondSquared
-                        ));
-
-        m_driveMotor = new WPI_TalonFX(driveMotorChannel);
-        m_turningMotor = new WPI_TalonFX(turningMotorChannel);
-
-        m_driveEncoder = new Encoder(driveEncoderChannels[0], driveEncoderChannels[1]);
-
-        m_turningEncoder = new Encoder(turningEncoderChannels[0], turningEncoderChannels[1]);
-
-        // Set the distance per pulse for the drive encoder. We can simply use the
-        // distance traveled for one rotation of the wheel divided by the encoder
-        // resolution.
-        m_driveEncoder.setDistancePerPulse((2 * config.wheelRadiusMeters * Math.PI) / (double) 1024);
-
-        // Set whether drive encoder should be reversed or not
-        m_driveEncoder.setReverseDirection(driveEncoderReversed);
-
-        // Set the distance (in this case, angle) in radians per pulse for the turning encoder.
-        // This is the the angle through an entire rotation (2 * pi) divided by the
-        // encoder resolution.
-        m_turningEncoder.setDistancePerPulse((2 * Math.PI) / (double) 1024);
-
-        // Set whether turning encoder should be reversed or not
-        m_turningEncoder.setReverseDirection(turningEncoderReversed);
-
+                                // Max angular velocity and acceleration of the module
+                                2*Math.PI,
+                                2*Math.PI
+                        )
+                );
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
-        m_turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+        turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     /**
@@ -87,53 +130,37 @@ public class SwerveModule {
      *
      * @return The current state of the module.
      */
-    public SwerveModuleState getState() {
-        return new SwerveModuleState(
-                m_driveEncoder.getRate(), new Rotation2d(m_turningEncoder.getDistance()));
-    }
+    public abstract SwerveModuleState getState();
 
     /**
      * Returns the current position of the module.
      *
      * @return The current position of the module.
      */
-    public SwerveModulePosition getPosition() {
-        return new SwerveModulePosition(
-                m_driveEncoder.getDistance(), new Rotation2d(m_turningEncoder.getDistance()));
-    }
+    public abstract SwerveModulePosition getPosition();
 
     /**
      * Sets the desired state for the module.
      *
      * @param desiredState Desired state with speed and angle.
      */
-    public void setDesiredState(SwerveModuleState desiredState) {
-        // Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState state =
-                SwerveModuleState.optimize(desiredState, new Rotation2d(m_turningEncoder.getDistance()));
-
-        // Calculate the drive output from the drive PID controller.
-        final double driveOutput =
-                m_drivePIDController.calculate(m_driveEncoder.getRate(), state.speedMetersPerSecond);
-
-        // Calculate the turning motor output from the turning PID controller.
-        final double turnOutput =
-                m_turningPIDController.calculate(m_turningEncoder.getDistance(), state.angle.getRadians());
-
-        // Calculate the turning motor output from the turning PID controller.
-        m_driveMotor.set(driveOutput);
-        m_turningMotor.set(turnOutput);
-    }
+    public abstract void setDesiredState(SwerveModuleState desiredState);
 
     public void setDesiredState(double speedMetersPerSecond, Rotation2d angle) {
         setDesiredState(new SwerveModuleState(speedMetersPerSecond, angle));
     }
 
-    /**
-     * Zeroes all the SwerveModule encoders.
-     */
-    public void resetEncoders() {
-        m_driveEncoder.reset();
-        m_turningEncoder.reset();
+    public double getAbsoluteCANCoderRadians() {
+        double angle = Math.toRadians(encoder.getAbsolutePosition());
+        angle %= 2.0 * Math.PI;
+        if (angle < 0.0) {
+            angle += 2.0 * Math.PI;
+        }
+
+        return angle;
+    }
+
+    public Rotation2d getCANCoderRotation2d() {
+        return new Rotation2d(getAbsoluteCANCoderRadians());
     }
 }

@@ -13,9 +13,6 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
   public static final double MAX_VOLTAGE = 12.0;
   protected static double DEADBAND = .15;
 
-  protected final SwerveDriveOdometry odometry;
-  protected final SwerveDriveKinematics kinematics;
-
   public static final SwerveModuleState[] EMPTY_SWERVE_MODULE_STATES = new SwerveModuleState[] {
     new SwerveModuleState(),
     new SwerveModuleState(),
@@ -23,6 +20,8 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     new SwerveModuleState()
   };
 
+  protected final SwerveDriveOdometry odometry;
+  protected final SwerveDriveKinematics kinematics;
 
   private final SwerveModule frontLeft, frontRight, backLeft, backRight;
 
@@ -30,7 +29,6 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
   public SwerveDrivetrain(
     DrivetrainConfig config,
     SwerveDriveKinematics kinematics,
-    SwerveDriveOdometry odometry,
     NavX gyro,
     SwerveModule frontLeft,
     SwerveModule frontRight,
@@ -39,7 +37,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
   ) {
     super(config, gyro);
 
-    this.odometry = odometry;
+    this.odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getSwerveModulePositions());
     this.kinematics = kinematics;
 
     this.frontLeft = frontLeft;
