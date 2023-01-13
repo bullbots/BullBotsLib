@@ -21,7 +21,7 @@ public class DrivetrainConfig {
         double chassisMaxAccelerationMetersPerSecondSquared,
         double chassisMaxAngularVelocityRadiansPerSecond,
         double chassisMaxAngularAccelerationRadiansPerSecondSquared,
-        double wheelRadiusInches,
+        double wheelRadiusMeters,
         double gearRatio,
         double encoderCountsPerMotorRevolution
     ) {
@@ -29,7 +29,7 @@ public class DrivetrainConfig {
         this.chassisMaxAccelerationMetersPerSecondSquared = chassisMaxAccelerationMetersPerSecondSquared;
         this.chassisMaxAngularVelocityRadiansPerSecond = chassisMaxAngularVelocityRadiansPerSecond;
         this.chassisMaxAngularAccelerationRadiansPerSecondSquared = chassisMaxAngularAccelerationRadiansPerSecondSquared;
-        this.wheelRadiusMeters = wheelRadiusInches;
+        this.wheelRadiusMeters = wheelRadiusMeters;
         this.gearRatio = gearRatio;
         this.encoderCountsPerMotorRevolution = encoderCountsPerMotorRevolution;
     }
