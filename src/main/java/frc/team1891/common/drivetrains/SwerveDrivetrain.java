@@ -5,13 +5,19 @@
 package frc.team1891.common.drivetrains;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team1891.common.hardware.NavX;
 
 /** Swerve Drivetrain base. */
 public class SwerveDrivetrain extends HolonomicDrivetrain {
   public static final double MAX_VOLTAGE = 12.0;
-  protected static double DEADBAND = .15;
 
   public static final SwerveModuleState[] EMPTY_SWERVE_MODULE_STATES = new SwerveModuleState[] {
     new SwerveModuleState(),
@@ -21,29 +27,100 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
   };
 
   protected final SwerveDriveOdometry odometry;
+  private final Translation2d frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation;
   protected final SwerveDriveKinematics kinematics;
 
   private final SwerveModule frontLeft, frontRight, backLeft, backRight;
 
-  /** Creates a new Drivetrain. */
+  private final Field2d modulesField;
+  private final double modulesFieldXOffset, modulesFieldYOffset;
+
+  /**
+   * Creates a new SwerveDrivetrain, assuming the center of the robot is the center of the drivebase.
+   * @param config the config of the drivetrain
+   * @param driveBaseWidth the width between left and right modules
+   * @param driveBaseLength the length between front and back modules
+   * @param gyro the gyro of the drivetrain
+   * @param frontLeft the front left module
+   * @param frontRight the front right module
+   * @param backLeft the back left module
+   * @param backRight the back right module
+   */
   public SwerveDrivetrain(
+    ShuffleboardTab shuffleboardTab,
     DrivetrainConfig config,
-    SwerveDriveKinematics kinematics,
+    double driveBaseWidth,
+    double driveBaseLength,
     NavX gyro,
     SwerveModule frontLeft,
     SwerveModule frontRight,
     SwerveModule backLeft,
     SwerveModule backRight
   ) {
-    super(config, gyro);
+    this(
+      shuffleboardTab,
+      config,
+      new Translation2d(driveBaseLength / 2d, driveBaseWidth / 2d),
+      new Translation2d(driveBaseLength / 2d, -driveBaseWidth / 2d),
+      new Translation2d(-driveBaseLength / 2d, driveBaseWidth / 2d),
+      new Translation2d(-driveBaseLength / 2d, -driveBaseWidth / 2d),
+      gyro,
+      frontLeft,
+      frontRight,
+      backLeft,
+      backRight
+    );
+  }
 
-    this.odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getSwerveModulePositions());
-    this.kinematics = kinematics;
+  /**
+   * Creates a new SwerveDrivetrain.
+   * @param config the config of the drivetrain
+   * @param frontLeftLocation the location of the front left module relative to the robot center
+   * @param frontRightLocation the location of the front right module relative to the robot center
+   * @param backLeftLocation the location of the back left module relative to the robot center
+   * @param backRightLocation the location of the back right module relative to the robot center
+   * @param gyro the gyro of the drivetrain
+   * @param frontLeft the front left module
+   * @param frontRight the front right module
+   * @param backLeft the back left module
+   * @param backRight the back right module
+   */
+  public SwerveDrivetrain(
+    ShuffleboardTab shuffleboardTab,
+    DrivetrainConfig config,
+    Translation2d frontLeftLocation,
+    Translation2d frontRightLocation,
+    Translation2d backLeftLocation,
+    Translation2d backRightLocation,
+    NavX gyro,
+    SwerveModule frontLeft,
+    SwerveModule frontRight,
+    SwerveModule backLeft,
+    SwerveModule backRight
+  ) {
+    super(shuffleboardTab, config, gyro);
 
     this.frontLeft = frontLeft;
     this.frontRight = frontRight;
     this.backLeft = backLeft;
     this.backRight = backRight;
+
+    this.frontLeftLocation = frontLeftLocation;
+    this.frontRightLocation = frontRightLocation;
+    this.backLeftLocation = backLeftLocation;
+    this.backRightLocation = backRightLocation;
+
+    this.kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
+
+    this.odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getSwerveModulePositions());
+
+    this.modulesField = new Field2d();
+    this.modulesFieldXOffset = Math.abs(frontLeftLocation.getX()) + Math.abs(backLeftLocation.getX());
+    this.modulesFieldYOffset = Math.abs(frontLeftLocation.getY()) + Math.abs(backLeftLocation.getY());
+    modulesField.setRobotPose(modulesFieldXOffset, modulesFieldYOffset, new Rotation2d());
+    SmartDashboard.putBoolean("Modules Robot Relative", true);
+    SmartDashboard.putBoolean("Modules Show Desired States", true);
+    SmartDashboard.putData("Modules (Field2d)", modulesField);
   }
 
   public void holonomicDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
@@ -52,7 +129,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     rot *= config.chassisMaxAngularVelocityRadiansPerSecond;
 
     SwerveModuleState[] swerveModuleStates;
-    if (Math.abs(xSpeed) < DEADBAND && Math.abs(ySpeed) < DEADBAND && Math.abs(rot) < DEADBAND) {
+    if (Math.abs(xSpeed) < 0 && Math.abs(ySpeed) < 0 && Math.abs(rot) < 0) {
       swerveModuleStates = new SwerveModuleState[] {
         new SwerveModuleState(0, frontLeft.getState().angle),
         new SwerveModuleState(0, frontRight.getState().angle),
@@ -99,6 +176,15 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     };
   }
 
+  public SwerveModuleState[] getSwerveModuleStates() {
+    return new SwerveModuleState[] {
+      frontLeft.getState(),
+      frontRight.getState(),
+      backLeft.getState(),
+      backRight.getState()
+    };
+  }
+
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
   }
@@ -134,5 +220,52 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
       gyro.getRotation2d(),
       getSwerveModulePositions()
     );
+  }
+
+  @Override
+  protected void configureShuffleboard() {
+    frontLeft.configureShuffleboard(shuffleboardTab.getLayout("Front Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0));
+    frontRight.configureShuffleboard(shuffleboardTab.getLayout("Front Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0));
+    backLeft.configureShuffleboard(shuffleboardTab.getLayout("Back Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0));
+    backRight.configureShuffleboard(shuffleboardTab.getLayout("Back Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0));
+    ShuffleboardLayout gyroLayout = shuffleboardTab.getLayout("Gyro", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 4);
+    gyroLayout.addNumber("Radians", gyro::getRadians);
+    gyroLayout.addNumber("Degrees", gyro::getDegrees);
+    gyroLayout.addNumber("Degrees (Looped)", gyro::getDegreesLooped);
+    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()).vxMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()).vyMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis omega Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()).omegaRadiansPerSecond);
+  }
+
+  @Override
+  public void periodic() {
+    super.periodic();
+
+    // modulesField
+    Translation2d frontLeftT = new Translation2d(frontLeftLocation.getX(), frontLeftLocation.getY());
+    Translation2d frontRightT =  new Translation2d(frontRightLocation.getX(), frontRightLocation.getY());
+    Translation2d backLeftT =  new Translation2d(backLeftLocation.getX(), backLeftLocation.getY());
+    Translation2d backRightT =  new Translation2d(backRightLocation.getX(), backRightLocation.getY());
+    if (SmartDashboard.getBoolean("Modules Robot Relative", true)) {
+      frontLeftT = frontLeftT.rotateBy(gyro.getRotation2d());
+      frontRightT = frontRightT.rotateBy(gyro.getRotation2d());
+      backLeftT = backLeftT.rotateBy(gyro.getRotation2d());
+      backRightT = backRightT.rotateBy(gyro.getRotation2d());
+      modulesField.setRobotPose(modulesFieldXOffset, modulesFieldYOffset, gyro.getRotation2d());
+    } else {
+      modulesField.setRobotPose(modulesFieldXOffset, modulesFieldYOffset, new Rotation2d());
+    }
+
+    modulesField.getObject("frontLeft").setPose(frontLeftT.getX()+modulesFieldXOffset, frontLeftT.getY()+modulesFieldYOffset, frontLeft.getCANCoderRotation2d().rotateBy(SmartDashboard.getBoolean("Modules Robot Relative", true) ? gyro.getRotation2d() : new Rotation2d()));
+    modulesField.getObject("frontRight").setPose(frontRightT.getX()+modulesFieldXOffset, frontRightT.getY()+modulesFieldYOffset, frontRight.getCANCoderRotation2d().rotateBy(SmartDashboard.getBoolean("Modules Robot Relative", true) ? gyro.getRotation2d() : new Rotation2d()));
+    modulesField.getObject("backLeft").setPose(backLeftT.getX()+modulesFieldXOffset, backLeftT.getY()+modulesFieldYOffset, backLeft.getCANCoderRotation2d().rotateBy(SmartDashboard.getBoolean("Modules Robot Relative", true) ? gyro.getRotation2d() : new Rotation2d()));
+    modulesField.getObject("backRight").setPose(backRightT.getX()+modulesFieldXOffset, backRightT.getY()+modulesFieldYOffset, backRight.getCANCoderRotation2d().rotateBy(SmartDashboard.getBoolean("Modules Robot Relative", true) ? gyro.getRotation2d() : new Rotation2d()));
+
+    if (SmartDashboard.getBoolean("Modules Show Desired States", true)) {
+      modulesField.getObject("frontLeftDesired").setPose(frontLeftT.getX() + modulesFieldXOffset, frontLeftT.getY() + modulesFieldYOffset, frontLeft.getDesiredState().angle.rotateBy(SmartDashboard.getBoolean("Modules Robot Relative", true) ? gyro.getRotation2d() : new Rotation2d()));
+      modulesField.getObject("frontRightDesired").setPose(frontRightT.getX() + modulesFieldXOffset, frontRightT.getY() + modulesFieldYOffset, frontRight.getDesiredState().angle.rotateBy(SmartDashboard.getBoolean("Modules Robot Relative", true) ? gyro.getRotation2d() : new Rotation2d()));
+      modulesField.getObject("backLeftDesired").setPose(backLeftT.getX() + modulesFieldXOffset, backLeftT.getY() + modulesFieldYOffset, backLeft.getDesiredState().angle.rotateBy(SmartDashboard.getBoolean("Modules Robot Relative", true) ? gyro.getRotation2d() : new Rotation2d()));
+      modulesField.getObject("backRightDesired").setPose(backRightT.getX() + modulesFieldXOffset, backRightT.getY() + modulesFieldYOffset, backRight.getDesiredState().angle.rotateBy(SmartDashboard.getBoolean("Modules Robot Relative", true) ? gyro.getRotation2d() : new Rotation2d()));
+    }
   }
 }

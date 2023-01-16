@@ -9,6 +9,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team1891.common.hardware.NavX;
 
 /** Mecanum Drivetrain base. */
@@ -20,6 +23,7 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
   private final TalonFX frontLeft, frontRight, backLeft, backRight;
 
   public MecanumDrivetrain(
+    ShuffleboardTab shuffleboardTab,
     DrivetrainConfig config,
     MecanumDriveKinematics kinematics,
     MecanumDriveOdometry odometry,
@@ -29,7 +33,7 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
     TalonFX backLeft,
     TalonFX backRight
   ) {
-    super(config, gyro);
+    super(shuffleboardTab, config, gyro);
 
     this.odometry = odometry;
     this.kinematics = kinematics;
@@ -114,5 +118,28 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
   public void resetOdometry(Pose2d pose2d) {
     // TODO Auto-generated method stub
     
+  }
+
+  @Override
+  protected void configureShuffleboard() {
+    ShuffleboardLayout frontLeftLayout = shuffleboardTab.getLayout("Front Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0);
+    frontLeftLayout.addNumber("Position", frontLeft::getSelectedSensorPosition);
+    frontLeftLayout.addNumber("Velocity", frontLeft::getSelectedSensorVelocity);
+    ShuffleboardLayout frontRightLayout = shuffleboardTab.getLayout("Front Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0);
+    frontRightLayout.addNumber("Position", frontRight::getSelectedSensorPosition);
+    frontRightLayout.addNumber("Velocity", frontRight::getSelectedSensorVelocity);
+    ShuffleboardLayout backLeftLayout = shuffleboardTab.getLayout("Back Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0);
+    backLeftLayout.addNumber("Position", backLeft::getSelectedSensorPosition);
+    backLeftLayout.addNumber("Velocity", backLeft::getSelectedSensorVelocity);
+    ShuffleboardLayout backRightLayout = shuffleboardTab.getLayout("Back Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0);
+    backRightLayout.addNumber("Position", backRight::getSelectedSensorPosition);
+    backRightLayout.addNumber("Velocity", backRight::getSelectedSensorVelocity);
+    ShuffleboardLayout gyroLayout = shuffleboardTab.getLayout("Gyro", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 4);
+    gyroLayout.addNumber("Radians", gyro::getRadians);
+    gyroLayout.addNumber("Degrees", gyro::getDegrees);
+    gyroLayout.addNumber("Degrees (Looped)", gyro::getDegreesLooped);
+    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis ω Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
   }
 }

@@ -103,7 +103,10 @@ public class HolonomicTrajectoryCommandGenerator {
         // drivetrain.resetOdometry(trajectory.getInitialPose());
 
         return command
-            .beforeStarting(() -> {drivetrain.resetOdometry(trajectory.getInitialPose());}, drivetrain)
+            .beforeStarting(() -> {
+                drivetrain.resetGyro();
+                drivetrain.resetOdometry(trajectory.getInitialPose());
+            }, drivetrain)
             .andThen(() -> {drivetrain.stop();});
     }
 
@@ -141,7 +144,10 @@ public class HolonomicTrajectoryCommandGenerator {
         );
 
         return command
-            .beforeStarting(() -> {drivetrain.resetOdometry(trajectory.getInitialPose());}, drivetrain)
+            .beforeStarting(() -> {
+                drivetrain.resetGyro();
+                drivetrain.resetOdometry(trajectory.getInitialPose());
+            }, drivetrain)
             .andThen(() -> {drivetrain.stop();});
     }
 
@@ -189,7 +195,10 @@ public class HolonomicTrajectoryCommandGenerator {
         );
 
         return command
-            .beforeStarting(() -> {drivetrain.resetOdometry(trajectory.getInitialPose());}, drivetrain)
+            .beforeStarting(() -> {
+                drivetrain.resetGyro();
+                drivetrain.resetOdometry(trajectory.getInitialPose());
+            }, drivetrain)
             .andThen(() -> {drivetrain.stop();});
     }
 
@@ -240,7 +249,10 @@ public class HolonomicTrajectoryCommandGenerator {
         // drivetrain.resetOdometry(trajectory.getInitialPose());
 
         return command
-            .beforeStarting(() -> {drivetrain.resetOdometry(trajectory.getInitialPose());}, drivetrain)
+            .beforeStarting(() -> {
+                drivetrain.resetGyro();
+                drivetrain.resetOdometry(trajectory.getInitialPose());
+            }, drivetrain)
             .andThen(() -> {drivetrain.stop();});
     }
 
@@ -278,7 +290,10 @@ public class HolonomicTrajectoryCommandGenerator {
         );
 
         return command
-            .beforeStarting(() -> {drivetrain.resetOdometry(trajectory.getInitialPose());}, drivetrain)
+            .beforeStarting(() -> {
+                drivetrain.resetGyro();
+                drivetrain.resetOdometry(trajectory.getInitialPose());
+            }, drivetrain)
             .andThen(() -> {drivetrain.stop();});
     }
 
@@ -326,7 +341,10 @@ public class HolonomicTrajectoryCommandGenerator {
         );
 
         return command
-            .beforeStarting(() -> {drivetrain.resetOdometry(trajectory.getInitialPose());}, drivetrain)
+            .beforeStarting(() -> {
+                drivetrain.resetGyro();
+                drivetrain.resetOdometry(trajectory.getInitialPose());
+            }, drivetrain)
             .andThen(() -> {drivetrain.stop();});
     }
 }

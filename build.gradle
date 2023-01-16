@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'frc.team1891'
-version '2023.0.1'
+version '2023.0.3-beta'
 
 repositories {
     mavenCentral()
@@ -32,6 +32,8 @@ dependencies {
     implementation 'edu.wpi.first.wpilibNewCommands:wpilibNewCommands-java:2023.1.1'
 
     implementation 'edu.wpi.first.ntcore:ntcore-java:2023.1.1'
+
+    implementation 'edu.wpi.first.hal:hal-java:2023.1.1'
 
     // CTRE is implementation because it is not a hard requirement
     implementation 'com.ctre.phoenix:api-java:5.30.2'

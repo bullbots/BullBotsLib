@@ -5,13 +5,14 @@
 package frc.team1891.common.drivetrains;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.team1891.common.Subsystem;
 import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base. */
-public abstract class Drivetrain extends SubsystemBase {
+public abstract class Drivetrain extends Subsystem {
     private final Field2d field = new Field2d();
 
     protected final DrivetrainConfig config;
@@ -19,9 +20,11 @@ public abstract class Drivetrain extends SubsystemBase {
 
       /** Creates a new Drivetrain. */
     public Drivetrain(
+        ShuffleboardTab shuffleboardTab,
         DrivetrainConfig config,
         NavX gyro
     ) {
+        super(shuffleboardTab);
         this.config = config;
         // gyro.reset();
         this.gyro = gyro;
