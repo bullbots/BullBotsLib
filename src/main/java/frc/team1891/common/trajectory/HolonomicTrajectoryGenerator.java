@@ -60,7 +60,7 @@ public class HolonomicTrajectoryGenerator {
      * @param config The configuration for the trajectory.
      * @return The generated trajectory.
      */
-    public static HolonomicTrajectory generateSwerveTrajectory(
+    public static HolonomicTrajectory generateHolonomicTrajectory(
         Spline.ControlVector initial,
         List<Translation2d> interiorWaypoints,
         Spline.ControlVector end,
@@ -122,14 +122,14 @@ public class HolonomicTrajectoryGenerator {
      * @param config The configuration for the trajectory.
      * @return The generated trajectory.
      */
-    public static HolonomicTrajectory generateSwerveTrajectory(
+    public static HolonomicTrajectory generateHolonomicTrajectory(
         Pose2d start, List<Translation2d> interiorWaypoints, Pose2d end, TrajectoryConfig config) {
         var controlVectors =
             SplineHelper.getCubicControlVectorsFromWaypoints(
                 start, interiorWaypoints.toArray(new Translation2d[0]), end);
 
         // Return the generated trajectory.
-        return generateSwerveTrajectory(controlVectors[0], interiorWaypoints, controlVectors[1], config);
+        return generateHolonomicTrajectory(controlVectors[0], interiorWaypoints, controlVectors[1], config);
     }
 
     /**
@@ -141,7 +141,7 @@ public class HolonomicTrajectoryGenerator {
      * @param config The configuration for the trajectory.
      * @return The generated trajectory.
      */
-    public static HolonomicTrajectory generateSwerveTrajectory(
+    public static HolonomicTrajectory generateHolonomicTrajectory(
         ControlVectorList controlVectors, TrajectoryConfig config) {
         final var flip = new Transform2d(new Translation2d(), Rotation2d.fromDegrees(180.0));
         final var newControlVectors = new ArrayList<Spline.ControlVector>(controlVectors.size());
@@ -197,7 +197,7 @@ public class HolonomicTrajectoryGenerator {
      * @return The generated trajectory.
      */
     @SuppressWarnings("LocalVariableName")
-    public static HolonomicTrajectory generateSwerveTrajectory(List<Pose2d> waypoints, TrajectoryConfig config) {
+    public static HolonomicTrajectory generateHolonomicTrajectory(List<Pose2d> waypoints, TrajectoryConfig config) {
         final var flip = new Transform2d(new Translation2d(), Rotation2d.fromDegrees(180.0));
 
         List<Pose2d> newWaypoints = new ArrayList<>();
@@ -247,7 +247,7 @@ public class HolonomicTrajectoryGenerator {
      * @return The generated trajectory.
      */
     @SuppressWarnings("LocalVariableName")
-    public static HolonomicTrajectory generateSwerveTrajectory(List<Pose2d> waypoints, List<Rotation2d> headings, TrajectoryConfig config) {
+        public static HolonomicTrajectory generateHolonomicTrajectory(List<Pose2d> waypoints, List<Rotation2d> headings, TrajectoryConfig config) {
         final var flip = new Transform2d(new Translation2d(), Rotation2d.fromDegrees(180.0));
 
         List<Pose2d> newWaypoints = new ArrayList<>();

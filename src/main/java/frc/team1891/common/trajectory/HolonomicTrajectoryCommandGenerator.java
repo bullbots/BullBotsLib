@@ -75,7 +75,7 @@ public class HolonomicTrajectoryCommandGenerator {
 
         Translation2d first = points.remove(0);
         Translation2d last = points.remove(points.size()-1);
-        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateSwerveTrajectory(
+        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(
             new Pose2d(first, initialHeading),
             points,
             new Pose2d(last, finalHeading),
@@ -120,7 +120,7 @@ public class HolonomicTrajectoryCommandGenerator {
             drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
         ).setKinematics(drivetrain.getKinematics());
 
-        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateSwerveTrajectory(
+        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(
             points,
             config
         );
@@ -170,7 +170,7 @@ public class HolonomicTrajectoryCommandGenerator {
             drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
         ).setKinematics(drivetrain.getKinematics());
 
-        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateSwerveTrajectory(
+        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(
             points,
             headings,
             config
@@ -221,7 +221,7 @@ public class HolonomicTrajectoryCommandGenerator {
 
         Translation2d first = points.remove(0);
         Translation2d last = points.remove(points.size()-1);
-        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateSwerveTrajectory(
+        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(
             new Pose2d(first, initialHeading),
             points,
             new Pose2d(last, finalHeading),
@@ -266,7 +266,7 @@ public class HolonomicTrajectoryCommandGenerator {
             drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
         ).setKinematics(drivetrain.getKinematics());
 
-        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateSwerveTrajectory(
+        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(
             points,
             config
         );
@@ -316,7 +316,7 @@ public class HolonomicTrajectoryCommandGenerator {
             drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
         ).setKinematics(drivetrain.getKinematics());
 
-        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateSwerveTrajectory(
+        HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(
             points,
             headings,
             config
