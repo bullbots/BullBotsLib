@@ -75,19 +75,19 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
 
   public MecanumDriveWheelSpeeds getWheelSpeeds() {
     return new MecanumDriveWheelSpeeds(
-      config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()),
-      config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()),
-      config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()),
-      config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity())
+      config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()),
+      config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()),
+      config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()),
+      config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity())
     );
   }
 
   public MecanumDriveWheelPositions getWheelPositions() {
     return new MecanumDriveWheelPositions(
-      config.nativeUnitsToDistanceMeters(frontLeft.getSelectedSensorPosition()),
-      config.nativeUnitsToDistanceMeters(frontRight.getSelectedSensorPosition()),
-      config.nativeUnitsToDistanceMeters(backLeft.getSelectedSensorPosition()),
-      config.nativeUnitsToDistanceMeters(backRight.getSelectedSensorPosition())
+      config.encoderTicksToDistance(frontLeft.getSelectedSensorPosition()),
+      config.encoderTicksToDistance(frontRight.getSelectedSensorPosition()),
+      config.encoderTicksToDistance(backLeft.getSelectedSensorPosition()),
+      config.encoderTicksToDistance(backRight.getSelectedSensorPosition())
     );
   }
 
@@ -138,8 +138,8 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
     gyroLayout.addNumber("Radians", gyro::getRadians);
     gyroLayout.addNumber("Degrees", gyro::getDegrees);
     gyroLayout.addNumber("Degrees (Looped)", gyro::getDegreesLooped);
-    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis ω Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis ω Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
   }
 }

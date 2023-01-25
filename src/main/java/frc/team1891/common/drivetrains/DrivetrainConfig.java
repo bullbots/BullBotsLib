@@ -4,8 +4,6 @@
 
 package frc.team1891.common.drivetrains;
 
-import edu.wpi.first.math.util.Units;
-
 /** Drivetrain constraints. */
 public class DrivetrainConfig {
     public final double chassisMaxVelocityMetersPerSecond,
@@ -13,8 +11,6 @@ public class DrivetrainConfig {
                         chassisMaxAngularVelocityRadiansPerSecond,
                         chassisMaxAngularAccelerationRadiansPerSecondSquared;
     public final double wheelRadiusMeters, gearRatio, encoderCountsPerMotorRevolution;
-
-    private final int k100msPerSecond = 10;
 
     public DrivetrainConfig(
         double chassisMaxVelocityMetersPerSecond,
@@ -34,28 +30,50 @@ public class DrivetrainConfig {
         this.encoderCountsPerMotorRevolution = encoderCountsPerMotorRevolution;
     }
 
-    public int distanceToNativeUnits(double positionMeters) {
+    /**
+     * Converts a position in meters into encoder ticks.
+     * @param positionMeters position
+     * @return position in encoder ticks
+     */
+    public int distanceToEncoderTicks(double positionMeters) {
         double wheelRotations = positionMeters / (wheelRadiusMeters * 2 * Math.PI);
         double motorRotations = wheelRotations * gearRatio;
         return (int)(motorRotations * encoderCountsPerMotorRevolution);
     }
 
-    public double nativeUnitsToVelocityMeters(double sensorCountsPer100ms) {
-        double motorRotationsPer100ms = sensorCountsPer100ms / encoderCountsPerMotorRevolution;
-        double motorRotationsPerSecond = motorRotationsPer100ms * k100msPerSecond;
-        double wheelRotationsPerSecond = motorRotationsPerSecond / gearRatio;
-        return wheelRotationsPerSecond * (wheelRadiusMeters * 2 * Math.PI);
-    }
-
-    public double nativeUnitsToDistanceMeters(double sensorCounts) {
+    /**
+     * Converts a position in encoder ticks into meters.
+     * @param sensorCounts position
+     * @return position in meters
+     */
+    public double encoderTicksToDistance(double sensorCounts) {
         double motorRotations = sensorCounts / encoderCountsPerMotorRevolution;
         double wheelRotations = motorRotations / gearRatio;
         return wheelRotations * (wheelRadiusMeters * 2 * Math.PI);
     }
 
-    public double nativeUnitsToDistanceFeet(double sensorCounts) {
-        double motorRotations = sensorCounts / encoderCountsPerMotorRevolution;
-        double wheelRotations = motorRotations / gearRatio;
-        return wheelRotations * Units.metersToFeet(wheelRadiusMeters) * 2 * Math.PI;
+    /**
+     * Converts encoder ticks per 100ms into meters per second.
+     * @param sensorCountsPer100ms velocity
+     * @return velocity in meters per second
+     */
+    public double encoderTicksPer100msToVelocity(double sensorCountsPer100ms) {
+        double motorRotationsPer100ms = sensorCountsPer100ms / encoderCountsPerMotorRevolution;
+        double motorRotationsPerSecond = motorRotationsPer100ms * 10;
+        double wheelRotationsPerSecond = motorRotationsPerSecond / gearRatio;
+        return wheelRotationsPerSecond * (wheelRadiusMeters * 2 * Math.PI);
+    }
+
+    /**
+     * Converts a velocity in m/s into encoder ticks per 100ms.
+     * @param velocityMetersPerSecond velocity
+     * @return velocity in encoder ticks per 100ms
+     */
+    public double velocityToEncoderTicksPer100ms(double velocityMetersPerSecond) {
+        double wheelRotationsPerSecond = velocityMetersPerSecond / (wheelRadiusMeters * 2 * Math.PI);
+        double motorRotationsPerSecond = wheelRotationsPerSecond * gearRatio;
+        double motorRotationsPer100ms = motorRotationsPerSecond / 10;
+        double sensorCountsPer100ms = motorRotationsPer100ms * encoderCountsPerMotorRevolution;
+        return sensorCountsPer100ms;
     }
 }

@@ -91,8 +91,8 @@ public class DifferentialDrivetrain extends Drivetrain {
     gyroLayout.addNumber("Radians", gyro::getRadians);
     gyroLayout.addNumber("Degrees", gyro::getDegrees);
     gyroLayout.addNumber("Degrees (Looped)", gyro::getDegreesLooped);
-    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(left.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(right.getSelectedSensorVelocity()))).vxMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(left.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(right.getSelectedSensorVelocity()))).vyMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis ω Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(left.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(right.getSelectedSensorVelocity()))).omegaRadiansPerSecond);
+    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(left.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(right.getSelectedSensorVelocity()))).vxMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(left.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(right.getSelectedSensorVelocity()))).vyMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis ω Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(left.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(right.getSelectedSensorVelocity()))).omegaRadiansPerSecond);
   }
 }
