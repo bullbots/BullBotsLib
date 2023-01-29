@@ -97,7 +97,7 @@ public class RotatingHolonomicDriveController {
         double yFF = linearVelocityRefMeters * directionOfMovement.getSin();
         // Theta seems to need to be inverted (at least for sim)
         double thetaFF =
-            -m_thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians());
+            m_thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians());
         
         if (smartDashboardEnabled) {
             SmartDashboard.putNumber("currentRadians", currentPose.getRotation().getRadians());

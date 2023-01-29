@@ -7,6 +7,7 @@ package frc.team1891.common.drivetrains;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -17,7 +18,7 @@ import frc.team1891.common.hardware.NavX;
 /** Mecanum Drivetrain base. */
 public class MecanumDrivetrain extends HolonomicDrivetrain {
 
-  protected final MecanumDriveOdometry odometry;
+  protected final MecanumDrivePoseEstimator poseEstimator;
   protected final MecanumDriveKinematics kinematics;
 
   private final TalonFX frontLeft, frontRight, backLeft, backRight;
@@ -26,7 +27,6 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
     ShuffleboardTab shuffleboardTab,
     DrivetrainConfig config,
     MecanumDriveKinematics kinematics,
-    MecanumDriveOdometry odometry,
     NavX gyro,
     TalonFX frontLeft,
     TalonFX frontRight,
@@ -35,13 +35,14 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
   ) {
     super(shuffleboardTab, config, gyro);
 
-    this.odometry = odometry;
     this.kinematics = kinematics;
 
     this.frontLeft = frontLeft;
     this.frontRight = frontRight;
     this.backLeft = backLeft;
     this.backRight = backRight;
+
+    this.poseEstimator = new MecanumDrivePoseEstimator(kinematics, gyro.getRotation2d(), getWheelPositions(), new Pose2d());
   }
 
   public void holonomicDrive(double xSpeed, double ySpeed, double rot, boolean fieldOriented) {
@@ -105,19 +106,17 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
 
   @Override
   public void updateOdometry() {
-    odometry.update(gyro.getRotation2d(), getWheelPositions());
+    poseEstimator.update(gyro.getRotation2d(), getWheelPositions());
   }
 
   @Override
   public Pose2d getPose2d() {
-    // TODO Auto-generated method stub
-    return null;
+    return poseEstimator.getEstimatedPosition();
   }
 
   @Override
   public void resetOdometry(Pose2d pose2d) {
-    // TODO Auto-generated method stub
-    
+    poseEstimator.resetPosition(gyro.getRotation2d(), getWheelPositions(), pose2d);
   }
 
   @Override
@@ -140,6 +139,6 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
     gyroLayout.addNumber("Degrees (Looped)", gyro::getDegreesLooped);
     shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
     shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis ω Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+    shuffleboardTab.addNumber("Chassis omega Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.nativeUnitsToVelocityMeters(frontLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(frontRight.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backLeft.getSelectedSensorVelocity()), config.nativeUnitsToVelocityMeters(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
   }
 }
