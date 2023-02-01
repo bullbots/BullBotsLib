@@ -14,11 +14,11 @@ import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.hardware.NavX;
 
 /** Mecanum Drivetrain base. */
 public class MecanumDrivetrain extends HolonomicDrivetrain {
-
   protected final MecanumDrivePoseEstimator poseEstimator;
   protected final MecanumDriveKinematics kinematics;
 
@@ -121,6 +121,11 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
     setWheelSpeeds(kinematics.toWheelSpeeds(speeds));
   }
 
+  @Override
+  public ChassisSpeeds getChassisSpeeds() {
+    return kinematics.toChassisSpeeds(getWheelSpeeds());
+  }
+
   public void setWheelSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
     wheelSpeeds.desaturate(config.chassisMaxVelocityMetersPerSecond);
 
@@ -177,25 +182,55 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
   }
 
   @Override
-  protected void configureShuffleboard() {
-    ShuffleboardLayout frontLeftLayout = shuffleboardTab.getLayout("Front Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0);
-    frontLeftLayout.addNumber("Position", frontLeft::getSelectedSensorPosition);
-    frontLeftLayout.addNumber("Velocity", frontLeft::getSelectedSensorVelocity);
-    ShuffleboardLayout frontRightLayout = shuffleboardTab.getLayout("Front Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0);
-    frontRightLayout.addNumber("Position", frontRight::getSelectedSensorPosition);
-    frontRightLayout.addNumber("Velocity", frontRight::getSelectedSensorVelocity);
-    ShuffleboardLayout backLeftLayout = shuffleboardTab.getLayout("Back Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0);
-    backLeftLayout.addNumber("Position", backLeft::getSelectedSensorPosition);
-    backLeftLayout.addNumber("Velocity", backLeft::getSelectedSensorVelocity);
-    ShuffleboardLayout backRightLayout = shuffleboardTab.getLayout("Back Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0);
-    backRightLayout.addNumber("Position", backRight::getSelectedSensorPosition);
-    backRightLayout.addNumber("Velocity", backRight::getSelectedSensorVelocity);
-    ShuffleboardLayout gyroLayout = shuffleboardTab.getLayout("Gyro", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 4);
-    gyroLayout.addNumber("Radians", gyro::getRadians);
-    gyroLayout.addNumber("Degrees", gyro::getDegrees);
-    gyroLayout.addNumber("Degrees (Looped)", gyro::getDegreesLooped);
-    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis omega Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+  protected void configureSmartDashboard() {
+////    ShuffleboardLayout frontLeftLayout = shuffleboardTab.getLayout("Front Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0);
+////    frontLeftLayout.addNumber("Position", frontLeft::getSelectedSensorPosition);
+////    frontLeftLayout.addNumber("Velocity", frontLeft::getSelectedSensorVelocity);
+////    ShuffleboardLayout frontRightLayout = shuffleboardTab.getLayout("Front Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0);
+////    frontRightLayout.addNumber("Position", frontRight::getSelectedSensorPosition);
+////    frontRightLayout.addNumber("Velocity", frontRight::getSelectedSensorVelocity);
+////    ShuffleboardLayout backLeftLayout = shuffleboardTab.getLayout("Back Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0);
+////    backLeftLayout.addNumber("Position", backLeft::getSelectedSensorPosition);
+////    backLeftLayout.addNumber("Velocity", backLeft::getSelectedSensorVelocity);
+////    ShuffleboardLayout backRightLayout = shuffleboardTab.getLayout("Back Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0);
+////    backRightLayout.addNumber("Position", backRight::getSelectedSensorPosition);
+////    backRightLayout.addNumber("Velocity", backRight::getSelectedSensorVelocity);
+//    frontLeftPosition.update(frontLeft.getSelectedSensorPosition());
+//    frontLeftVelocity.update(frontLeft.getSelectedSensorVelocity());
+//    frontRightPosition.update(frontRight.getSelectedSensorPosition());
+//    frontRightVelocity.update(frontRight.getSelectedSensorVelocity());
+//    backLeftPosition.update(backLeft.getSelectedSensorPosition());
+//    backLeftVelocity.update(backLeft.getSelectedSensorVelocity());
+//    backRightPosition.update(backRight.getSelectedSensorPosition());
+//    backRightVelocity.update(backRight.getSelectedSensorVelocity());
+////    ShuffleboardLayout gyroLayout = shuffleboardTab.getLayout("Gyro", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 4);
+////    gyroLayout.addNumber("Radians", gyro::getRadians);
+////    gyroLayout.addNumber("Degrees", gyro::getDegrees);
+////    gyroLayout.addNumber("Degrees (Looped)", gyro::getDegreesLooped);
+//    gyroRadians.update(gyro.getRadians());
+//    gyroDegrees.update(gyro.getDegrees());
+//    gyroDegreesLooped.update(gyro.getDegreesLooped());
+////    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+////    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+////    shuffleboardTab.addNumber("Chassis omega Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new MecanumDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity()))).vxMetersPerSecond);
+//    ChassisSpeeds chassisSpeeds = getChassisSpeeds();
+//    chassisXSpeed.update(chassisSpeeds.vxMetersPerSecond);
+//    chassisYSpeed.update(chassisSpeeds.vyMetersPerSecond);
+//    chassisOmegaSpeed.update(chassisSpeeds.omegaRadiansPerSecond);
+
+    LazyDashboard.addNumber("Drivetrain/frontLeftPosition", frontLeft::getSelectedSensorPosition);
+    LazyDashboard.addNumber("Drivetrain/frontLeftVelocity", frontLeft::getSelectedSensorVelocity);
+    LazyDashboard.addNumber("Drivetrain/frontRightPosition", frontRight::getSelectedSensorPosition);
+    LazyDashboard.addNumber("Drivetrain/frontRightVelocity", frontRight::getSelectedSensorVelocity);
+    LazyDashboard.addNumber("Drivetrain/backLeftPosition", backLeft::getSelectedSensorPosition);
+    LazyDashboard.addNumber("Drivetrain/backLeftVelocity", backLeft::getSelectedSensorVelocity);
+    LazyDashboard.addNumber("Drivetrain/backRightPosition", backRight::getSelectedSensorPosition);
+    LazyDashboard.addNumber("Drivetrain/backRightVelocity", backRight::getSelectedSensorVelocity);
+    LazyDashboard.addNumber("Drivetrain/gyroRadians", gyro::getRadians);
+    LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getDegrees);
+    LazyDashboard.addNumber("Drivetrain/gyroDegreesLooped", gyro::getDegreesLooped);
+    LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
+    LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
+    LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);
   }
 }

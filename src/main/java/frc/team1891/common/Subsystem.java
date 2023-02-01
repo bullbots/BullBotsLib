@@ -9,5 +9,5 @@ public abstract class Subsystem extends SubsystemBase {
         this.shuffleboardTab = shuffleboardTab;
     }
 
-    protected abstract void configureShuffleboard();
+    protected abstract void configureSmartDashboard();
 }

@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import frc.team1891.common.LazyDashboard;
 
 public class SwerveModule {
     public static double degreesToMotorEncoderTicks(double degrees, double steeringGearRatio, double motorEncoderTicksPerRevolution) {
@@ -117,14 +118,14 @@ public class SwerveModule {
     }
 
     /**
-     * Configure the module to output its information to Shuffleboard
-     * @param moduleLayout the layout for the module
+     * Configure the module to output its information to SmartDashboard
+     * @param moduleName the name for the module
      */
-    public void configureShuffleboard(ShuffleboardLayout moduleLayout) {
-        moduleLayout.addNumber("Current Position (Meters)", () -> getSwerveModulePosition().distanceMeters);
-        moduleLayout.addNumber("Current Velocity (Meters per Second)", () -> getSwerveModuleState().speedMetersPerSecond);
-        moduleLayout.addNumber("Current Angle (Radians)", this::getAngleRadians);
-        moduleLayout.addNumber("Desired Velocity (Meters per Second)", () -> desiredState.speedMetersPerSecond);
-        moduleLayout.addNumber("Desired Angle (Radians)", () -> desiredState.angle.getRadians());
+    public void configureSmartDashboard(String moduleName) {
+        LazyDashboard.addNumber("Drivetrain/"+moduleName+"/Current Position (Meters)", () -> getSwerveModulePosition().distanceMeters);
+        LazyDashboard.addNumber("Drivetrain/"+moduleName+"/Current Velocity (Meters per Second)", () -> getSwerveModuleState().speedMetersPerSecond);
+        LazyDashboard.addNumber("Drivetrain/"+moduleName+"/Current Angle (Radians)", this::getAngleRadians);
+        LazyDashboard.addNumber("Drivetrain/"+moduleName+"/Desired Velocity (Meters per Second)", () -> desiredState.speedMetersPerSecond);
+        LazyDashboard.addNumber("Drivetrain/"+moduleName+"/Desired Angle (Radians)", () -> desiredState.angle.getRadians());
     }
 }

@@ -7,6 +7,7 @@ package frc.team1891.common.drivetrains;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.hardware.NavX;
 
 public class DifferentialDrivetrain extends Drivetrain {
@@ -54,6 +56,15 @@ public class DifferentialDrivetrain extends Drivetrain {
   }
 
   @Override
+  public ChassisSpeeds getChassisSpeeds() {
+    return kinematics.toChassisSpeeds(getWheelSpeeds());
+  }
+
+  public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    return new DifferentialDriveWheelSpeeds(left.getSelectedSensorVelocity(), right.getSelectedSensorVelocity());
+  }
+
+  @Override
   public Pose2d getPose2d() {
     return odometry.getPoseMeters();
   }
@@ -80,19 +91,16 @@ public class DifferentialDrivetrain extends Drivetrain {
   }
 
   @Override
-  protected void configureShuffleboard() {
-    ShuffleboardLayout leftLayout = shuffleboardTab.getLayout("Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0);
-    leftLayout.addNumber("Position", left::getSelectedSensorPosition);
-    leftLayout.addNumber("Velocity", left::getSelectedSensorVelocity);
-    ShuffleboardLayout rightLayout = shuffleboardTab.getLayout("Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0);
-    rightLayout.addNumber("Position", right::getSelectedSensorPosition);
-    rightLayout.addNumber("Velocity", right::getSelectedSensorVelocity);
-    ShuffleboardLayout gyroLayout = shuffleboardTab.getLayout("Gyro", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 4);
-    gyroLayout.addNumber("Radians", gyro::getRadians);
-    gyroLayout.addNumber("Degrees", gyro::getDegrees);
-    gyroLayout.addNumber("Degrees (Looped)", gyro::getDegreesLooped);
-    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(left.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(right.getSelectedSensorVelocity()))).vxMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(left.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(right.getSelectedSensorVelocity()))).vyMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis ω Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(config.encoderTicksPer100msToVelocity(left.getSelectedSensorVelocity()), config.encoderTicksPer100msToVelocity(right.getSelectedSensorVelocity()))).omegaRadiansPerSecond);
+  protected void configureSmartDashboard() {
+    LazyDashboard.addNumber("Drivetrain/leftPosition", left::getSelectedSensorPosition);
+    LazyDashboard.addNumber("Drivetrain/leftVelocity", left::getSelectedSensorVelocity);
+    LazyDashboard.addNumber("Drivetrain/rightPosition", right::getSelectedSensorPosition);
+    LazyDashboard.addNumber("Drivetrain/rightVelocity", right::getSelectedSensorVelocity);
+    LazyDashboard.addNumber("Drivetrain/gyroRadians", gyro::getRadians);
+    LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getDegrees);
+    LazyDashboard.addNumber("Drivetrain/gyroDegreesLooped", gyro::getDegreesLooped);
+    LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
+    LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
+    LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);
   }
 }

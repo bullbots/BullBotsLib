@@ -5,6 +5,7 @@
 package frc.team1891.common.drivetrains;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,6 +31,8 @@ public abstract class Drivetrain extends Subsystem {
 
         SmartDashboard.putData("Robot (Field2d)", field);
     }
+
+    public abstract ChassisSpeeds getChassisSpeeds();
 
     public DrivetrainConfig getConfig() {
         return config;

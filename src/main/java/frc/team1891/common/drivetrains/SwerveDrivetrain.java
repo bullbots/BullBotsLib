@@ -9,11 +9,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.drivetrains.swervemodules.SwerveModule;
 import frc.team1891.common.hardware.NavX;
 
@@ -151,6 +150,11 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     }
   }
 
+  @Override
+  public ChassisSpeeds getChassisSpeeds() {
+    return kinematics.toChassisSpeeds(getSwerveModuleStates());
+  }
+
   /**
    * Sets the 4 swerve modules to the desired states.
    * @param swerveModuleStates An array of length 4, of the desired module states
@@ -222,18 +226,17 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
   }
 
   @Override
-  protected void configureShuffleboard() {
-    frontLeft.configureShuffleboard(shuffleboardTab.getLayout("Front Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(0, 0));
-    frontRight.configureShuffleboard(shuffleboardTab.getLayout("Front Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(2, 0));
-    backLeft.configureShuffleboard(shuffleboardTab.getLayout("Back Left", BuiltInLayouts.kList).withSize(2, 4).withPosition(4, 0));
-    backRight.configureShuffleboard(shuffleboardTab.getLayout("Back Right", BuiltInLayouts.kList).withSize(2, 4).withPosition(6, 0));
-    ShuffleboardLayout gyroLayout = shuffleboardTab.getLayout("Gyro", BuiltInLayouts.kList).withSize(2, 3).withPosition(0, 4);
-    gyroLayout.addNumber("Radians", gyro::getRadians);
-    gyroLayout.addNumber("Degrees", gyro::getDegrees);
-    gyroLayout.addNumber("Degrees (Looped)", gyro::getDegreesLooped);
-    shuffleboardTab.addNumber("Chassis x Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(frontLeft.getSwerveModuleState(), frontRight.getSwerveModuleState(), backLeft.getSwerveModuleState(), backRight.getSwerveModuleState()).vxMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis y Speed (Meters per Second)", () -> kinematics.toChassisSpeeds(frontLeft.getSwerveModuleState(), frontRight.getSwerveModuleState(), backLeft.getSwerveModuleState(), backRight.getSwerveModuleState()).vyMetersPerSecond);
-    shuffleboardTab.addNumber("Chassis omega Speed (Radians per Second)", () -> kinematics.toChassisSpeeds(frontLeft.getSwerveModuleState(), frontRight.getSwerveModuleState(), backLeft.getSwerveModuleState(), backRight.getSwerveModuleState()).omegaRadiansPerSecond);
+  protected void configureSmartDashboard() {
+    frontLeft.configureSmartDashboard("Front Left");
+    frontRight.configureSmartDashboard("Front Right");
+    backLeft.configureSmartDashboard("Back Left");
+    backRight.configureSmartDashboard("Back Right");
+    LazyDashboard.addNumber("Drivetrain/gyroRadians", gyro::getRadians);
+    LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getDegrees);
+    LazyDashboard.addNumber("Drivetrain/gyroDegreesLooped", gyro::getDegreesLooped);
+    LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
+    LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
+    LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);
   }
 
   @Override
