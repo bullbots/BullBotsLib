@@ -13,7 +13,7 @@ import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base. */
 public abstract class Drivetrain extends Subsystem {
-    private final Field2d field = new Field2d();
+    protected final Field2d field = new Field2d();
 
     protected final DrivetrainConfig config;
     protected final NavX gyro;
