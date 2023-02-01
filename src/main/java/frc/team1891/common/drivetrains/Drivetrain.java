@@ -26,11 +26,9 @@ public abstract class Drivetrain extends Subsystem {
     ) {
         super(shuffleboardTab);
         this.config = config;
-        // gyro.reset();
         this.gyro = gyro;
 
         SmartDashboard.putData("Robot (Field2d)", field);
-        // field.setRobotPose(getPose2d());
     }
 
     public DrivetrainConfig getConfig() {

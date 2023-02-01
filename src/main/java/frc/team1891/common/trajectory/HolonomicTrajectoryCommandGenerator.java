@@ -64,7 +64,7 @@ public class HolonomicTrajectoryCommandGenerator {
      * @param pointTranslations points for the trajectory to go through
      * @return an autonomous command
      */
-    public static SequentialCommandGroup generate(SwerveDrivetrain drivetrain, Rotation2d initialHeading, Rotation2d finalHeading, Translation2d ... pointTranslations) {
+    public static SequentialCommandGroup generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, Rotation2d initialHeading, Rotation2d finalHeading, Translation2d ... pointTranslations) {
         ArrayList<Translation2d> points = new ArrayList<>();
         Collections.addAll(points, pointTranslations);
 
@@ -102,15 +102,15 @@ public class HolonomicTrajectoryCommandGenerator {
 
         // drivetrain.resetOdometry(trajectory.getInitialPose());
 
-        return command
-            .beforeStarting(() -> {
-                drivetrain.resetGyro();
-                drivetrain.resetOdometry(trajectory.getInitialPose());
-            }, drivetrain)
-            .andThen(() -> {drivetrain.stop();});
+        if (resetPoseBeforeStarting) {
+            drivetrain.resetOdometry(trajectory.getInitialPose());
+        }
+        return command.andThen(
+                drivetrain::stop
+        );
     }
 
-    public static SequentialCommandGroup generate(SwerveDrivetrain drivetrain, Pose2d ... poses) {
+    public static SequentialCommandGroup generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, Pose2d ... poses) {
         // List<Translation2d> points = Arrays.asList(pointTranslations);
         ArrayList<Pose2d> points = new ArrayList<>();
         Collections.addAll(points, poses);
@@ -143,16 +143,16 @@ public class HolonomicTrajectoryCommandGenerator {
             drivetrain
         );
 
-        return command
-            .beforeStarting(() -> {
-                drivetrain.resetGyro();
-                drivetrain.resetOdometry(trajectory.getInitialPose());
-            }, drivetrain)
-            .andThen(() -> {drivetrain.stop();});
+        if (resetPoseBeforeStarting) {
+            drivetrain.resetOdometry(trajectory.getInitialPose());
+        }
+        return command.andThen(
+                drivetrain::stop
+        );
     }
 
     @SafeVarargs
-    public static SequentialCommandGroup generate(SwerveDrivetrain drivetrain, Pair<Pose2d, Rotation2d> ... posesAndHeadings) {
+    public static SequentialCommandGroup generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, Pair<Pose2d, Rotation2d> ... posesAndHeadings) {
         Pose2d[] poses = new Pose2d[posesAndHeadings.length];
         Rotation2d[] rotations = new Rotation2d[posesAndHeadings.length];
         for (int i = 0; i < posesAndHeadings.length; i++) {
@@ -194,12 +194,12 @@ public class HolonomicTrajectoryCommandGenerator {
             drivetrain
         );
 
-        return command
-            .beforeStarting(() -> {
-                drivetrain.resetGyro();
-                drivetrain.resetOdometry(trajectory.getInitialPose());
-            }, drivetrain)
-            .andThen(() -> {drivetrain.stop();});
+        if (resetPoseBeforeStarting) {
+            drivetrain.resetOdometry(trajectory.getInitialPose());
+        }
+        return command.andThen(
+                drivetrain::stop
+        );
     }
 
         /**
@@ -210,7 +210,7 @@ public class HolonomicTrajectoryCommandGenerator {
      * @param pointTranslations points for the trajectory to go through
      * @return an autonomous command
      */
-    public static SequentialCommandGroup generate(MecanumDrivetrain drivetrain, Rotation2d initialHeading, Rotation2d finalHeading, Translation2d ... pointTranslations) {
+    public static SequentialCommandGroup generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, Rotation2d initialHeading, Rotation2d finalHeading, Translation2d ... pointTranslations) {
         ArrayList<Translation2d> points = new ArrayList<>();
         Collections.addAll(points, pointTranslations);
 
@@ -246,17 +246,15 @@ public class HolonomicTrajectoryCommandGenerator {
             drivetrain
         );
 
-        // drivetrain.resetOdometry(trajectory.getInitialPose());
-
-        return command
-            .beforeStarting(() -> {
-                drivetrain.resetGyro();
-                drivetrain.resetOdometry(trajectory.getInitialPose());
-            }, drivetrain)
-            .andThen(() -> {drivetrain.stop();});
+        if (resetPoseBeforeStarting) {
+            drivetrain.resetOdometry(trajectory.getInitialPose());
+        }
+        return command.andThen(
+                drivetrain::stop
+        );
     }
 
-    public static SequentialCommandGroup generate(MecanumDrivetrain drivetrain, Pose2d ... poses) {
+    public static SequentialCommandGroup generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, Pose2d ... poses) {
         // List<Translation2d> points = Arrays.asList(pointTranslations);
         ArrayList<Pose2d> points = new ArrayList<>();
         Collections.addAll(points, poses);
@@ -289,16 +287,16 @@ public class HolonomicTrajectoryCommandGenerator {
             drivetrain
         );
 
-        return command
-            .beforeStarting(() -> {
-                drivetrain.resetGyro();
-                drivetrain.resetOdometry(trajectory.getInitialPose());
-            }, drivetrain)
-            .andThen(() -> {drivetrain.stop();});
+        if (resetPoseBeforeStarting) {
+            drivetrain.resetOdometry(trajectory.getInitialPose());
+        }
+        return command.andThen(
+                drivetrain::stop
+        );
     }
 
     @SafeVarargs
-    public static SequentialCommandGroup generate(MecanumDrivetrain drivetrain, Pair<Pose2d, Rotation2d> ... posesAndHeadings) {
+    public static SequentialCommandGroup generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, Pair<Pose2d, Rotation2d> ... posesAndHeadings) {
         Pose2d[] poses = new Pose2d[posesAndHeadings.length];
         Rotation2d[] rotations = new Rotation2d[posesAndHeadings.length];
         for (int i = 0; i < posesAndHeadings.length; i++) {
@@ -340,11 +338,11 @@ public class HolonomicTrajectoryCommandGenerator {
             drivetrain
         );
 
-        return command
-            .beforeStarting(() -> {
-                drivetrain.resetGyro();
-                drivetrain.resetOdometry(trajectory.getInitialPose());
-            }, drivetrain)
-            .andThen(() -> {drivetrain.stop();});
+        if (resetPoseBeforeStarting) {
+            drivetrain.resetOdometry(trajectory.getInitialPose());
+        }
+        return command.andThen(
+                drivetrain::stop
+        );
     }
 }
