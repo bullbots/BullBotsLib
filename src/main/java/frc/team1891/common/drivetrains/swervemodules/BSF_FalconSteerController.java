@@ -9,6 +9,9 @@ import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
+/**
+ * Based on https://github.com/Team364/BaseFalconSwerve
+ */
 public class BSF_FalconSteerController implements SteerController {
     private final WPI_TalonFX steerMotor;
     private final CANCoder encoder;
@@ -21,6 +24,9 @@ public class BSF_FalconSteerController implements SteerController {
         this.encoder = encoder;
         this.steeringGearRatio = steeringGearRatio;
         this.encoderOffset = encoderOffset;
+
+        // TODO: configureCANCoder
+        configureSteerMotor();
     }
 
     private void configureSteerMotor() {
@@ -45,7 +51,7 @@ public class BSF_FalconSteerController implements SteerController {
     }
 
     private void resetToAbsolute(){
-        double absolutePosition = SwerveModule.degreesToMotorEncoderTicks(getDegrees() - encoderOffset, 150/7., 2048);
+        double absolutePosition = SwerveModule.degreesToMotorEncoderTicks(encoder.getAbsolutePosition() - encoderOffset, 150/7., 2048);
         steerMotor.setSelectedSensorPosition(absolutePosition);
     }
 

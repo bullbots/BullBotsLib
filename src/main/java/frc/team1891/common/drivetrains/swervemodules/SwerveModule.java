@@ -71,6 +71,7 @@ public class SwerveModule {
      * Stops the swerve module.
      */
     public void stop() {
+        desiredState = new SwerveModuleState(0, getAngleRotation2d());
         driveController.stop();
         steerController.stop();
     }
@@ -116,7 +117,7 @@ public class SwerveModule {
     }
 
     /**
-     * Configure the module to output it's information to Shuffleboard
+     * Configure the module to output its information to Shuffleboard
      * @param moduleLayout the layout for the module
      */
     public void configureShuffleboard(ShuffleboardLayout moduleLayout) {

@@ -37,6 +37,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
 
   /**
    * Creates a new SwerveDrivetrain, assuming the center of the robot is the center of the drivebase.
+   * @param shuffleboardTab the shuffleboard tab for the content of this subsystem
    * @param config the config of the drivetrain
    * @param driveBaseWidth the width between left and right modules
    * @param driveBaseLength the length between front and back modules
@@ -74,6 +75,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
 
   /**
    * Creates a new SwerveDrivetrain.
+   * @param shuffleboardTab the shuffleboard tab for the content of this subsystem
    * @param config the config of the drivetrain
    * @param frontLeftLocation the location of the front left module relative to the robot center
    * @param frontRightLocation the location of the front right module relative to the robot center

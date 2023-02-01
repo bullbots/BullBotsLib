@@ -5,10 +5,11 @@
 package frc.team1891.common.drivetrains;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -21,26 +22,81 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
   protected final MecanumDrivePoseEstimator poseEstimator;
   protected final MecanumDriveKinematics kinematics;
 
-  private final TalonFX frontLeft, frontRight, backLeft, backRight;
+  private final WPI_TalonFX frontLeft, frontRight, backLeft, backRight;
 
+  /**
+   * Creates a new MecanumDrivetrain, assuming the center of the robot is the center of the drivebase.
+   * @param shuffleboardTab the shuffleboard tab for the content of this subsystem
+   * @param config the config of the drivetrain
+   * @param driveBaseWidth the width between left and right wheels
+   * @param driveBaseLength the length between front and back wheels
+   * @param gyro the gyro of the drivetrain
+   * @param frontLeft the front left wheels
+   * @param frontRight the front right wheels
+   * @param backLeft the back left wheels
+   * @param backRight the back right wheels
+   */
   public MecanumDrivetrain(
     ShuffleboardTab shuffleboardTab,
     DrivetrainConfig config,
-    MecanumDriveKinematics kinematics,
+    double driveBaseWidth,
+    double driveBaseLength,
     NavX gyro,
-    TalonFX frontLeft,
-    TalonFX frontRight,
-    TalonFX backLeft,
-    TalonFX backRight
+    WPI_TalonFX frontLeft,
+    WPI_TalonFX frontRight,
+    WPI_TalonFX backLeft,
+    WPI_TalonFX backRight
+  ) {
+    this(
+      shuffleboardTab,
+      config,
+      new Translation2d(driveBaseLength / 2d, driveBaseWidth / 2d),
+      new Translation2d(driveBaseLength / 2d, -driveBaseWidth / 2d),
+      new Translation2d(-driveBaseLength / 2d, driveBaseWidth / 2d),
+      new Translation2d(-driveBaseLength / 2d, -driveBaseWidth / 2d),
+      gyro,
+      frontLeft,
+      frontRight,
+      backLeft,
+      backRight
+    );
+  }
+
+  /**
+   * Creates a new MecanumDrivetrain.
+   * @param shuffleboardTab the shuffleboard tab for the content of this subsystem
+   * @param config the config of the drivetrain
+   * @param frontLeftLocation the location of the front left wheel relative to the robot center
+   * @param frontRightLocation the location of the front right wheel relative to the robot center
+   * @param backLeftLocation the location of the back left wheel relative to the robot center
+   * @param backRightLocation the location of the back right wheel relative to the robot center
+   * @param gyro the gyro of the drivetrain
+   * @param frontLeft the front left wheel
+   * @param frontRight the front right wheel
+   * @param backLeft the back left wheel
+   * @param backRight the back right wheel
+   */
+  public MecanumDrivetrain(
+    ShuffleboardTab shuffleboardTab,
+    DrivetrainConfig config,
+    Translation2d frontLeftLocation,
+    Translation2d frontRightLocation,
+    Translation2d backLeftLocation,
+    Translation2d backRightLocation,
+    NavX gyro,
+    WPI_TalonFX frontLeft,
+    WPI_TalonFX frontRight,
+    WPI_TalonFX backLeft,
+    WPI_TalonFX backRight
   ) {
     super(shuffleboardTab, config, gyro);
-
-    this.kinematics = kinematics;
 
     this.frontLeft = frontLeft;
     this.frontRight = frontRight;
     this.backLeft = backLeft;
     this.backRight = backRight;
+
+    this.kinematics = new MecanumDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
     this.poseEstimator = new MecanumDrivePoseEstimator(kinematics, gyro.getRotation2d(), getWheelPositions(), new Pose2d());
   }
@@ -68,6 +124,7 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
   public void setWheelSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
     wheelSpeeds.desaturate(config.chassisMaxVelocityMetersPerSecond);
 
+    // TODO: This could - and probably should be ControlMode.Velocity
     frontLeft.set(ControlMode.PercentOutput, wheelSpeeds.frontLeftMetersPerSecond / config.chassisMaxVelocityMetersPerSecond);
     frontRight.set(ControlMode.PercentOutput, wheelSpeeds.frontRightMetersPerSecond / config.chassisMaxVelocityMetersPerSecond);
     backLeft.set(ControlMode.PercentOutput, wheelSpeeds.rearLeftMetersPerSecond / config.chassisMaxVelocityMetersPerSecond);
