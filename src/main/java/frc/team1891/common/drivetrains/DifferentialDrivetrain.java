@@ -12,9 +12,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.hardware.NavX;
 
@@ -27,7 +24,6 @@ public class DifferentialDrivetrain extends Drivetrain {
   protected final WPI_TalonFX left, right;
 
   public DifferentialDrivetrain(
-    ShuffleboardTab shuffleboardTab,
     DrivetrainConfig config,
     DifferentialDriveKinematics kinematics,
     DifferentialDriveOdometry odometry,
@@ -35,7 +31,7 @@ public class DifferentialDrivetrain extends Drivetrain {
     WPI_TalonFX leftMaster,
     WPI_TalonFX rightMaster
   ) {
-    super(shuffleboardTab, config, gyro);
+    super(config, gyro);
 
     this.kinematics = kinematics;
     this.odometry = odometry;

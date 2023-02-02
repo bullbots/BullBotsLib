@@ -6,7 +6,6 @@ package frc.team1891.common.drivetrains;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team1891.common.Subsystem;
@@ -21,11 +20,9 @@ public abstract class Drivetrain extends Subsystem {
 
       /** Creates a new Drivetrain. */
     public Drivetrain(
-        ShuffleboardTab shuffleboardTab,
         DrivetrainConfig config,
         NavX gyro
     ) {
-        super(shuffleboardTab);
         this.config = config;
         this.gyro = gyro;
 

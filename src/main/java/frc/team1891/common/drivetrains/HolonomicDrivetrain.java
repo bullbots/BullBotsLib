@@ -13,8 +13,8 @@ import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base for any drivetrain with holonomic movement. */
 public abstract class HolonomicDrivetrain extends Drivetrain {
-    public HolonomicDrivetrain(ShuffleboardTab shuffleboardTab, DrivetrainConfig config, NavX gyro) {
-        super(shuffleboardTab, config, gyro);
+    public HolonomicDrivetrain(DrivetrainConfig config, NavX gyro) {
+        super(config, gyro);
     }
 
     /**

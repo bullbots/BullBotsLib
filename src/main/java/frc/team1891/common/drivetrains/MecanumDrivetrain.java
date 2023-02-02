@@ -11,9 +11,6 @@ import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.hardware.NavX;
 
@@ -26,7 +23,6 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
 
   /**
    * Creates a new MecanumDrivetrain, assuming the center of the robot is the center of the drivebase.
-   * @param shuffleboardTab the shuffleboard tab for the content of this subsystem
    * @param config the config of the drivetrain
    * @param driveBaseWidth the width between left and right wheels
    * @param driveBaseLength the length between front and back wheels
@@ -37,7 +33,6 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
    * @param backRight the back right wheels
    */
   public MecanumDrivetrain(
-    ShuffleboardTab shuffleboardTab,
     DrivetrainConfig config,
     double driveBaseWidth,
     double driveBaseLength,
@@ -48,7 +43,6 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
     WPI_TalonFX backRight
   ) {
     this(
-      shuffleboardTab,
       config,
       new Translation2d(driveBaseLength / 2d, driveBaseWidth / 2d),
       new Translation2d(driveBaseLength / 2d, -driveBaseWidth / 2d),
@@ -64,7 +58,6 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
 
   /**
    * Creates a new MecanumDrivetrain.
-   * @param shuffleboardTab the shuffleboard tab for the content of this subsystem
    * @param config the config of the drivetrain
    * @param frontLeftLocation the location of the front left wheel relative to the robot center
    * @param frontRightLocation the location of the front right wheel relative to the robot center
@@ -77,7 +70,6 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
    * @param backRight the back right wheel
    */
   public MecanumDrivetrain(
-    ShuffleboardTab shuffleboardTab,
     DrivetrainConfig config,
     Translation2d frontLeftLocation,
     Translation2d frontRightLocation,
@@ -89,7 +81,7 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
     WPI_TalonFX backLeft,
     WPI_TalonFX backRight
   ) {
-    super(shuffleboardTab, config, gyro);
+    super(config, gyro);
 
     this.frontLeft = frontLeft;
     this.frontRight = frontRight;

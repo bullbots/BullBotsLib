@@ -36,7 +36,6 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
 
   /**
    * Creates a new SwerveDrivetrain, assuming the center of the robot is the center of the drivebase.
-   * @param shuffleboardTab the shuffleboard tab for the content of this subsystem
    * @param config the config of the drivetrain
    * @param driveBaseWidth the width between left and right modules
    * @param driveBaseLength the length between front and back modules
@@ -47,7 +46,6 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
    * @param backRight the back right module
    */
   public SwerveDrivetrain(
-    ShuffleboardTab shuffleboardTab,
     DrivetrainConfig config,
     double driveBaseWidth,
     double driveBaseLength,
@@ -58,7 +56,6 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     SwerveModule backRight
   ) {
     this(
-      shuffleboardTab,
       config,
       new Translation2d(driveBaseLength / 2d, driveBaseWidth / 2d),
       new Translation2d(driveBaseLength / 2d, -driveBaseWidth / 2d),
@@ -74,7 +71,6 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
 
   /**
    * Creates a new SwerveDrivetrain.
-   * @param shuffleboardTab the shuffleboard tab for the content of this subsystem
    * @param config the config of the drivetrain
    * @param frontLeftLocation the location of the front left module relative to the robot center
    * @param frontRightLocation the location of the front right module relative to the robot center
@@ -87,7 +83,6 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
    * @param backRight the back right module
    */
   public SwerveDrivetrain(
-    ShuffleboardTab shuffleboardTab,
     DrivetrainConfig config,
     Translation2d frontLeftLocation,
     Translation2d frontRightLocation,
@@ -99,7 +94,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     SwerveModule backLeft,
     SwerveModule backRight
   ) {
-    super(shuffleboardTab, config, gyro);
+    super(config, gyro);
 
     this.frontLeft = frontLeft;
     this.frontRight = frontRight;
