@@ -14,7 +14,7 @@ public class MAX_NeoSteerController implements SteerController {
 
     private final SparkMaxPIDController m_turningPIDController;
 
-    private double m_chassisAngularOffset = 0;
+    private double m_chassisAngularOffsetRadians = 0;
 
     /**
      * Constructs a MAX_NeoSteerController and configures the turning motor,
@@ -22,8 +22,8 @@ public class MAX_NeoSteerController implements SteerController {
      * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
      * Encoder.
      */
-    public MAX_NeoSteerController(int turningCANId, double chassisAngularOffset) {
-        this(new CANSparkMax(turningCANId, CANSparkMaxLowLevel.MotorType.kBrushless), chassisAngularOffset);
+    public MAX_NeoSteerController(int turningCANId, double chassisAngularOffset, double kP, double kI, double kD, double kFF) {
+        this(new CANSparkMax(turningCANId, CANSparkMaxLowLevel.MotorType.kBrushless), chassisAngularOffset, kP, kI, kD, kFF);
     }
     /**
      * Constructs a MAX_NeoSteerController and configures the turning motor,
@@ -31,7 +31,7 @@ public class MAX_NeoSteerController implements SteerController {
      * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
      * Encoder.
      */
-    public MAX_NeoSteerController(CANSparkMax turningNeo, double chassisAngularOffset) {
+    public MAX_NeoSteerController(CANSparkMax turningNeo, double chassisAngularOffsetRadians, double kP, double kI, double kD, double kFF) {
         m_turningNeo = turningNeo;
 
         // Factory reset, so we get the SPARKS MAX to a known state before configuring
@@ -61,12 +61,10 @@ public class MAX_NeoSteerController implements SteerController {
         m_turningPIDController.setPositionPIDWrappingMinInput(0);
         m_turningPIDController.setPositionPIDWrappingMaxInput((2 * Math.PI)); // Match positionConversionFactor
 
-        // TODO: Set the PID gains for the turning motor. Note these are example gains, and you
-        // may need to tune them for your own robot!
-        m_turningPIDController.setP(1);
-        m_turningPIDController.setI(0);
-        m_turningPIDController.setD(0);
-        m_turningPIDController.setFF(0);
+        m_turningPIDController.setP(kP);
+        m_turningPIDController.setI(kI);
+        m_turningPIDController.setD(kD);
+        m_turningPIDController.setFF(kFF);
         m_turningPIDController.setOutputRange(-1, 1);
 
         m_turningNeo.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -76,7 +74,7 @@ public class MAX_NeoSteerController implements SteerController {
         // operation, it will maintain the above configurations.
         m_turningNeo.burnFlash();
 
-        m_chassisAngularOffset = chassisAngularOffset;
+        m_chassisAngularOffsetRadians = chassisAngularOffsetRadians;
     }
 
     @Override
@@ -84,7 +82,7 @@ public class MAX_NeoSteerController implements SteerController {
         // Apply chassis angular offset to the desired state.
         SwerveModuleState correctedDesiredState = new SwerveModuleState();
         correctedDesiredState.speedMetersPerSecond = state.speedMetersPerSecond;
-        correctedDesiredState.angle = state.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
+        correctedDesiredState.angle = state.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffsetRadians));
 
         //TODO: state may need re-optimized here
 
@@ -102,12 +100,12 @@ public class MAX_NeoSteerController implements SteerController {
 
     @Override
     public Rotation2d getRotation2d() {
-        return new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffset);
+        return new Rotation2d(m_turningEncoder.getPosition() - m_chassisAngularOffsetRadians);
     }
 
     @Override
     public double getRadians() {
-        return m_turningEncoder.getPosition() - m_chassisAngularOffset;
+        return m_turningEncoder.getPosition() - m_chassisAngularOffsetRadians;
     }
 
     @Override
