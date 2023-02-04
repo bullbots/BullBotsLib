@@ -4,4 +4,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public abstract class Subsystem extends SubsystemBase {
     protected abstract void configureSmartDashboard();
+
+    /**
+     * Stops all moving parts.
+     */
+    public abstract void stop();
 }

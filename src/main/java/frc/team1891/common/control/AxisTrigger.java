@@ -19,6 +19,7 @@ public class AxisTrigger extends Trigger {
         POSITIVE_ONLY,
         NEGATIVE_ONLY
     }
+
     public AxisTrigger(GenericHID stick, int axis) {
         this(stick, axis, Direction.BOTH_WAYS);
     }
@@ -26,20 +27,18 @@ public class AxisTrigger extends Trigger {
     public AxisTrigger(GenericHID stick, int axis, Direction direction) {
         this(stick, axis, direction, .2);
     }
-    
+
+    public AxisTrigger(GenericHID stick, int axis, double axisThreshold) {
+        this(stick, axis, Direction.BOTH_WAYS, axisThreshold);
+    }
+
     public AxisTrigger(GenericHID stick, int axis, Direction direction, double axisThreshold) {
         super(() -> {
-            switch (direction) {
-                case BOTH_WAYS:
-                    return Math.abs(stick.getRawAxis(axis)) > axisThreshold;
-
-                case POSITIVE_ONLY:
-                    return stick.getRawAxis(axis) > axisThreshold;
-
-                case NEGATIVE_ONLY:
-                    return stick.getRawAxis(axis) < -axisThreshold;
-            }
-            return false;
+            return switch (direction) {
+                case BOTH_WAYS -> Math.abs(stick.getRawAxis(axis)) > axisThreshold;
+                case POSITIVE_ONLY -> stick.getRawAxis(axis) > axisThreshold;
+                case NEGATIVE_ONLY -> stick.getRawAxis(axis) < -axisThreshold;
+            };
         });
     }
 }

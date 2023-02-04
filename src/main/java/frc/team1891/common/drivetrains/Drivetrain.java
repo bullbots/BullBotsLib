@@ -38,11 +38,6 @@ public abstract class Drivetrain extends Subsystem {
     public abstract Pose2d getPose2d();
 
     /**
-     * Stops all drive motors.
-     */
-    public abstract void stop();
-
-    /**
      * Sets the gyro angle to 0.
      */
     public void resetGyro() {
