@@ -46,6 +46,7 @@ public class MAX_NeoSteerController implements SteerController {
         // Apply position and velocity conversion factors for the turning encoder. We
         // want these in radians and radians per second to use with WPILib's swerve
         // APIs.
+        // The native units of the encoder is rotations
         m_turningEncoder.setPositionConversionFactor((2 * Math.PI));
         m_turningEncoder.setVelocityConversionFactor((2 * Math.PI) / 60.);
 

@@ -202,7 +202,7 @@ public class HolonomicTrajectoryCommandGenerator {
         );
     }
 
-        /**
+    /**
      * Creates an autonomous {@link SequentialCommandGroup} that follows a {@link Trajectory} for swerve drive, then stops.
      * @param drivetrain subsystem
      * @param initialHeading intitial angle of the robot
