@@ -389,6 +389,7 @@ public final class HolonomicTrajectoryParameterizer {
      * href="http://www2.informatik.uni-freiburg.de/~lau/students/Sprunk2008.pdf">here</a>.
      *
      * @param points Reference to the spline points.
+     * @param headings Reference to headings at each spline point.
      * @param constraints A vector of various velocity and acceleration. constraints.
      * @param startVelocityMetersPerSecond The start velocity for the trajectory.
      * @param endVelocityMetersPerSecond The end velocity for the trajectory.
@@ -701,7 +702,6 @@ public final class HolonomicTrajectoryParameterizer {
         }
     }
 
-    @SuppressWarnings("serial")
     public static class TrajectoryGenerationException extends RuntimeException {
         public TrajectoryGenerationException(String message) {
             super(message);

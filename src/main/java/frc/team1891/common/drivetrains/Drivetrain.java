@@ -53,7 +53,7 @@ public abstract class Drivetrain extends Subsystem {
 
     /**
      * Sets the position of the odometry to the given {@link Pose2d}, while maintaining the angle read from the gyro.
-     * @param pose2d
+     * @param pose2d the pose the robot at after the reset
      */
     public abstract void resetOdometry(Pose2d pose2d);
 

@@ -9,6 +9,7 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public abstract class LazyDashboard {
+    private static int DEFAULT_INTERVAL = 50;
     private static ArrayList<LazyDashboard> lazyDashboards = new ArrayList<>();
 
     /**
@@ -21,7 +22,7 @@ public abstract class LazyDashboard {
     }
 
     public static LazyDashboard addBoolean(String name, BooleanSupplier supplier) {
-        return addBoolean(name, 20, supplier);
+        return addBoolean(name, DEFAULT_INTERVAL, supplier);
     }
 
     public static LazyDashboard addBoolean(String name, int updateInterval, BooleanSupplier supplier) {
@@ -36,7 +37,7 @@ public abstract class LazyDashboard {
     }
 
     public static LazyDashboard addNumber(String name, DoubleSupplier supplier) {
-        return addNumber(name, 50, supplier);
+        return addNumber(name, DEFAULT_INTERVAL, supplier);
     }
 
     public static LazyDashboard addNumber(String name, int updateInterval, DoubleSupplier supplier) {
@@ -51,7 +52,7 @@ public abstract class LazyDashboard {
     }
 
     public static LazyDashboard addString(String name, Supplier<String> supplier) {
-        return addString(name, 50, supplier);
+        return addString(name, DEFAULT_INTERVAL, supplier);
     }
 
     public static LazyDashboard addString(String name, int updateInterval, Supplier<String> supplier) {
@@ -66,7 +67,7 @@ public abstract class LazyDashboard {
     }
 
     public static LazyDashboard addBooleanArray(String name, Supplier<Boolean[]> supplier) {
-        return addBooleanArray(name, 50, supplier);
+        return addBooleanArray(name, DEFAULT_INTERVAL, supplier);
     }
 
     public static LazyDashboard addBooleanArray(String name, int updateInterval, Supplier<Boolean[]> supplier) {
@@ -81,7 +82,7 @@ public abstract class LazyDashboard {
     }
 
     public static LazyDashboard addNumberArray(String name, Supplier<Double[]> supplier) {
-        return addNumberArray(name, 50, supplier);
+        return addNumberArray(name, DEFAULT_INTERVAL, supplier);
     }
 
     public static LazyDashboard addNumberArray(String name, int updateInterval, Supplier<Double[]> supplier) {
@@ -96,7 +97,7 @@ public abstract class LazyDashboard {
     }
 
     public static LazyDashboard addStringArray(String name, Supplier<String[]> supplier) {
-        return addStringArray(name, 50, supplier);
+        return addStringArray(name, DEFAULT_INTERVAL, supplier);
     }
 
     public static LazyDashboard addStringArray(String name, int updateInterval, Supplier<String[]> supplier) {
@@ -130,96 +131,4 @@ public abstract class LazyDashboard {
     }
 
     protected abstract void publishToSmartDashboard();
-
-//    public void update(boolean bool) {
-//        count++;
-//        if (count > updateInterval) {
-//            count = 0;
-//            entry.setBoolean(bool);
-//        }
-//    }
-//
-//    public boolean getBoolean(boolean defaultValue) {
-//        return entry.getBoolean(defaultValue);
-//    }
-//
-//    public void update(double number) {
-//        count++;
-//        if (count > updateInterval) {
-//            count = 0;
-//            entry.setNumber(number);
-//        }
-//    }
-//
-//    public double getNumber(double defaultValue) {
-//        return entry.getDouble(defaultValue);
-//    }
-//
-//    public void update(String string) {
-//        count++;
-//        if (count > updateInterval) {
-//            count = 0;
-//            entry.setString(string);
-//        }
-//    }
-//
-//    public String getNumber(String defaultValue) {
-//        return entry.getString(defaultValue);
-//    }
-//
-//    public void update(boolean[] booleanArray) {
-//        count++;
-//        if (count > updateInterval) {
-//            count = 0;
-//            entry.setBooleanArray(booleanArray);
-//        }
-//    }
-//    public void update(Boolean[] booleanArray) {
-//        count++;
-//        if (count > updateInterval) {
-//            count = 0;
-//            entry.setBooleanArray(booleanArray);
-//        }
-//    }
-//
-//    public boolean[] getBooleanArray(boolean[] defaultValue) {
-//        return entry.getBooleanArray(defaultValue);
-//    }
-//    public Boolean[] getBooleanArray(Boolean[] defaultValue) {
-//        return entry.getBooleanArray(defaultValue);
-//    }
-//
-//    public void update(double[] numberArray) {
-//        count++;
-//        if (count > updateInterval) {
-//            count = 0;
-//            entry.setDoubleArray(numberArray);
-//        }
-//    }
-//    public void update(Double[] numberArray) {
-//        count++;
-//        if (count > updateInterval) {
-//            count = 0;
-//            entry.setDoubleArray(numberArray);
-//        }
-//    }
-//
-//    public double[] getNumberArray(double[] defaultValue) {
-//        return entry.getDoubleArray(defaultValue);
-//    }
-//    public Double[] getNumberArray(Double[] defaultValue) {
-//        return entry.getDoubleArray(defaultValue);
-//    }
-//
-//    public void update(String[] numberArray) {
-//        count++;
-//        if (count > updateInterval) {
-//            count = 0;
-//            entry.setStringArray(numberArray);
-//        }
-//    }
-//
-//    public String[] getStringArray(String[] defaultValue) {
-//        return entry.getStringArray(defaultValue);
-//    }
 }
