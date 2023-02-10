@@ -23,6 +23,15 @@ public class DifferentialDrivetrain extends Drivetrain {
 
   protected final WPI_TalonFX left, right;
 
+  /**
+   * Creates a new differential drivetrain.
+   * @param config the drivetrain config
+   * @param kinematics the kinematics for this drivetrain
+   * @param odometry the odometry for this drivetrain
+   * @param gyro the gyro used by the drivetrain ({@link NavX})
+   * @param leftMaster the left drive motor
+   * @param rightMaster the right drive motor
+   */
   public DifferentialDrivetrain(
     DrivetrainConfig config,
     DifferentialDriveKinematics kinematics,

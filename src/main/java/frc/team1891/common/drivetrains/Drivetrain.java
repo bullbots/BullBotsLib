@@ -18,7 +18,11 @@ public abstract class Drivetrain extends Subsystem {
     protected final DrivetrainConfig config;
     protected final NavX gyro;
 
-      /** Creates a new Drivetrain. */
+    /**
+     * Creates a new Drivetrain
+     * @param config the drivetrain config
+     * @param gyro the gyro used by the drivetrian ({@link NavX})
+     */
     public Drivetrain(
         DrivetrainConfig config,
         NavX gyro
