@@ -23,5 +23,9 @@ public abstract class HolonomicDrivetrain extends Drivetrain {
      */
     public abstract void holonomicDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative);
 
+    /**
+     * Drives the robot to the desired {@link ChassisSpeeds}.
+     * @param speeds chassis speeds
+     */
     public abstract void fromChassisSpeeds(ChassisSpeeds speeds);
 }

@@ -4,12 +4,6 @@
 
 package frc.team1891.common.trajectory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.BiConsumer;
-
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,6 +16,12 @@ import edu.wpi.first.math.spline.SplineHelper;
 import edu.wpi.first.math.spline.SplineParameterizer;
 import edu.wpi.first.math.spline.SplineParameterizer.MalformedSplineException;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 public class HolonomicTrajectoryGenerator {
     private static final HolonomicTrajectory kDoNothingTrajectory =
@@ -242,8 +242,9 @@ public class HolonomicTrajectoryGenerator {
      * splines -- therefore, all points must be represented by Pose2d objects. Continuous curvature is
      * guaranteed in this method.
      *
-     * @param waypoints List of waypoints..
-     * @param config The configuration for the trajectory.
+     * @param waypoints List of waypoints
+     * @param headings Headings with each waypoint
+     * @param config The configuration for the trajectory
      * @return The generated trajectory.
      */
     @SuppressWarnings("LocalVariableName")

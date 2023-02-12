@@ -129,82 +129,6 @@ public final class HolonomicTrajectoryParameterizer {
             predecessor = constrainedState;
         }
 
-        // // Rotational movement
-        // // Forward pass
-        // for (int i = 0; i < points.size(); i++) {
-        //     constrainedStates.add(new ConstrainedState());
-        //     var constrainedState = constrainedStates.get(i);
-        //     constrainedState.pose = points.get(i);
-
-        //     // Begin constraining based on predecessor.
-        //     double a = constrainedState.pose.poseMeters.getRotation().getRadians();
-        //     double b = predecessor.pose.poseMeters.getRotation().getRadians();
-        //     // Smallest difference between angles
-        //     double da = Math.min(Math.min(Math.abs(a-b), Math.abs(2*Math.PI - a + b)), Math.abs(2*Math.PI - b + a));
-        //     constrainedState.angleRadians = predecessor.angleRadians + da;
-
-        //     // We may need to iterate to find the maximum end velocity and common
-        //     // acceleration, since acceleration limits may be a function of velocity.
-        //     while (true) {
-        //         // Enforce global max velocity and max reachable velocity by global
-        //         // acceleration limit. vf = std::sqrt(vi^2 + 2*a*d).
-        //         constrainedState.maxAngularVelocityRadiansPerSecond =
-        //             Math.min(
-        //                 maxAngularVelocityRadiansPerSecond,
-        //                 Math.sqrt(
-        //                     predecessor.maxAngularVelocityRadiansPerSecond * predecessor.maxAngularVelocityRadiansPerSecond
-        //                         + predecessor.maxAngularAccelerationRadiansPerSecondSq * da * 2.0));
-
-        //         constrainedState.minAngularAccelerationRadiansPerSecondSq = -maxAngularAccelerationRadiansPerSecondSq;
-        //         constrainedState.maxAngularAccelerationRadiansPerSecondSq = maxAngularAccelerationRadiansPerSecondSq;
-
-        //         // At this point, the constrained state is fully constructed apart from
-        //         // all the custom-defined user constraints.
-        //         for (final var constraint : constraints) {
-        //             constrainedState.maxAngularVelocityRadiansPerSecond =
-        //                 Math.min(
-        //                     constrainedState.maxAngularVelocityRadiansPerSecond,
-        //                     constraint.getMaxAngularVelocityRadiansPerSecond(
-        //                         constrainedState.pose.poseMeters,
-        //                         constrainedState.maxAngularVelocityRadiansPerSecond));
-        //             }
-
-        //             // Now enforce all acceleration limits.
-        //             enforceAccelerationLimits(reversed, constraints, constrainedState);
-
-        //             if (da < 1E-6) {
-        //                 break;
-        //             }
-
-        //             // If the actual acceleration for this state is higher than the max
-        //             // acceleration that we applied, then we need to reduce the max
-        //             // acceleration of the predecessor and try again.
-        //             double actualAcceleration =
-        //                 (constrainedState.maxAngularVelocityRadiansPerSecond
-        //                         * constrainedState.maxAngularVelocityRadiansPerSecond
-        //                         - predecessor.maxAngularVelocityRadiansPerSecond
-        //                         * predecessor.maxAngularVelocityRadiansPerSecond)
-        //                     / (da * 2.0);
-
-        //             // If we violate the max acceleration constraint, let's modify the
-        //             // predecessor.
-        //             if (constrainedState.maxAngularAccelerationRadiansPerSecondSq < actualAcceleration - 1E-6) {
-        //                 predecessor.maxAngularAccelerationRadiansPerSecondSq =
-        //                     constrainedState.maxAngularAccelerationRadiansPerSecondSq;
-        //             } else {
-        //             // Constrain the predecessor's max acceleration to the current
-        //             // acceleration.
-        //             if (actualAcceleration > predecessor.minAngularAccelerationRadiansPerSecondSq) {
-        //                 predecessor.maxAngularAccelerationRadiansPerSecondSq = actualAcceleration;
-        //             }
-        //             // If the actual acceleration is less than the predecessor's min
-        //             // acceleration, it will be repaired in the backward pass.
-        //             break;
-        //         }
-        //     }
-        //     predecessor = constrainedState;
-        // }
-        
 
         var successor =
             new ConstrainedState(
@@ -262,56 +186,6 @@ public final class HolonomicTrajectoryParameterizer {
         successor = constrainedState;
         }
 
-        // // Rotational movement
-        // // Backward pass
-        // for (int i = points.size() - 1; i >= 0; i--) {
-        //     var constrainedState = constrainedStates.get(i);
-        //     double a = successor.pose.poseMeters.getRotation().getRadians();
-        //     double b = constrainedState.pose.poseMeters.getRotation().getRadians();
-        //     // Smallest difference between angles
-        //     double da = Math.min(Math.min(Math.abs(a-b), Math.abs(2*Math.PI - a + b)), Math.abs(2*Math.PI - b + a));
-        
-        //     while (true) {
-        //         // Enforce max velocity limit (reverse)
-        //         // vf = std::sqrt(vi^2 + 2*a*d), where vi = successor.
-        //         double newMaxVelocity =
-        //             Math.sqrt(
-        //                 successor.maxAngularVelocityRadiansPerSecond * successor.maxAngularVelocityRadiansPerSecond
-        //                     + successor.minAngularAccelerationRadiansPerSecondSq * da * 2.0);
-        
-        //         // No more limits to impose! This state can be finalized.
-        //         if (newMaxVelocity >= constrainedState.maxAngularVelocityRadiansPerSecond) {
-        //             break;
-        //         }
-        
-        //         constrainedState.maxAngularVelocityRadiansPerSecond = newMaxVelocity;
-        
-        //         // Check all acceleration constraints with the new max velocity.
-        //         enforceAccelerationLimits(reversed, constraints, constrainedState);
-        
-        //         if (da > -1E-6) {
-        //             break;
-        //         }
-        
-        //         // If the actual acceleration for this state is lower than the min
-        //         // acceleration, then we need to lower the min acceleration of the
-        //         // successor and try again.
-        //         double actualAcceleration =
-        //             (constrainedState.maxAngularVelocityRadiansPerSecond
-        //                         * constrainedState.maxAngularVelocityRadiansPerSecond
-        //                     - successor.maxAngularVelocityRadiansPerSecond * successor.maxAngularVelocityRadiansPerSecond)
-        //                 / (da * 2.0);
-        
-        //         if (constrainedState.minAngularAccelerationRadiansPerSecondSq > actualAcceleration + 1E-6) {
-        //             successor.minAngularAccelerationRadiansPerSecondSq =
-        //                 constrainedState.minAngularAccelerationRadiansPerSecondSq;
-        //         } else {
-        //             successor.minAngularAccelerationRadiansPerSecondSq = actualAcceleration;
-        //             break;
-        //         }
-        //     }
-        //     successor = constrainedState;
-        // }
 
         // Now we can integrate the constrained states forward in time to obtain our
         // trajectory states.

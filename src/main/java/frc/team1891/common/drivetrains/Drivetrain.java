@@ -33,6 +33,10 @@ public abstract class Drivetrain extends Subsystem {
         SmartDashboard.putData("Robot (Field2d)", field);
     }
 
+    /**
+     * Returns the speed of the robot as a {@link ChassisSpeeds}.
+     * @return the speed of the robot
+     */
     public abstract ChassisSpeeds getChassisSpeeds();
 
     public DrivetrainConfig getConfig() {
@@ -61,6 +65,12 @@ public abstract class Drivetrain extends Subsystem {
      */
     public abstract void resetOdometry(Pose2d pose2d);
 
+    /**
+     * Updates the odometry of the drivetrain.
+     *
+     * This is called by the periodic method. If the {@link Drivetrain#periodic()} method is overridden without calling
+     * super.periodic() this will not work.
+     */
     public abstract void updateOdometry();
 
     @Override

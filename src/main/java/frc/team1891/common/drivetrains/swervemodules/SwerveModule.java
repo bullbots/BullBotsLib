@@ -11,19 +11,47 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.team1891.common.LazyDashboard;
 
 public class SwerveModule {
+    /**
+     * Converts from the module angle in degrees to the motor position in encoder ticks.
+     * @param degrees module angle in degrees
+     * @param steeringGearRatio gear ratio between rotations of the module and the steering motor (motor rotations / module rotations)
+     * @param motorEncoderTicksPerRevolution encoder counts of motor per revolution (e.g. TalonFX = 2048)
+     * @return the position in encoder ticks of the steer motor
+     */
     public static double degreesToMotorEncoderTicks(double degrees, double steeringGearRatio, double motorEncoderTicksPerRevolution) {
         return degrees / (360.0 / (steeringGearRatio * motorEncoderTicksPerRevolution));
     }
 
+    /**
+     * Converts from the module angle in radians to the motor position in encoder ticks.
+     * @param radians module angle in radians
+     * @param steeringGearRatio gear ratio between rotations of the module and the steering motor (motor rotations / module rotations)
+     * @param motorEncoderTicksPerRevolution encoder counts of motor per revolution (e.g. TalonFX = 2048)
+     * @return the position in encoder ticks of the steer motor
+     */
     public static double radiansToEncoderTicks(double radians, double steeringGearRatio, double motorEncoderTicksPerRevolution) {
         return radians / ((2*Math.PI) / (steeringGearRatio * motorEncoderTicksPerRevolution));
     }
 
+    /**
+     * Converts from the motor position in encoder ticks to the module angle in degrees.
+     * @param motorEncoderTicks the position in encoder ticks of the steer motor
+     * @param steeringGearRatio gear ratio between rotations of the module and the steering motor (motor rotations / module rotations)
+     * @param motorEncoderTicksPerRevolution encoder counts of motor per revolution (e.g. TalonFX = 2048)
+     * @return the module angle in degrees
+     */
     public static double motorEncoderTicksToDegrees(double motorEncoderTicks, double steeringGearRatio, double motorEncoderTicksPerRevolution) {
 //        return Rotation2d.fromDegrees(bsfSwerveModule.Conversions.falconToDegrees(mAngleMotor.getSelectedSensorPosition(), 150/7.));
         return motorEncoderTicks * (360.0 / (steeringGearRatio * motorEncoderTicksPerRevolution));
     }
 
+    /**
+     * Converts from the motor position in encoder ticks to the module angle in radians.
+     * @param motorEncoderTicks the position in encoder ticks of the steer motor
+     * @param steeringGearRatio gear ratio between rotations of the module and the steering motor (motor rotations / module rotations)
+     * @param motorEncoderTicksPerRevolution encoder counts of motor per revolution (e.g. TalonFX = 2048)
+     * @return the module angle in radians
+     */
     public static double motorEncoderTicksToRadians(double motorEncoderTicks, double steeringGearRatio, double motorEncoderTicksPerRevolution) {
 //        return Rotation2d.fromDegrees(bsfSwerveModule.Conversions.falconToDegrees(mAngleMotor.getSelectedSensorPosition(), 150/7.));
         return motorEncoderTicks * ((2*Math.PI) / (steeringGearRatio * motorEncoderTicksPerRevolution));
@@ -33,20 +61,37 @@ public class SwerveModule {
     private final SteerController steerController;
     private SwerveModuleState desiredState;
 
+    /**
+     * Creates a new swerve module using the given {@link DriveController} and {@link SteerController}.
+     * @param driveController the drive controller
+     * @param steerController the steer controller
+     */
     public SwerveModule(DriveController driveController, SteerController steerController) {
         this.driveController = driveController;
         this.steerController = steerController;
         this.desiredState = new SwerveModuleState();
     }
 
+    /**
+     * Returns the current {@link SwerveModulePosition} of the module.
+     * @return the current position of the module
+     */
     public SwerveModulePosition getSwerveModulePosition() {
         return new SwerveModulePosition(getWheelPosition(), getAngleRotation2d());
     }
 
+    /**
+     * Returns the current {@link SwerveModuleState} of the module.
+     * @return the current state of the module
+     */
     public SwerveModuleState getSwerveModuleState() {
         return new SwerveModuleState(getWheelVelocity(), getAngleRotation2d());
     }
 
+    /**
+     * Sets the desired {@link SwerveModuleState} of the module and drives to it.
+     * @param desiredState the desired state of the module
+     */
     public void setDesiredSwerveModuleState(SwerveModuleState desiredState) {
         desiredState.angle = new Rotation2d(MathUtil.inputModulus(desiredState.angle.getRadians(), 0, 2*Math.PI));
         this.desiredState = desiredState;
@@ -54,6 +99,10 @@ public class SwerveModule {
         drive(desiredState);
     }
 
+    /**
+     * Returns the desired {@link SwerveModuleState} of the module.
+     * @return the desired state of the module
+     */
     public SwerveModuleState getDesiredSwerveModuleState() {
         return desiredState;
     }

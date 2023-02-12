@@ -18,7 +18,7 @@ import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.drivetrains.swervemodules.SwerveModule;
 import frc.team1891.common.hardware.NavX;
 
-/** Swerve Drivetrain base. */
+/** Drivetrain base for a swerve drivetrain. */
 public class SwerveDrivetrain extends HolonomicDrivetrain {
   public static final SwerveModuleState[] EMPTY_SWERVE_MODULE_STATES = new SwerveModuleState[] {
     new SwerveModuleState(),
@@ -124,6 +124,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     SmartDashboard.putData("Modules (Field2d)", modulesField);
   }
 
+  @Override
   public void holonomicDrive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     xSpeed *= config.chassisMaxVelocityMetersPerSecond;
     ySpeed *= config.chassisMaxVelocityMetersPerSecond;
@@ -166,6 +167,10 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     backRight.setDesiredSwerveModuleState(swerveModuleStates[3]);
   }
 
+  /**
+   * Returns the positions of the 4 modules as a {@link SwerveModulePosition} array.
+   * @return the positions of the modules
+   */
   public SwerveModulePosition[] getSwerveModulePositions() {
     return new SwerveModulePosition[] {
       frontLeft.getSwerveModulePosition(),
@@ -175,6 +180,10 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     };
   }
 
+  /**
+   * Returns the states of the 4 modules as a {@link SwerveModuleState} array.
+   * @return the states of the modules
+   */
   public SwerveModuleState[] getSwerveModuleStates() {
     return new SwerveModuleState[] {
       frontLeft.getSwerveModuleState(),
@@ -184,6 +193,10 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     };
   }
 
+  /**
+   * Returns the {@link SwerveDriveKinematics} of this drivetrain.
+   * @return kinematics
+   */
   public SwerveDriveKinematics getKinematics() {
     return kinematics;
   }
@@ -209,11 +222,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
       poseEstimator.resetPosition(gyro.getRotation2d(), getSwerveModulePositions(), pose2d);
   }
 
-  /**
-   * Updates the field relative position of the robot.
-   * 
-   * Odometry is measured in meters.
-   */
+  @Override
   public void updateOdometry() {
     // TODO: Add timestamp to estimate
     poseEstimator.update(

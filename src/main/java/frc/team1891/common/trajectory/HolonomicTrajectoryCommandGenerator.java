@@ -56,27 +56,75 @@ public class HolonomicTrajectoryCommandGenerator {
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops  for swerve drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for swerve drive.
+     * @param drivetrain subsystem
+     * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
+     * @param trajectory the trajectory to follow
+     * @return a command that follows a {@link HolonomicTrajectory}
+     */
+    public static Command generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, HolonomicTrajectory trajectory) {
+        return generate(drivetrain, resetPoseBeforeStarting, true, trajectory);
+    }
+
+    /**
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for swerve drive.
+     * @param drivetrain subsystem
+     * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
+     * @param stopOnFinish should the drivetrain be told to stop when it finishes
+     * @param trajectory the trajectory to follow
+     * @return a command that follows a {@link HolonomicTrajectory}
+     */
+    public static Command generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, HolonomicTrajectory trajectory) {
+        ProfiledPIDController headingController = new ProfiledPIDController(rP, rI, rD,
+                new TrapezoidProfile.Constraints(
+                        drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
+                        drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
+                )
+        );
+        headingController.enableContinuousInput(-Math.PI, Math.PI);
+
+        Command command = new HolonomicTrajectoryCommand(
+                trajectory,
+                drivetrain::getPose2d,
+                new PIDController(tP, tI, tD),
+                new PIDController(tP, tI, tD),
+                headingController,
+                drivetrain::fromChassisSpeeds,
+                drivetrain
+        );
+
+        if (resetPoseBeforeStarting) {
+            drivetrain.resetOdometry(trajectory.getInitialPose());
+        }
+        if (stopOnFinish) {
+            command = command.andThen(drivetrain::stop);
+        }
+
+        return command;
+    }
+
+    /**
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for swerve drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
      * @param initialHeading initial angle of the robot
      * @param finalHeading final angle of the robot
      * @param pointTranslations points for the trajectory to go through
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     public static Command generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, Rotation2d initialHeading, Rotation2d finalHeading, Translation2d ... pointTranslations) {
         return generate(drivetrain, resetPoseBeforeStarting, true, initialHeading, finalHeading, pointTranslations);
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for swerve drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for swerve drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
      * @param stopOnFinish should the drivetrain be told to stop when it finishes
      * @param initialHeading initial angle of the robot
      * @param finalHeading final angle of the robot
      * @param pointTranslations points for the trajectory to go through
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     public static Command generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, Rotation2d initialHeading, Rotation2d finalHeading, Translation2d[] pointTranslations) {
         ArrayList<Translation2d> points = new ArrayList<>();
@@ -96,55 +144,29 @@ public class HolonomicTrajectoryCommandGenerator {
             config
         );
 
-        ProfiledPIDController headingController = new ProfiledPIDController(rP, rI, rD,
-            new TrapezoidProfile.Constraints(
-                drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
-                drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
-            )
-        );
-        headingController.enableContinuousInput(-Math.PI, Math.PI);
-
-        Command command = new HolonomicTrajectoryCommand(
-            trajectory,
-            drivetrain::getPose2d,
-            new PIDController(tP, tI, tD),
-            new PIDController(tP, tI, tD),
-            headingController,
-            drivetrain::fromChassisSpeeds,
-            drivetrain
-        );
-
-        if (resetPoseBeforeStarting) {
-            drivetrain.resetOdometry(trajectory.getInitialPose());
-        }
-        if (stopOnFinish) {
-            command = command.andThen(drivetrain::stop);
-        }
-
-        return command;
+        return generate(drivetrain, resetPoseBeforeStarting, stopOnFinish, trajectory);
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for swerve drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for swerve drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it's already at the initial pose
      * @param poses the waypoints for the robot to drive through; the rotation of the pose controls the chassis heading and direction of movement
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     public static Command generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, Pose2d ... poses) {
         return generate(drivetrain, resetPoseBeforeStarting, true, poses);
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for swerve drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for swerve drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it's already at the initial pose
      * @param stopOnFinish should the drivetrain be told to stop when it finishes
      * @param poses the waypoints for the robot to drive through; the rotation of the pose controls the chassis heading and direction of movement
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     public static Command generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, Pose2d ... poses) {
-        // List<Translation2d> points = Arrays.asList(pointTranslations);
         ArrayList<Pose2d> points = new ArrayList<>();
         Collections.addAll(points, poses);
 
@@ -158,40 +180,15 @@ public class HolonomicTrajectoryCommandGenerator {
             config
         );
 
-        ProfiledPIDController headingController = new ProfiledPIDController(rP, rI, rD,
-            new TrapezoidProfile.Constraints(
-                drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
-                drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
-            )
-        );
-        headingController.enableContinuousInput(-Math.PI, Math.PI);
-
-        Command command = new HolonomicTrajectoryCommand(
-            trajectory,
-            drivetrain::getPose2d,
-            new PIDController(tP, tI, tD),
-            new PIDController(tP, tI, tD),
-            headingController,
-            drivetrain::fromChassisSpeeds,
-            drivetrain
-        );
-
-        if (resetPoseBeforeStarting) {
-            drivetrain.resetOdometry(trajectory.getInitialPose());
-        }
-        if (stopOnFinish) {
-            command = command.andThen(drivetrain::stop);
-        }
-
-        return command;
+        return generate(drivetrain, resetPoseBeforeStarting, stopOnFinish, trajectory);
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for swerve drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for swerve drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
      * @param posesAndHeadings pairs containing a pose that controls the waypoints and direction of movement through said waypoints, and a rotation that controls the heading of the chassis at each point
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     @SafeVarargs
     public static Command generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, Pair<Pose2d, Rotation2d> ... posesAndHeadings) {
@@ -199,12 +196,12 @@ public class HolonomicTrajectoryCommandGenerator {
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for swerve drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for swerve drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
      * @param stopOnFinish should the drivetrain be told to stop when it finishes
      * @param posesAndHeadings pairs containing a pose that controls the waypoints and direction of movement through said waypoints, and a rotation that controls the heading of the chassis at each point
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     @SafeVarargs
     public static Command generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, Pair<Pose2d, Rotation2d> ... posesAndHeadings) {
@@ -231,22 +228,37 @@ public class HolonomicTrajectoryCommandGenerator {
             config
         );
 
+        return generate(drivetrain, resetPoseBeforeStarting, stopOnFinish, trajectory);
+    }
+
+    /**
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for swerve drive.
+     * @param drivetrain subsystem
+     * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
+     * @param trajectory the trajectory to follow
+     * @return a command that follows a {@link HolonomicTrajectory}
+     */
+    public static Command generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, HolonomicTrajectory trajectory) {
+        return generate(drivetrain, resetPoseBeforeStarting, true, trajectory);
+    }
+
+    public static Command generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, HolonomicTrajectory trajectory) {
         ProfiledPIDController headingController = new ProfiledPIDController(rP, rI, rD,
-            new TrapezoidProfile.Constraints(
-                drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
-                drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
-            )
+                new TrapezoidProfile.Constraints(
+                        drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
+                        drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
+                )
         );
         headingController.enableContinuousInput(-Math.PI, Math.PI);
 
         Command command = new HolonomicTrajectoryCommand(
-            trajectory,
-            drivetrain::getPose2d,
-            new PIDController(tP, tI, tD),
-            new PIDController(tP, tI, tD),
-            headingController,
-            drivetrain::fromChassisSpeeds,
-            drivetrain
+                trajectory,
+                drivetrain::getPose2d,
+                new PIDController(tP, tI, tD),
+                new PIDController(tP, tI, tD),
+                headingController,
+                drivetrain::fromChassisSpeeds,
+                drivetrain
         );
 
         if (resetPoseBeforeStarting) {
@@ -255,31 +267,32 @@ public class HolonomicTrajectoryCommandGenerator {
         if (stopOnFinish) {
             command = command.andThen(drivetrain::stop);
         }
+
         return command;
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for mecanum drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for mecanum drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
      * @param initialHeading initial angle of the robot
      * @param finalHeading final angle of the robot
      * @param pointTranslations points for the trajectory to go through
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     public static Command generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, Rotation2d initialHeading, Rotation2d finalHeading, Translation2d ... pointTranslations) {
         return generate(drivetrain, resetPoseBeforeStarting, true, initialHeading, finalHeading, pointTranslations);
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for mecanum drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for mecanum drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
      * @param stopOnFinish should the drivetrain be told to stop when it finishes
      * @param initialHeading initial angle of the robot
      * @param finalHeading final angle of the robot
      * @param pointTranslations points for the trajectory to go through
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     public static Command generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, Rotation2d initialHeading, Rotation2d finalHeading, Translation2d[] pointTranslations) {
         ArrayList<Translation2d> points = new ArrayList<>();
@@ -299,52 +312,27 @@ public class HolonomicTrajectoryCommandGenerator {
                 config
         );
 
-        ProfiledPIDController headingController = new ProfiledPIDController(rP, rI, rD,
-                new TrapezoidProfile.Constraints(
-                        drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
-                        drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
-                )
-        );
-        headingController.enableContinuousInput(-Math.PI, Math.PI);
-
-        Command command = new HolonomicTrajectoryCommand(
-                trajectory,
-                drivetrain::getPose2d,
-                new PIDController(tP, tI, tD),
-                new PIDController(tP, tI, tD),
-                headingController,
-                drivetrain::fromChassisSpeeds,
-                drivetrain
-        );
-
-        if (resetPoseBeforeStarting) {
-            drivetrain.resetOdometry(trajectory.getInitialPose());
-        }
-        if (stopOnFinish) {
-            command = command.andThen(drivetrain::stop);
-        }
-
-        return command;
+        return generate(drivetrain, resetPoseBeforeStarting, stopOnFinish, trajectory);
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for mecanum drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for mecanum drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it's already at the initial pose
      * @param poses the waypoints for the robot to drive through; the rotation of the pose controls the chassis heading and direction of movement
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     public static Command generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, Pose2d ... poses) {
         return generate(drivetrain, resetPoseBeforeStarting, true, poses);
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for mecanum drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for mecanum drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it's already at the initial pose
      * @param stopOnFinish should the drivetrain be told to stop when it finishes
      * @param poses the waypoints for the robot to drive through; the rotation of the pose controls the chassis heading and direction of movement
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     public static Command generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, Pose2d ... poses) {
         // List<Translation2d> points = Arrays.asList(pointTranslations);
@@ -361,40 +349,15 @@ public class HolonomicTrajectoryCommandGenerator {
                 config
         );
 
-        ProfiledPIDController headingController = new ProfiledPIDController(rP, rI, rD,
-                new TrapezoidProfile.Constraints(
-                        drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
-                        drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
-                )
-        );
-        headingController.enableContinuousInput(-Math.PI, Math.PI);
-
-        Command command = new HolonomicTrajectoryCommand(
-                trajectory,
-                drivetrain::getPose2d,
-                new PIDController(tP, tI, tD),
-                new PIDController(tP, tI, tD),
-                headingController,
-                drivetrain::fromChassisSpeeds,
-                drivetrain
-        );
-
-        if (resetPoseBeforeStarting) {
-            drivetrain.resetOdometry(trajectory.getInitialPose());
-        }
-        if (stopOnFinish) {
-            command = command.andThen(drivetrain::stop);
-        }
-
-        return command;
+        return generate(drivetrain, resetPoseBeforeStarting, stopOnFinish, trajectory);
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for mecanum drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} and stops for mecanum drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
      * @param posesAndHeadings pairs containing a pose that controls the waypoints and direction of movement through said waypoints, and a rotation that controls the heading of the chassis at each point
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     @SafeVarargs
     public static Command generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, Pair<Pose2d, Rotation2d> ... posesAndHeadings) {
@@ -402,12 +365,12 @@ public class HolonomicTrajectoryCommandGenerator {
     }
 
     /**
-     * Creates an autonomous {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for mecanum drive.
+     * Creates a {@link HolonomicTrajectoryCommand} that follows a {@link HolonomicTrajectory} for mecanum drive.
      * @param drivetrain subsystem
      * @param resetPoseBeforeStarting when true the robot assumes it is already at the initial pose
      * @param stopOnFinish should the drivetrain be told to stop when it finishes
      * @param posesAndHeadings pairs containing a pose that controls the waypoints and direction of movement through said waypoints, and a rotation that controls the heading of the chassis at each point
-     * @return an autonomous command
+     * @return a command that follows a {@link HolonomicTrajectory}
      */
     @SafeVarargs
     public static Command generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, Pair<Pose2d, Rotation2d> ... posesAndHeadings) {
@@ -434,30 +397,6 @@ public class HolonomicTrajectoryCommandGenerator {
                 config
         );
 
-        ProfiledPIDController headingController = new ProfiledPIDController(rP, rI, rD,
-                new TrapezoidProfile.Constraints(
-                        drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
-                        drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
-                )
-        );
-        headingController.enableContinuousInput(-Math.PI, Math.PI);
-
-        Command command = new HolonomicTrajectoryCommand(
-                trajectory,
-                drivetrain::getPose2d,
-                new PIDController(tP, tI, tD),
-                new PIDController(tP, tI, tD),
-                headingController,
-                drivetrain::fromChassisSpeeds,
-                drivetrain
-        );
-
-        if (resetPoseBeforeStarting) {
-            drivetrain.resetOdometry(trajectory.getInitialPose());
-        }
-        if (stopOnFinish) {
-            command = command.andThen(drivetrain::stop);
-        }
-        return command;
+        return generate(drivetrain, resetPoseBeforeStarting, stopOnFinish, trajectory);
     }
 }

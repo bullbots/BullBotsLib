@@ -4,7 +4,11 @@
 
 package frc.team1891.common.drivetrains;
 
-/** Drivetrain constraints. */
+/**
+ * Structure to hold useful information about a {@link Drivetrain} and makes unit conversions easier.
+ *
+ * Used throughout BullBotsLib.
+ */
 public class DrivetrainConfig {
     public final double chassisMaxVelocityMetersPerSecond,
                         chassisMaxAccelerationMetersPerSecondSquared,
@@ -12,6 +16,16 @@ public class DrivetrainConfig {
                         chassisMaxAngularAccelerationRadiansPerSecondSquared;
     public final double wheelRadiusMeters, gearRatio, encoderCountsPerMotorRevolution;
 
+    /**
+     * Creates a new drivetrain configuration
+     * @param chassisMaxVelocityMetersPerSecond max attainable velocity of the drivetrain
+     * @param chassisMaxAccelerationMetersPerSecondSquared max attainable acceleration of the drivetrain
+     * @param chassisMaxAngularVelocityRadiansPerSecond max attainable angular velocity of the drivetrain
+     * @param chassisMaxAngularAccelerationRadiansPerSecondSquared max attainable angular acceleration of the drivetrain
+     * @param wheelRadiusMeters radius of the wheels
+     * @param gearRatio gear ratio of wheels (motor rotations / wheel rotations)
+     * @param encoderCountsPerMotorRevolution encoder counts of motor per revolution (e.g. TalonFX = 2048)
+     */
     public DrivetrainConfig(
         double chassisMaxVelocityMetersPerSecond,
         double chassisMaxAccelerationMetersPerSecondSquared,

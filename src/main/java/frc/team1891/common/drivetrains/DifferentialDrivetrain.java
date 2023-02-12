@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.hardware.NavX;
 
+/** Drivetrain base for a differential drivetrain. */
 public class DifferentialDrivetrain extends Drivetrain {
   protected final DifferentialDriveKinematics kinematics;
   protected final DifferentialDriveOdometry odometry;
@@ -52,10 +53,22 @@ public class DifferentialDrivetrain extends Drivetrain {
     this.right = rightMaster;
   }
 
+  /**
+   * Drives the robot using {@link DifferentialDrive#arcadeDrive(double, double, boolean)}.
+   * @param xSpeed forward speed
+   * @param rot turning speed
+   * @param squaredInputs square joystick inputs for more controlled movements at low speed
+   */
   public void arcadeDrive(double xSpeed, double rot, boolean squaredInputs) {
     differentialDrive.arcadeDrive(xSpeed, rot, squaredInputs);
   }
 
+  /**
+   * Drives the robot using {@link DifferentialDrive#curvatureDrive(double, double, boolean)}.
+   * @param xSpeed forward speed
+   * @param zRotation turning speed
+   * @param allowTurnInPlace allow the robot to turn if there is no forward input
+   */
   public void curvatureDrive(double xSpeed, double zRotation, boolean allowTurnInPlace) {
     differentialDrive.curvatureDrive(xSpeed, zRotation, allowTurnInPlace);
   }
@@ -65,6 +78,10 @@ public class DifferentialDrivetrain extends Drivetrain {
     return kinematics.toChassisSpeeds(getWheelSpeeds());
   }
 
+  /**
+   * Returns the speeds of the left and right sides as a {@link DifferentialDriveWheelSpeeds}.
+   * @return the speeds of the wheels
+   */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
     return new DifferentialDriveWheelSpeeds(left.getSelectedSensorVelocity(), right.getSelectedSensorVelocity());
   }
@@ -85,6 +102,9 @@ public class DifferentialDrivetrain extends Drivetrain {
     odometry.resetPosition(gyro.getRotation2d(), left.getSelectedSensorPosition(), right.getSelectedSensorPosition(), pose2d);
   }
 
+  /**
+   * Resets the encoders of the left and right motors
+   */
   public void resetEncoders() {
     left.setSelectedSensorPosition(0);
     right.setSelectedSensorPosition(0);
