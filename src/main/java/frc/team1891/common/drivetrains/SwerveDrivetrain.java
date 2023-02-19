@@ -33,6 +33,8 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
 
   private final SwerveModule frontLeft, frontRight, backLeft, backRight;
 
+  private final double moduleMaxVelocityMetersPerSecond;
+
   private final Field2d modulesField;
   private final double modulesFieldXOffset, modulesFieldYOffset;
 
@@ -46,6 +48,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
    * @param frontRight the front right module
    * @param backLeft the back left module
    * @param backRight the back right module
+   * @param moduleMaxVelocityMetersPerSecond the maximum velocity of an individual module
    */
   public SwerveDrivetrain(
     DrivetrainConfig config,
@@ -55,7 +58,8 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     SwerveModule frontLeft,
     SwerveModule frontRight,
     SwerveModule backLeft,
-    SwerveModule backRight
+    SwerveModule backRight,
+    double moduleMaxVelocityMetersPerSecond
   ) {
     this(
       config,
@@ -67,7 +71,8 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
       frontLeft,
       frontRight,
       backLeft,
-      backRight
+      backRight,
+      moduleMaxVelocityMetersPerSecond
     );
   }
 
@@ -83,6 +88,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
    * @param frontRight the front right module
    * @param backLeft the back left module
    * @param backRight the back right module
+   * @param moduleMaxVelocityMetersPerSecond the maximum velocity of an individual module
    */
   public SwerveDrivetrain(
     DrivetrainConfig config,
@@ -94,7 +100,8 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     SwerveModule frontLeft,
     SwerveModule frontRight,
     SwerveModule backLeft,
-    SwerveModule backRight
+    SwerveModule backRight,
+    double moduleMaxVelocityMetersPerSecond
   ) {
     super(config, gyro);
 
@@ -102,6 +109,8 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     this.frontRight = frontRight;
     this.backLeft = backLeft;
     this.backRight = backRight;
+
+    this.moduleMaxVelocityMetersPerSecond = moduleMaxVelocityMetersPerSecond;
 
     this.frontLeftLocation = frontLeftLocation;
     this.frontRightLocation = frontRightLocation;
@@ -171,7 +180,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
    */
   public void setSwerveModuleStates(SwerveModuleState[] swerveModuleStates) {
     // Normalize wheel speeds
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, config.chassisMaxVelocityMetersPerSecond);
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, moduleMaxVelocityMetersPerSecond);
 
     frontLeft.setDesiredSwerveModuleState(swerveModuleStates[0]);
     frontRight.setDesiredSwerveModuleState(swerveModuleStates[1]);
