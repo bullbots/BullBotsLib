@@ -112,7 +112,7 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
 
 //    this.odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getSwerveModulePositions());
     // TODO: new Pose2d() assumes the robot starts at 0,0, with isn't a safe assumption.
-      // Potential 'solution' is just expecting them to call resetOdometry() with their starting pose.
+    // Potential 'solution' is just expecting them to call resetOdometry() with their starting pose.
     this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, gyro.getRotation2d(), getSwerveModulePositions(), new Pose2d());
 
     this.modulesField = new Field2d();
@@ -151,6 +151,18 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
   @Override
   public ChassisSpeeds getChassisSpeeds() {
     return kinematics.toChassisSpeeds(getSwerveModuleStates());
+  }
+
+  /**
+   * Sets the modules to an x shape to avoid rolling unintentionally.
+   */
+  public void moduleXConfiguration() {
+    setSwerveModuleStates(new SwerveModuleState[] {
+            new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+            new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+            new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+            new SwerveModuleState(0, Rotation2d.fromDegrees(45))
+    });
   }
 
   /**
