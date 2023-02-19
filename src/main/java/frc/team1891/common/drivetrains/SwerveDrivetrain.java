@@ -153,6 +153,12 @@ public class SwerveDrivetrain extends HolonomicDrivetrain {
     if (Math.abs(speeds.vxMetersPerSecond) == 0 && Math.abs(speeds.vyMetersPerSecond) == 0 && Math.abs(speeds.omegaRadiansPerSecond) == 0) {
       stop();
     } else {
+      // Keep velocity below the max speed
+      if (speeds.vxMetersPerSecond*speeds.vxMetersPerSecond+speeds.vyMetersPerSecond*speeds.vyMetersPerSecond > config.chassisMaxVelocityMetersPerSecond) {
+        double theta = Math.atan2(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+        speeds.vxMetersPerSecond = Math.cos(theta) * config.chassisMaxVelocityMetersPerSecond;
+        speeds.vyMetersPerSecond = Math.sin(theta) * config.chassisMaxVelocityMetersPerSecond;
+      }
       setSwerveModuleStates(kinematics.toSwerveModuleStates(speeds));
     }
   }

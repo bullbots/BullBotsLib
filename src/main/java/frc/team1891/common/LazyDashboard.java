@@ -1,9 +1,11 @@
 package frc.team1891.common;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -32,8 +34,12 @@ public abstract class LazyDashboard {
                 entry.setBoolean(supplier.getAsBoolean());
             }
         };
-        lazyDashboards.add(lazyDashboardObject);
-        return lazyDashboardObject;
+        if (!lazyDashboards.contains(lazyDashboardObject)) {
+            lazyDashboards.add(lazyDashboardObject);
+            return lazyDashboardObject;
+        }
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        return null;
     }
 
     public static LazyDashboard addNumber(String name, DoubleSupplier supplier) {
@@ -47,8 +53,12 @@ public abstract class LazyDashboard {
                 entry.setDouble(supplier.getAsDouble());
             }
         };
-        lazyDashboards.add(lazyDashboardObject);
-        return lazyDashboardObject;
+        if (!lazyDashboards.contains(lazyDashboardObject)) {
+            lazyDashboards.add(lazyDashboardObject);
+            return lazyDashboardObject;
+        }
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        return null;
     }
 
     public static LazyDashboard addString(String name, Supplier<String> supplier) {
@@ -62,8 +72,12 @@ public abstract class LazyDashboard {
                 entry.setString(supplier.get());
             }
         };
-        lazyDashboards.add(lazyDashboardObject);
-        return lazyDashboardObject;
+        if (!lazyDashboards.contains(lazyDashboardObject)) {
+            lazyDashboards.add(lazyDashboardObject);
+            return lazyDashboardObject;
+        }
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        return null;
     }
 
     public static LazyDashboard addBooleanArray(String name, Supplier<Boolean[]> supplier) {
@@ -77,8 +91,12 @@ public abstract class LazyDashboard {
                 entry.setBooleanArray(supplier.get());
             }
         };
-        lazyDashboards.add(lazyDashboardObject);
-        return lazyDashboardObject;
+        if (!lazyDashboards.contains(lazyDashboardObject)) {
+            lazyDashboards.add(lazyDashboardObject);
+            return lazyDashboardObject;
+        }
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        return null;
     }
 
     public static LazyDashboard addNumberArray(String name, Supplier<Double[]> supplier) {
@@ -92,8 +110,12 @@ public abstract class LazyDashboard {
                 entry.setNumberArray(supplier.get());
             }
         };
-        lazyDashboards.add(lazyDashboardObject);
-        return lazyDashboardObject;
+        if (!lazyDashboards.contains(lazyDashboardObject)) {
+            lazyDashboards.add(lazyDashboardObject);
+            return lazyDashboardObject;
+        }
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        return null;
     }
 
     public static LazyDashboard addStringArray(String name, Supplier<String[]> supplier) {
@@ -107,8 +129,12 @@ public abstract class LazyDashboard {
                 entry.setStringArray(supplier.get());
             }
         };
-        lazyDashboards.add(lazyDashboardObject);
-        return lazyDashboardObject;
+        if (!lazyDashboards.contains(lazyDashboardObject)) {
+            lazyDashboards.add(lazyDashboardObject);
+            return lazyDashboardObject;
+        }
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        return null;
     }
 
 
@@ -131,4 +157,17 @@ public abstract class LazyDashboard {
     }
 
     protected abstract void publishToSmartDashboard();
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        LazyDashboard that = (LazyDashboard) o;
+        return Objects.equals(entry, that.entry);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(entry);
+    }
 }

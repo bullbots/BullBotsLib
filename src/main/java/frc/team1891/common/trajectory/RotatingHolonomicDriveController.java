@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Recreation of {@link HolonomicDriveController} to allow for free rotation of the chassis. */
 public class RotatingHolonomicDriveController {
-    public static boolean smartDashboardEnabled = false;
+    private static boolean smartDashboardEnabled = false;
     /**
      * SmartDashboard values for debug.
      * @param enable show or hide SmartDashboard values
@@ -89,6 +89,8 @@ public class RotatingHolonomicDriveController {
         // heading.
         if (m_firstRun) {
             m_thetaController.reset(currentPose.getRotation().getRadians());
+            m_xController.reset();
+            m_yController.reset();
             m_firstRun = false;
         }
     
@@ -100,17 +102,17 @@ public class RotatingHolonomicDriveController {
             m_thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians());
         
         if (smartDashboardEnabled) {
-            SmartDashboard.putNumber("currentRadians", currentPose.getRotation().getRadians());
-            SmartDashboard.putNumber("targetRadians", angleRef.getRadians());
-            SmartDashboard.putNumber("thetaFF", thetaFF);
+            SmartDashboard.putNumber("RotatingHolonomicDriveController/currentRadians", currentPose.getRotation().getRadians());
+            SmartDashboard.putNumber("RotatingHolonomicDriveController/targetRadians", angleRef.getRadians());
+            SmartDashboard.putNumber("RotatingHolonomicDriveController/thetaFF", thetaFF);
 
-            SmartDashboard.putNumber("currentX", currentPose.getX());
-            SmartDashboard.putNumber("targetX", poseRef.getX());
-            SmartDashboard.putNumber("xFF", xFF);
+            SmartDashboard.putNumber("RotatingHolonomicDriveController/currentX", currentPose.getX());
+            SmartDashboard.putNumber("RotatingHolonomicDriveController/targetX", poseRef.getX());
+            SmartDashboard.putNumber("RotatingHolonomicDriveController/xFF", xFF);
 
-            SmartDashboard.putNumber("currentY", currentPose.getY());
-            SmartDashboard.putNumber("targetY", poseRef.getY());
-            SmartDashboard.putNumber("yFF", yFF);
+            SmartDashboard.putNumber("RotatingHolonomicDriveController/currentY", currentPose.getY());
+            SmartDashboard.putNumber("RotatingHolonomicDriveController/targetY", poseRef.getY());
+            SmartDashboard.putNumber("RotatingHolonomicDriveController/yFF", yFF);
         }
     
         m_poseError = poseRef.relativeTo(currentPose);
