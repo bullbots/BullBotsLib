@@ -9,12 +9,12 @@ Inside your `build.gradle` file, add this to the dependencies:
 ```
 dependencies {
     ...
-    implementation fileTree(dir:'libs', include:'BullBotsLib-2023.0.3-beta.jar')
+    implementation fileTree(dir:'libs', include:'BullBotsLib-2023.2.2.jar')
 }
 ```
 
 ## How to use in an FRC Project
-### Drivetrains (frc.team1891.common.drivetrains)
+### Drivetrains ([frc.team1891.common.drivetrains](https://github.com/bullbots/BullBotsLib/tree/2023.2.2/src/main/java/frc/team1891/common/drivetrains))
 BullBotsLib provides 3 drivetrain types (but the ability to add your own by extending `Drivetrain` or 
 `HolonomicDrivetrain`).  To use an existing drivetrain, create a class that extends it.
 
@@ -24,7 +24,7 @@ shuffuleboardTab = Shuffleboard.getTab("Drivetrain");`).
 
 Once you do that, your drivetrain is ready to go.  All you need to do is configure your motors (eg. `talon.configFactoryDefault()`), as that's not done for you.
 
-### User Input (frc.team1891.common.control)
+### User Input ([frc.team1891.common.control](https://github.com/bullbots/BullBotsLib/tree/2023.2.2/src/main/java/frc/team1891/common/control))
 ###### Triggers
 `TriggerCombo`, `AxisTrigger`, and `POVTrigger` all behave similarly to a `JoystickButton`, in that you can attach commands that can be
 scheduled when the trigger activates.  Hopefully they are simple and intuitive to use.
@@ -53,14 +53,17 @@ if (getName().equals("Logitech Extreme 3D")) {
 ...
 super.configure();
 ```
-### Hardware (frc.team1891.common.hardware)
+### Hardware ([frc.team1891.common.hardware](https://github.com/bullbots/BullBotsLib/tree/2023.2.2/src/main/java/frc/team1891/common/hardware))
 ###### NavX
 The `NavX` is a simple wrapper class to `AHRS`, ensuring clarity on the units used by the gyro by implementing
 `getDegrees()` and `getRadians()` instead of the built-in `getAngle()`.
 
 `SimNavX` is extension of `NavX`, allowing for basic use in a simulator through setter methods, `setDegrees()` and
 `setRadians()`.
-### Trajectories (frc.team1891.common.trajectory)
+
+###### WPI_CANSparkMax
+This is a simple wrapper to `CANSparkMax`, making it a `Sendable`.  This is similar to `WPI_TalonFX`.
+### Trajectories ([frc.team1891.common.trajectory](https://github.com/bullbots/BullBotsLib/tree/2023.2.2/src/main/java/frc/team1891/common/trajectory))
 The purpose of this package is to make an easy way to generate a trajectory (`HolonomicTrajectory`) that allows a robot to move in one direction
 while facing another direction.
 
