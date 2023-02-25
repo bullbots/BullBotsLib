@@ -1,20 +1,24 @@
 package frc.team1891.common.drivetrains.swervemodules;
 
-import com.revrobotics.*;
+import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.team1891.common.hardware.WPI_CANSparkMax;
 
 /**
  * https://github.com/REVrobotics/MAXSwerve-Java-Template
  */
 public class MAX_NeoSteerController implements SteerController {
-    private final CANSparkMax m_turningNeo;
+    protected final WPI_CANSparkMax m_turningNeo;
 
-    private final AbsoluteEncoder m_turningEncoder;
+    protected final AbsoluteEncoder m_turningEncoder;
 
-    private final SparkMaxPIDController m_turningPIDController;
+    protected final SparkMaxPIDController m_turningPIDController;
 
-    private double m_chassisAngularOffsetRadians = 0;
+    protected double m_chassisAngularOffsetRadians = 0;
 
     /**
      * Constructs a MAX_NeoSteerController and configures the turning motor,
@@ -22,8 +26,8 @@ public class MAX_NeoSteerController implements SteerController {
      * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
      * Encoder.
      */
-    public MAX_NeoSteerController(int turningCANId, double chassisAngularOffset, double kP, double kI, double kD, double kFF) {
-        this(new CANSparkMax(turningCANId, CANSparkMaxLowLevel.MotorType.kBrushless), chassisAngularOffset, kP, kI, kD, kFF);
+    public MAX_NeoSteerController(int turningMotorCANId, double chassisAngularOffset, double kP, double kI, double kD, double kFF) {
+        this(new WPI_CANSparkMax(turningMotorCANId, CANSparkMaxLowLevel.MotorType.kBrushless), chassisAngularOffset, kP, kI, kD, kFF);
     }
     /**
      * Constructs a MAX_NeoSteerController and configures the turning motor,
@@ -31,7 +35,7 @@ public class MAX_NeoSteerController implements SteerController {
      * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
      * Encoder.
      */
-    public MAX_NeoSteerController(CANSparkMax turningNeo, double chassisAngularOffsetRadians, double kP, double kI, double kD, double kFF) {
+    public MAX_NeoSteerController(WPI_CANSparkMax turningNeo, double chassisAngularOffsetRadians, double kP, double kI, double kD, double kFF) {
         m_turningNeo = turningNeo;
 
         // Factory reset, so we get the SPARKS MAX to a known state before configuring
@@ -68,7 +72,7 @@ public class MAX_NeoSteerController implements SteerController {
         m_turningPIDController.setFF(kFF);
         m_turningPIDController.setOutputRange(-1, 1);
 
-        m_turningNeo.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        m_turningNeo.setIdleMode(WPI_CANSparkMax.IdleMode.kBrake);
         m_turningNeo.setSmartCurrentLimit(20);
 
         // Save the SPARK MAX configurations. If a SPARK MAX browns out during
@@ -91,7 +95,7 @@ public class MAX_NeoSteerController implements SteerController {
         SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
                 new Rotation2d(m_turningEncoder.getPosition()));
 
-        m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
+        m_turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), WPI_CANSparkMax.ControlType.kPosition);
     }
 
     @Override
