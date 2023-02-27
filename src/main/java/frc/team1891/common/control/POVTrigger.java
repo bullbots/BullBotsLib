@@ -13,7 +13,7 @@ import java.util.function.BooleanSupplier;
  * Button triggers when the given POV is active.
  */
 public class POVTrigger extends Trigger {
-    public static enum POV {
+    public enum POV {
         NORTH(0),
         NORTHEAST(45),
         EAST(90),
@@ -26,7 +26,7 @@ public class POVTrigger extends Trigger {
         NONE(-1);
 
         private int value;
-        private POV(int value) {
+        POV(int value) {
             this.value = value;
         }
 
@@ -43,9 +43,56 @@ public class POVTrigger extends Trigger {
         super(condition);
     }
 
+    /**
+     * Creates a new trigger that activates if any POV is pressed.
+     * @param joystick the joystick to listen to
+     * @return the trigger
+     */
     public static POVTrigger anyPOV(GenericHID joystick) {
         return new POVTrigger(
             () -> (joystick.getPOV() != POV.NONE.getValue())
         );
+    }
+
+    public enum Direction {
+        UP(POV.NORTH),
+        DOWN(POV.SOUTH),
+        LEFT(POV.WEST),
+        RIGHT(POV.EAST);
+
+        private POV pov;
+
+        Direction(POV pov) {
+            this.pov = pov;
+        }
+    }
+
+    /**
+     * Creates a new trigger to turn a POV into a set of four buttons.
+     *
+     * For example, UP will trigger if the POV is NORTHWEST, NORTH, or NORTHEAST.
+     * @param joystick the controller to listen to
+     * @param direction the direction that will activate the trigger
+     * @return the trigger
+     */
+    public static POVTrigger asButton(GenericHID joystick, Direction direction) {
+        if (direction.equals(Direction.UP)) {
+            return new POVTrigger(() -> (joystick.getPOV() == POV.NORTHEAST.getValue() ||
+                    joystick.getPOV() == POV.NORTH.getValue() ||
+                    joystick.getPOV() == POV.NORTHWEST.getValue()));
+        } else if (direction.equals(Direction.DOWN)) {
+            return new POVTrigger(() -> (joystick.getPOV() == POV.SOUTHEAST.getValue() ||
+                    joystick.getPOV() == POV.SOUTH.getValue() ||
+                    joystick.getPOV() == POV.SOUTHWEST.getValue()));
+        } else if (direction.equals(Direction.LEFT)) {
+            return new POVTrigger(() -> (joystick.getPOV() == POV.NORTHWEST.getValue() ||
+                    joystick.getPOV() == POV.WEST.getValue() ||
+                    joystick.getPOV() == POV.SOUTHWEST.getValue()));
+        } else if (direction.equals(Direction.RIGHT)) {
+            return new POVTrigger(() -> (joystick.getPOV() == POV.NORTHEAST.getValue() ||
+                    joystick.getPOV() == POV.EAST.getValue() ||
+                    joystick.getPOV() == POV.SOUTHEAST.getValue()));
+        }
+        return null;
     }
 }

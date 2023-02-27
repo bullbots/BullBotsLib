@@ -5,7 +5,6 @@
 package frc.team1891.common.trajectory;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,8 +27,8 @@ public class RotatingHolonomicDriveController {
     private Pose2d m_poseTolerance = new Pose2d();
     private boolean m_enabled = true;
   
-    private final PIDController m_xController;
-    private final PIDController m_yController;
+    private final ProfiledPIDController m_xController;
+    private final ProfiledPIDController m_yController;
     private final ProfiledPIDController m_thetaController;
   
     private boolean m_firstRun = true;
@@ -43,7 +42,7 @@ public class RotatingHolonomicDriveController {
      */
     @SuppressWarnings("ParameterName")
     public RotatingHolonomicDriveController(
-            PIDController xController, PIDController yController, ProfiledPIDController thetaController) {
+            ProfiledPIDController xController, ProfiledPIDController yController, ProfiledPIDController thetaController) {
         m_xController = xController;
         m_yController = yController;
         m_thetaController = thetaController;
@@ -89,8 +88,8 @@ public class RotatingHolonomicDriveController {
         // heading.
         if (m_firstRun) {
             m_thetaController.reset(currentPose.getRotation().getRadians());
-            m_xController.reset();
-            m_yController.reset();
+            m_xController.reset(currentPose.getX());
+            m_yController.reset(currentPose.getX());
             m_firstRun = false;
         }
     

@@ -4,10 +4,6 @@
 
 package frc.team1891.common.trajectory;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -17,6 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team1891.common.trajectory.HolonomicTrajectory.State;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /** 
  * A command that follows a {@link HolonomicTrajectory}.
@@ -51,8 +50,8 @@ public class HolonomicTrajectoryCommand extends CommandBase {
     public HolonomicTrajectoryCommand(
             HolonomicTrajectory trajectory,
             Supplier<Pose2d> pose,
-            PIDController xController,
-            PIDController yController,
+            ProfiledPIDController xController,
+            ProfiledPIDController yController,
             ProfiledPIDController thetaController,
             Consumer<ChassisSpeeds> outputChassisSpeeds,
             Subsystem... requirements) {

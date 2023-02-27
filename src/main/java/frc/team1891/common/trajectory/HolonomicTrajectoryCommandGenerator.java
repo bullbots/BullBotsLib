@@ -5,7 +5,6 @@
 package frc.team1891.common.trajectory;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -86,15 +85,15 @@ public class HolonomicTrajectoryCommandGenerator {
         Command command = new HolonomicTrajectoryCommand(
                 trajectory,
                 drivetrain::getPose2d,
-                new PIDController(tP, tI, tD),
-                new PIDController(tP, tI, tD),
+                new ProfiledPIDController(tP, tI, tD, new TrapezoidProfile.Constraints(drivetrain.getConfig().chassisMaxVelocityMetersPerSecond, drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared)),
+                new ProfiledPIDController(tP, tI, tD, new TrapezoidProfile.Constraints(drivetrain.getConfig().chassisMaxVelocityMetersPerSecond, drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared)),
                 headingController,
                 drivetrain::fromChassisSpeeds,
                 drivetrain
         );
 
         if (resetPoseBeforeStarting) {
-            drivetrain.resetOdometry(trajectory.getInitialPose());
+            command = command.beforeStarting(() -> drivetrain.resetOdometry(trajectory.getInitialPose()));
         }
         if (stopOnFinish) {
             command = command.andThen(drivetrain::stop);
@@ -254,15 +253,15 @@ public class HolonomicTrajectoryCommandGenerator {
         Command command = new HolonomicTrajectoryCommand(
                 trajectory,
                 drivetrain::getPose2d,
-                new PIDController(tP, tI, tD),
-                new PIDController(tP, tI, tD),
+                new ProfiledPIDController(tP, tI, tD, new TrapezoidProfile.Constraints(drivetrain.getConfig().chassisMaxVelocityMetersPerSecond, drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared)),
+                new ProfiledPIDController(tP, tI, tD, new TrapezoidProfile.Constraints(drivetrain.getConfig().chassisMaxVelocityMetersPerSecond, drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared)),
                 headingController,
                 drivetrain::fromChassisSpeeds,
                 drivetrain
         );
 
         if (resetPoseBeforeStarting) {
-            drivetrain.resetOdometry(trajectory.getInitialPose());
+            command = command.beforeStarting(() -> drivetrain.resetOdometry(trajectory.getInitialPose()));
         }
         if (stopOnFinish) {
             command = command.andThen(drivetrain::stop);
