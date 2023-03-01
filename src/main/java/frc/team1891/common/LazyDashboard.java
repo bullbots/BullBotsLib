@@ -23,6 +23,26 @@ public abstract class LazyDashboard {
         }
     }
 
+    /**
+     * Changes the update interval of an existing LazyDashboard object.
+     * @param name name of object
+     * @param newInterval new interval to update with
+     * @return true if there was an object with the given name
+     */
+    public static boolean changeUpdateInterval(String name, int newInterval) {
+        LazyDashboard dashboard = null;
+        for (LazyDashboard lazyDashboard : lazyDashboards) {
+            if (lazyDashboard.entryString.equals(name)) {
+                dashboard = lazyDashboard;
+            }
+        }
+        if (dashboard == null) {
+            return false;
+        }
+        dashboard.updateInterval = newInterval;
+        return true;
+    }
+
     public static LazyDashboard addBoolean(String name, BooleanSupplier supplier) {
         return addBoolean(name, DEFAULT_INTERVAL, supplier);
     }
@@ -38,7 +58,7 @@ public abstract class LazyDashboard {
             lazyDashboards.add(lazyDashboardObject);
             return lazyDashboardObject;
         }
-        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name (\""+name+"\").  The second object was ignored", false);
         return null;
     }
 
@@ -57,7 +77,7 @@ public abstract class LazyDashboard {
             lazyDashboards.add(lazyDashboardObject);
             return lazyDashboardObject;
         }
-        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name (\""+name+"\").  The second object was ignored", false);
         return null;
     }
 
@@ -76,7 +96,7 @@ public abstract class LazyDashboard {
             lazyDashboards.add(lazyDashboardObject);
             return lazyDashboardObject;
         }
-        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name (\""+name+"\").  The second object was ignored", false);
         return null;
     }
 
@@ -95,7 +115,7 @@ public abstract class LazyDashboard {
             lazyDashboards.add(lazyDashboardObject);
             return lazyDashboardObject;
         }
-        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name (\""+name+"\").  The second object was ignored", false);
         return null;
     }
 
@@ -114,7 +134,7 @@ public abstract class LazyDashboard {
             lazyDashboards.add(lazyDashboardObject);
             return lazyDashboardObject;
         }
-        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name (\""+name+"\").  The second object was ignored", false);
         return null;
     }
 
@@ -133,16 +153,18 @@ public abstract class LazyDashboard {
             lazyDashboards.add(lazyDashboardObject);
             return lazyDashboardObject;
         }
-        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name.  The second object was ignored", false);
+        DriverStation.reportWarning("LazyDashboard was given two objects with the same entry name (\""+name+"\").  The second object was ignored", false);
         return null;
     }
 
 
+    private final String entryString;
     protected final NetworkTableEntry entry;
     private int count;
-    private final int updateInterval;
+    private int updateInterval;
 
     private LazyDashboard(String name, int updateInterval) {
+        this.entryString = name;
         this.entry = SmartDashboard.getEntry(name);
         this.count = (int) (Math.random()*updateInterval);
         this.updateInterval = updateInterval;
@@ -163,7 +185,7 @@ public abstract class LazyDashboard {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LazyDashboard that = (LazyDashboard) o;
-        return Objects.equals(entry, that.entry);
+        return Objects.equals(entryString, that.entryString);
     }
 
     @Override

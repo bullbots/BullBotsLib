@@ -5,6 +5,7 @@
 package frc.team1891.common.trajectory;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -85,8 +86,8 @@ public class HolonomicTrajectoryCommandGenerator {
         Command command = new HolonomicTrajectoryCommand(
                 trajectory,
                 drivetrain::getPose2d,
-                new ProfiledPIDController(tP, tI, tD, new TrapezoidProfile.Constraints(drivetrain.getConfig().chassisMaxVelocityMetersPerSecond, drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared)),
-                new ProfiledPIDController(tP, tI, tD, new TrapezoidProfile.Constraints(drivetrain.getConfig().chassisMaxVelocityMetersPerSecond, drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared)),
+                new PIDController(tP, tI, tD),
+                new PIDController(tP, tI, tD),
                 headingController,
                 drivetrain::fromChassisSpeeds,
                 drivetrain
@@ -253,8 +254,8 @@ public class HolonomicTrajectoryCommandGenerator {
         Command command = new HolonomicTrajectoryCommand(
                 trajectory,
                 drivetrain::getPose2d,
-                new ProfiledPIDController(tP, tI, tD, new TrapezoidProfile.Constraints(drivetrain.getConfig().chassisMaxVelocityMetersPerSecond, drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared)),
-                new ProfiledPIDController(tP, tI, tD, new TrapezoidProfile.Constraints(drivetrain.getConfig().chassisMaxVelocityMetersPerSecond, drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared)),
+                new PIDController(tP, tI, tD),
+                new PIDController(tP, tI, tD),
                 headingController,
                 drivetrain::fromChassisSpeeds,
                 drivetrain

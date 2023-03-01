@@ -30,20 +30,6 @@ public class FalconDriveController implements DriveController {
     }
 
     /**
-     * Creates a new FalconDriveController with the given motor and Drivetrain config and sets the PIDF to the given
-     * parameters.
-     * @param driveMotor drive Falcon500
-     * @param config drivetrain config
-     */
-    public FalconDriveController(WPI_TalonFX driveMotor, DrivetrainConfig config, double kP, double kI, double kD, double kFF) {
-        this(driveMotor, config);
-        driveMotor.config_kP(0, kP);
-        driveMotor.config_kI(0, kI);
-        driveMotor.config_kD(0, kD);
-        driveMotor.config_kF(0, kFF);
-    }
-
-    /**
      * Creates a new FalconDriveController with the given motor and Drivetrain config, assuming that the PIDF of the
      * motor will be tuned elsewhere.
      * @param driveMotor drive Falcon500

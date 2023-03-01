@@ -4,6 +4,7 @@
 
 package frc.team1891.common.trajectory;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -50,8 +51,8 @@ public class HolonomicTrajectoryCommand extends CommandBase {
     public HolonomicTrajectoryCommand(
             HolonomicTrajectory trajectory,
             Supplier<Pose2d> pose,
-            ProfiledPIDController xController,
-            ProfiledPIDController yController,
+            PIDController xController,
+            PIDController yController,
             ProfiledPIDController thetaController,
             Consumer<ChassisSpeeds> outputChassisSpeeds,
             Subsystem... requirements) {
