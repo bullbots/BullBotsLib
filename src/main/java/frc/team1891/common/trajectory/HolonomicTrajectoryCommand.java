@@ -22,14 +22,14 @@ import java.util.function.Supplier;
  * A command that follows a {@link HolonomicTrajectory}.
  */
 public class HolonomicTrajectoryCommand extends CommandBase {
-    private final Timer m_timer = new Timer();
-    private final HolonomicTrajectory m_trajectory;
-    private final Supplier<Pose2d> m_pose;
-    private final RotatingHolonomicDriveController m_controller;
-    private final Consumer<ChassisSpeeds> m_outputChassisSpeeds;
+    private final Timer timer = new Timer();
+    private final HolonomicTrajectory trajectory;
+    private final Supplier<Pose2d> pose;
+    private final RotatingHolonomicDriveController controller;
+    private final Consumer<ChassisSpeeds> outputChassisSpeeds;
     // private final Supplier<Rotation2d> m_desiredRotation;
 
-    private final Field2d m_field = new Field2d();
+    private final Field2d field2d = new Field2d();
 
     /**
      * Constructs a new SwerveControllerCommand that when executed will follow the provided
@@ -56,57 +56,57 @@ public class HolonomicTrajectoryCommand extends CommandBase {
             ProfiledPIDController thetaController,
             Consumer<ChassisSpeeds> outputChassisSpeeds,
             Subsystem... requirements) {
-        m_trajectory = trajectory;
-        m_pose = pose;
+        this.trajectory = trajectory;
+        this.pose = pose;
 
-        m_controller =
+        controller =
             new RotatingHolonomicDriveController(
                 xController,
                 yController,
                 thetaController
             );
 
-        m_outputChassisSpeeds =
+        this.outputChassisSpeeds =
             outputChassisSpeeds;
 
         addRequirements(requirements);
 
-        SmartDashboard.putData("Holonomic Trajectory (Field2d)", m_field);
+        SmartDashboard.putData("Holonomic Trajectory (Field2d)", field2d);
     }
 
     @Override
     public void initialize() {
-        m_timer.reset();
-        m_timer.start();
+        timer.reset();
+        timer.start();
 
-        m_field.getObject("Holonomic Trajectory Path").setTrajectory(m_trajectory.getAsTrajectory());
+        field2d.getObject("Holonomic Trajectory Path").setTrajectory(trajectory.getAsTrajectory());
 
-        m_controller.reset();
+        controller.reset();
     }
 
     @Override
     @SuppressWarnings("LocalVariableName")
     public void execute() {
-        double curTime = m_timer.get();
-        State desiredState = m_trajectory.sample(curTime);
+        double curTime = timer.get();
+        State desiredState = trajectory.sample(curTime);
 
         ChassisSpeeds targetChassisSpeeds =
-            m_controller.calculate(m_pose.get(), desiredState);
+            controller.calculate(pose.get(), desiredState);
         
-        m_outputChassisSpeeds.accept(targetChassisSpeeds);
+        outputChassisSpeeds.accept(targetChassisSpeeds);
 
-        m_field.setRobotPose(m_pose.get());
-        m_field.getObject("Desired State").setPose(desiredState.poseMeters);
+        field2d.setRobotPose(pose.get());
+        field2d.getObject("Desired State").setPose(desiredState.poseMeters);
     }
 
     @Override
     public void end(boolean interrupted) {
-        m_timer.stop();
-        m_outputChassisSpeeds.accept(new ChassisSpeeds());
+        timer.stop();
+        outputChassisSpeeds.accept(new ChassisSpeeds());
     }
 
     @Override
     public boolean isFinished() {
-        return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds());
+        return timer.hasElapsed(trajectory.getTotalTimeSeconds());
     }
   }

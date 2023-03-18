@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base for any drivetrain with holonomic movement. */
+@SuppressWarnings("unused")
 public abstract class HolonomicDrivetrain extends Drivetrain {
     public HolonomicDrivetrain(DrivetrainConfig config, NavX gyro) {
         super(config, gyro);
@@ -25,7 +26,15 @@ public abstract class HolonomicDrivetrain extends Drivetrain {
 
     /**
      * Drives the robot to the desired {@link ChassisSpeeds}.
-     * @param speeds chassis speeds
+     * @param chassisSpeeds chassis speeds
      */
-    public abstract void fromChassisSpeeds(ChassisSpeeds speeds);
+    public abstract void fromChassisSpeeds(ChassisSpeeds chassisSpeeds);
+
+    /**
+     * Drives the robot to the desired field oriented {@link ChassisSpeeds}.
+     * @param fieldSpeeds field oriented chassis speeds
+     */
+    public void fromFieldSpeeds(ChassisSpeeds fieldSpeeds) {
+        fromChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(fieldSpeeds, gyro.getRotation2d()));
+    }
 }

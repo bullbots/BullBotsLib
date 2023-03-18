@@ -13,10 +13,13 @@ import edu.wpi.first.wpilibj.event.EventLoop;
 @SuppressWarnings("unused")
 public class X52ProfessionalHOTAS extends GenericHID {
     public enum Axis {
-        // TODO: There are like 7 axis
         JoystickX(0),
         JoystickY(1),
-        Throttle(2);
+        Throttle(2),
+        ThrottleThumbDial(3),
+        Throttle1stFingerDial(4),
+        JoystickZ(5),
+        ThrottleThumbSlider(6);
 
         public final int value;
 
@@ -34,14 +37,13 @@ public class X52ProfessionalHOTAS extends GenericHID {
         Joystick4thFingerTrigger(6),
         D(7),
         E(8),
-        T1Up(9),
-        T1Down(10),
-        T2Up(11),
-        T2Down(12),
-        T3Up(13),
-        T3Down(14),
-        // TODO: Unkown
-        Unknown15(15),
+        T1(9),
+        T2(10),
+        T3(11),
+        T4(12),
+        T5(13),
+        T6(14),
+        JoystickTriggerSecondLevel(15),
         MouseButton(16),
         ScrollDownThrottle2ndFinger(17),
         ScrollUpThrottle2ndFinger(18),
@@ -54,17 +56,29 @@ public class X52ProfessionalHOTAS extends GenericHID {
         Throttle1stFingerPOVLeft(25),
         Throttle1stFingerPOVForward(26),
         Throttle1stFingerPOVRight(27),
-        // TODO: Unkown
-        Unknown28(28),
-        Unknown29(29),
-        Unknown30(30),
-        Unknown31(31),
-        Unknown32(32);
+        JoystickModeRed(28),
+        JoystickModePurple(29),
+        JoystickModeBlue(30),
+        ThrottleThumbDialButton(31),
+        LeftScrollPressMultiFunctionDisplay(32);
+        // TODO: There may be more buttons that don't show up in the sim
 
         public final int value;
 
         Button(int value) {
             this.value = value;
+        }
+    }
+
+    public enum Mode {
+        RED(28),
+        PURPLE(29),
+        BLUE(30);
+
+        public final int buttonNumber;
+
+        Mode(int buttonNumber) {
+            this.buttonNumber = buttonNumber;
         }
     }
 
@@ -91,7 +105,21 @@ public class X52ProfessionalHOTAS extends GenericHID {
         return getRawAxis(Axis.Throttle.value);
     }
 
-    // TODO: Finish axis
+    public double getThrottleThumbDial() {
+        return getRawAxis(Axis.ThrottleThumbDial.value);
+    }
+
+    public double getThrottle1stFingerDial() {
+        return getRawAxis(Axis.Throttle1stFingerDial.value);
+    }
+
+    public double getJoystickZ() {
+        return getRawAxis(Axis.JoystickZ.value);
+    }
+
+    public double getThrottleThumbSlider() {
+        return getRawAxis(Axis.ThrottleThumbSlider.value);
+    }
 
     public boolean getJoystickTriggerFirstLevel() {
         return getRawButton(Button.JoystickTriggerFirstLevel.value);
@@ -220,116 +248,116 @@ public class X52ProfessionalHOTAS extends GenericHID {
     public BooleanEvent e(EventLoop loop) {
         return new BooleanEvent(loop, this::getE);
     }
-    public boolean getT1Up() {
-        return getRawButton(Button.T1Up.value);
+    public boolean getT1() {
+        return getRawButton(Button.T1.value);
     }
 
-    public boolean getT1UpPressed() {
-        return getRawButtonPressed(Button.T1Up.value);
+    public boolean getT1Pressed() {
+        return getRawButtonPressed(Button.T1.value);
     }
 
-    public boolean getT1UpReleased() {
-        return getRawButtonReleased(Button.T1Up.value);
+    public boolean getT1Released() {
+        return getRawButtonReleased(Button.T1.value);
     }
 
-    public BooleanEvent t1Up(EventLoop loop) {
-        return new BooleanEvent(loop, this::getT1Up);
+    public BooleanEvent t1(EventLoop loop) {
+        return new BooleanEvent(loop, this::getT1);
     }
 
-    public boolean getT1Down() {
-        return getRawButton(Button.T1Down.value);
+    public boolean getT2() {
+        return getRawButton(Button.T2.value);
     }
 
-    public boolean getT1DownPressed() {
-        return getRawButtonPressed(Button.T1Down.value);
+    public boolean getT2Pressed() {
+        return getRawButtonPressed(Button.T2.value);
     }
 
-    public boolean getT1DownReleased() {
-        return getRawButtonReleased(Button.T1Down.value);
+    public boolean getT2Released() {
+        return getRawButtonReleased(Button.T2.value);
     }
 
-    public BooleanEvent t1Down(EventLoop loop) {
-        return new BooleanEvent(loop, this::getT1Down);
+    public BooleanEvent t2(EventLoop loop) {
+        return new BooleanEvent(loop, this::getT2);
     }
 
-    public boolean getT2Up() {
-        return getRawButton(Button.T2Up.value);
+    public boolean getT3() {
+        return getRawButton(Button.T3.value);
     }
 
-    public boolean getT2UpPressed() {
-        return getRawButtonPressed(Button.T2Up.value);
+    public boolean getT3Pressed() {
+        return getRawButtonPressed(Button.T3.value);
     }
 
-    public boolean getT2UpReleased() {
-        return getRawButtonReleased(Button.T2Up.value);
+    public boolean getT3Released() {
+        return getRawButtonReleased(Button.T3.value);
     }
 
-    public BooleanEvent t2Up(EventLoop loop) {
-        return new BooleanEvent(loop, this::getT2Up);
+    public BooleanEvent t3(EventLoop loop) {
+        return new BooleanEvent(loop, this::getT3);
     }
 
-    public boolean getT2Down() {
-        return getRawButton(Button.T2Down.value);
+    public boolean getT4() {
+        return getRawButton(Button.T4.value);
     }
 
-    public boolean getT2DownPressed() {
-        return getRawButtonPressed(Button.T2Down.value);
+    public boolean getT4Pressed() {
+        return getRawButtonPressed(Button.T4.value);
     }
 
-    public boolean getT2DownReleased() {
-        return getRawButtonReleased(Button.T2Down.value);
+    public boolean getT4Released() {
+        return getRawButtonReleased(Button.T4.value);
     }
 
-    public BooleanEvent t2Down(EventLoop loop) {
-        return new BooleanEvent(loop, this::getT2Down);
+    public BooleanEvent t4(EventLoop loop) {
+        return new BooleanEvent(loop, this::getT4);
     }
 
-    public boolean getT3Up() {
-        return getRawButton(Button.T3Up.value);
+    public boolean getT5() {
+        return getRawButton(Button.T5.value);
     }
 
-    public boolean getT3UpPressed() {
-        return getRawButtonPressed(Button.T3Up.value);
+    public boolean getT5Pressed() {
+        return getRawButtonPressed(Button.T5.value);
     }
 
-    public boolean getT3UpReleased() {
-        return getRawButtonReleased(Button.T3Up.value);
+    public boolean getT5Released() {
+        return getRawButtonReleased(Button.T5.value);
     }
 
-    public BooleanEvent t3Up(EventLoop loop) {
-        return new BooleanEvent(loop, this::getT3Up);
+    public BooleanEvent t5(EventLoop loop) {
+        return new BooleanEvent(loop, this::getT5);
     }
 
-    public boolean getT3Down() {
-        return getRawButton(Button.T3Down.value);
+    public boolean getT6() {
+        return getRawButton(Button.T6.value);
     }
 
-    public boolean getT3DownPressed() {
-        return getRawButtonPressed(Button.T3Down.value);
+    public boolean getT6Pressed() {
+        return getRawButtonPressed(Button.T6.value);
     }
 
-    public boolean getT3DownReleased() {
-        return getRawButtonReleased(Button.T3Down.value);
+    public boolean getT6Released() {
+        return getRawButtonReleased(Button.T6.value);
     }
 
-    public BooleanEvent t3Down(EventLoop loop) {
-        return new BooleanEvent(loop, this::getT3Down);
+    public BooleanEvent t6(EventLoop loop) {
+        return new BooleanEvent(loop, this::getT6);
     }
 
-    public boolean getUnknown15() {
-        return getRawButton(Button.Unknown15.value);
+    public boolean getJoystickTriggerSecondLevel() {
+        return getRawButton(Button.JoystickTriggerSecondLevel.value);
     }
 
-    public boolean getUnknown15Pressed() {
-        return getRawButtonPressed(Button.Unknown15.value);
+    public boolean getJoystickTriggerSecondLevelPressed() {
+        return getRawButtonPressed(Button.JoystickTriggerSecondLevel.value);
     }
 
-    public boolean getUnknown15Released() {
-        return getRawButtonReleased(Button.Unknown15.value);
+    public boolean getJoystickTriggerSecondLevelReleased() {
+        return getRawButtonReleased(Button.JoystickTriggerSecondLevel.value);
     }
 
-    public BooleanEvent unknown15(EventLoop loop) {
-        return new BooleanEvent(loop, this::getUnknown15);
+    public BooleanEvent joystickTriggerSecondLevel(EventLoop loop) {
+        return new BooleanEvent(loop, this::getJoystickTriggerSecondLevel);
     }
 
     public boolean getMouseButton() {
@@ -524,83 +552,96 @@ public class X52ProfessionalHOTAS extends GenericHID {
         return new BooleanEvent(loop, this::getThrottle1stFingerPOVRight);
     }
 
-    public boolean getUnknown28() {
-        return getRawButton(Button.Unknown28.value);
+    public boolean getJoystickModeRed() {
+        return getRawButton(Button.JoystickModeRed.value);
     }
 
-    public boolean getUnknown28Pressed() {
-        return getRawButtonPressed(Button.Unknown28.value);
+    public boolean getJoystickModeRedPressed() {
+        return getRawButtonPressed(Button.JoystickModeRed.value);
     }
 
-    public boolean getUnknown28Released() {
-        return getRawButtonReleased(Button.Unknown28.value);
+    public boolean getJoystickModeRedReleased() {
+        return getRawButtonReleased(Button.JoystickModeRed.value);
     }
 
-    public BooleanEvent unknown28(EventLoop loop) {
-        return new BooleanEvent(loop, this::getUnknown28);
+    public BooleanEvent joystickModeRed(EventLoop loop) {
+        return new BooleanEvent(loop, this::getJoystickModeRed);
     }
 
-    public boolean getUnknown29() {
-        return getRawButton(Button.Unknown29.value);
+    public boolean getJoystickModePurple() {
+        return getRawButton(Button.JoystickModePurple.value);
     }
 
-    public boolean getUnknown29Pressed() {
-        return getRawButtonPressed(Button.Unknown29.value);
+    public boolean getJoystickModePurplePressed() {
+        return getRawButtonPressed(Button.JoystickModePurple.value);
     }
 
-    public boolean getUnknown29Released() {
-        return getRawButtonReleased(Button.Unknown29.value);
+    public boolean getJoystickModePurpleReleased() {
+        return getRawButtonReleased(Button.JoystickModePurple.value);
     }
 
-    public BooleanEvent unknown29(EventLoop loop) {
-        return new BooleanEvent(loop, this::getUnknown29);
+    public BooleanEvent joystickModePurple(EventLoop loop) {
+        return new BooleanEvent(loop, this::getJoystickModePurple);
     }
 
-    public boolean getUnknown30() {
-        return getRawButton(Button.Unknown30.value);
+    public boolean getJoystickModeBlue() {
+        return getRawButton(Button.JoystickModeBlue.value);
     }
 
-    public boolean getUnknown30Pressed() {
-        return getRawButtonPressed(Button.Unknown30.value);
+    public boolean getJoystickModeBluePressed() {
+        return getRawButtonPressed(Button.JoystickModeBlue.value);
     }
 
-    public boolean getUnknown30Released() {
-        return getRawButtonReleased(Button.Unknown30.value);
+    public boolean getJoystickModeBlueReleased() {
+        return getRawButtonReleased(Button.JoystickModeBlue.value);
     }
 
-    public BooleanEvent unknown30(EventLoop loop) {
-        return new BooleanEvent(loop, this::getUnknown30);
+    public BooleanEvent joystickModeBlue(EventLoop loop) {
+        return new BooleanEvent(loop, this::getJoystickModeBlue);
     }
 
-    public boolean getUnknown31() {
-        return getRawButton(Button.Unknown31.value);
+    public boolean getThrottleThumbDialButton() {
+        return getRawButton(Button.ThrottleThumbDialButton.value);
     }
 
-    public boolean getUnknown31Pressed() {
-        return getRawButtonPressed(Button.Unknown31.value);
+    public boolean getThrottleThumbDialButtonPressed() {
+        return getRawButtonPressed(Button.ThrottleThumbDialButton.value);
     }
 
-    public boolean getUnknown31Released() {
-        return getRawButtonReleased(Button.Unknown31.value);
+    public boolean getThrottleThumbDialButtonReleased() {
+        return getRawButtonReleased(Button.ThrottleThumbDialButton.value);
     }
 
-    public BooleanEvent unknown31(EventLoop loop) {
-        return new BooleanEvent(loop, this::getUnknown31);
+    public BooleanEvent throttleThumbDialButton(EventLoop loop) {
+        return new BooleanEvent(loop, this::getThrottleThumbDialButton);
     }
 
-    public boolean getUnknown32() {
-        return getRawButton(Button.Unknown32.value);
+    public boolean getLeftScrollPressMultiFunctionDisplay() {
+        return getRawButton(Button.LeftScrollPressMultiFunctionDisplay.value);
     }
 
-    public boolean getUnknown32Pressed() {
-        return getRawButtonPressed(Button.Unknown32.value);
+    public boolean getLeftScrollPressMultiFunctionDisplayPressed() {
+        return getRawButtonPressed(Button.LeftScrollPressMultiFunctionDisplay.value);
     }
 
-    public boolean getUnknown32Released() {
-        return getRawButtonReleased(Button.Unknown32.value);
+    public boolean getLeftScrollPressMultiFunctionDisplayReleased() {
+        return getRawButtonReleased(Button.LeftScrollPressMultiFunctionDisplay.value);
     }
 
-    public BooleanEvent unknown32(EventLoop loop) {
-        return new BooleanEvent(loop, this::getUnknown32);
+    public BooleanEvent leftScrollPressMultiFunctionalDisplayRelease(EventLoop loop) {
+        return new BooleanEvent(loop, this::getLeftScrollPressMultiFunctionDisplay);
+    }
+
+    public Mode getMode() {
+        if (getJoystickModeRed()) {
+            return Mode.RED;
+        }
+        if (getJoystickModePurple()) {
+            return Mode.PURPLE;
+        }
+        if (getJoystickModeBlue()) {
+            return Mode.BLUE;
+        }
+        return null;
     }
 }

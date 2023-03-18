@@ -9,6 +9,7 @@ import frc.team1891.common.drivetrains.DrivetrainConfig;
 /**
  * An implementation of the {@link DriveController} interface, intended to drive a falcon motor.
  */
+@SuppressWarnings("unused")
 public class FalconDriveController implements DriveController {
     protected final WPI_TalonFX driveMotor;
     protected final DrivetrainConfig config;

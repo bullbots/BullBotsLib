@@ -4,11 +4,12 @@
 
 package frc.team1891.common.control;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 
+import java.util.function.DoubleSupplier;
+
 /** Takes the two axes of a joystick and converts it to an angle. */
+@SuppressWarnings("unused")
 public class JoystickRotation2d {
     DoubleSupplier xAxis, yAxis;
     public JoystickRotation2d(DoubleSupplier xAxis, DoubleSupplier yAxis) {

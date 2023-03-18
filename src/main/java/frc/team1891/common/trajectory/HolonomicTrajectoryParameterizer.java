@@ -193,8 +193,6 @@ public final class HolonomicTrajectoryParameterizer {
         double timeSeconds = 0.0;
         double distanceMeters = 0.0;
         double velocityMetersPerSecond = 0.0;
-        // double angleRadians = points.get(0).poseMeters.getRotation().getRadians();
-        // double angularVelocityRadiansPerSecond = 0.0;
 
         for (int i = 0; i < constrainedStates.size(); i++) {
             final var state = constrainedStates.get(i);
@@ -432,8 +430,6 @@ public final class HolonomicTrajectoryParameterizer {
         double timeSeconds = 0.0;
         double distanceMeters = 0.0;
         double velocityMetersPerSecond = 0.0;
-        // double angleRadians = points.get(0).poseMeters.getRotation().getRadians();
-        // double angularVelocityRadiansPerSecond = 0.0;
 
         for (int i = 0; i < constrainedStates.size(); i++) {
             final var state = constrainedStates.get(i);
@@ -520,33 +516,6 @@ public final class HolonomicTrajectoryParameterizer {
                     reverse
                         ? -minMaxAccel.minAccelerationMetersPerSecondSq
                         : minMaxAccel.maxAccelerationMetersPerSecondSq);
-
-
-        //     // Rotational movement
-        //     final var minMaxAngularAccel =
-        //     constraint.getMinMaxAngularAccelerationRadiansPerSecondSq(
-        //         state.pose.poseMeters,
-        //         state.maxAngularVelocityRadiansPerSecond);
-
-        //     if (minMaxAngularAccel.minAngularAccelerationRadiansPerSecondSq
-        //         > minMaxAngularAccel.maxAngularAccelerationRadiansPerSecondSq) {
-        //         throw new TrajectoryGenerationException(
-        //             "The constraint's min acceleration "
-        //                 + "was greater than its max acceleration.\n Offending Constraint: "
-        //                 + constraint.getClass().getName()
-        //                 + "\n If the offending constraint was packaged with WPILib, please file a bug"
-        //                 + " report.");
-        //     }
-
-        //     state.minAngularAccelerationRadiansPerSecondSq =
-        //         Math.max(
-        //             state.minAngularAccelerationRadiansPerSecondSq,
-        //             minMaxAngularAccel.minAngularAccelerationRadiansPerSecondSq);
-
-        //     state.maxAccelerationMetersPerSecondSq =
-        //         Math.min(
-        //             state.maxAccelerationMetersPerSecondSq,
-        //             minMaxAngularAccel.maxAngularAccelerationRadiansPerSecondSq);
         }
     }
 

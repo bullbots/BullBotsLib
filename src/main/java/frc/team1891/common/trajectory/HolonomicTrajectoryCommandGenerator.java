@@ -19,6 +19,7 @@ import frc.team1891.common.drivetrains.SwerveDrivetrain;
 import java.util.ArrayList;
 import java.util.Collections;
 
+@SuppressWarnings("unused")
 public class HolonomicTrajectoryCommandGenerator {
     private HolonomicTrajectoryCommandGenerator() {}
     
@@ -77,8 +78,8 @@ public class HolonomicTrajectoryCommandGenerator {
     public static Command generate(SwerveDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, HolonomicTrajectory trajectory) {
         ProfiledPIDController headingController = new ProfiledPIDController(rP, rI, rD,
                 new TrapezoidProfile.Constraints(
-                        drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
-                        drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
+                        drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond(),
+                        drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared()
                 )
         );
         headingController.enableContinuousInput(-Math.PI, Math.PI);
@@ -131,8 +132,8 @@ public class HolonomicTrajectoryCommandGenerator {
         Collections.addAll(points, pointTranslations);
 
         TrajectoryConfig config = new TrajectoryConfig(
-            drivetrain.getConfig().chassisMaxVelocityMetersPerSecond,
-            drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
+            drivetrain.getConfig().chassisMaxVelocityMetersPerSecond(),
+            drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared()
         ).setKinematics(drivetrain.getKinematics());
 
         Translation2d first = points.remove(0);
@@ -171,8 +172,8 @@ public class HolonomicTrajectoryCommandGenerator {
         Collections.addAll(points, poses);
 
         TrajectoryConfig config = new TrajectoryConfig(
-            drivetrain.getConfig().chassisMaxVelocityMetersPerSecond,
-            drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
+            drivetrain.getConfig().chassisMaxVelocityMetersPerSecond(),
+            drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared()
         ).setKinematics(drivetrain.getKinematics());
 
         HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(
@@ -218,8 +219,8 @@ public class HolonomicTrajectoryCommandGenerator {
         Collections.addAll(headings, rotations);
 
         TrajectoryConfig config = new TrajectoryConfig(
-            drivetrain.getConfig().chassisMaxVelocityMetersPerSecond,
-            drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
+            drivetrain.getConfig().chassisMaxVelocityMetersPerSecond(),
+            drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared()
         ).setKinematics(drivetrain.getKinematics());
 
         HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(
@@ -245,8 +246,8 @@ public class HolonomicTrajectoryCommandGenerator {
     public static Command generate(MecanumDrivetrain drivetrain, boolean resetPoseBeforeStarting, boolean stopOnFinish, HolonomicTrajectory trajectory) {
         ProfiledPIDController headingController = new ProfiledPIDController(rP, rI, rD,
                 new TrapezoidProfile.Constraints(
-                        drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond,
-                        drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared
+                        drivetrain.getConfig().chassisMaxAngularVelocityRadiansPerSecond(),
+                        drivetrain.getConfig().chassisMaxAngularAccelerationRadiansPerSecondSquared()
                 )
         );
         headingController.enableContinuousInput(-Math.PI, Math.PI);
@@ -299,8 +300,8 @@ public class HolonomicTrajectoryCommandGenerator {
         Collections.addAll(points, pointTranslations);
 
         TrajectoryConfig config = new TrajectoryConfig(
-                drivetrain.getConfig().chassisMaxVelocityMetersPerSecond,
-                drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
+                drivetrain.getConfig().chassisMaxVelocityMetersPerSecond(),
+                drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared()
         ).setKinematics(drivetrain.getKinematics());
 
         Translation2d first = points.remove(0);
@@ -340,8 +341,8 @@ public class HolonomicTrajectoryCommandGenerator {
         Collections.addAll(points, poses);
 
         TrajectoryConfig config = new TrajectoryConfig(
-                drivetrain.getConfig().chassisMaxVelocityMetersPerSecond,
-                drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
+                drivetrain.getConfig().chassisMaxVelocityMetersPerSecond(),
+                drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared()
         ).setKinematics(drivetrain.getKinematics());
 
         HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(
@@ -387,8 +388,8 @@ public class HolonomicTrajectoryCommandGenerator {
         Collections.addAll(headings, rotations);
 
         TrajectoryConfig config = new TrajectoryConfig(
-                drivetrain.getConfig().chassisMaxVelocityMetersPerSecond,
-                drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared
+                drivetrain.getConfig().chassisMaxVelocityMetersPerSecond(),
+                drivetrain.getConfig().chassisMaxAccelerationMetersPerSecondSquared()
         ).setKinematics(drivetrain.getKinematics());
 
         HolonomicTrajectory trajectory = HolonomicTrajectoryGenerator.generateHolonomicTrajectory(

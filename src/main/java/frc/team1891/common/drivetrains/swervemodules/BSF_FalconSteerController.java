@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 /**
  * Based on https://github.com/Team364/BaseFalconSwerve
  */
+@SuppressWarnings("unused")
 public class BSF_FalconSteerController implements SteerController {
     private final WPI_TalonFX steerMotor;
     private final CANCoder encoder;
@@ -39,10 +40,6 @@ public class BSF_FalconSteerController implements SteerController {
 
         TalonFXConfiguration configuration = new TalonFXConfiguration();
 
-//        configuration.slot0.kP = 1;
-//        configuration.slot0.kI = 0;
-//        configuration.slot0.kD = 0;
-//        configuration.slot0.kF = 0;
         configuration.supplyCurrLimit = angleSupplyLimit;
         steerMotor.configAllSettings(configuration);
         steerMotor.setInverted(false);

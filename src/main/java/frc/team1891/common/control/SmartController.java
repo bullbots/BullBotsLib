@@ -4,15 +4,16 @@
 
 package frc.team1891.common.control;
 
-import java.util.HashMap;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import java.util.HashMap;
+
 /** A controller that detects the device plugged in, and uses the correct inputs to control the robot. */
+@SuppressWarnings("unused")
 public class SmartController extends GenericHID {
     protected static final boolean[] default_axis_inverted = new boolean[] {
         false,
@@ -22,10 +23,10 @@ public class SmartController extends GenericHID {
     };
 
     public enum AxisType {
-        kStrafe(0),
-        kForward(1),
-        kTwist(2),
-        kThrottle(3);
+        Strafe(0),
+        Forward(1),
+        Twist(2),
+        Throttle(3);
 
         public final int value;
 
@@ -39,84 +40,86 @@ public class SmartController extends GenericHID {
             return name + "Axis";
         }
     }
-    private final byte[] m_axes = new byte[AxisType.values().length];
-    private final boolean[] m_axis_inverted = new boolean[AxisType.values().length];
+    private final byte[] axes = new byte[AxisType.values().length];
+    private final boolean[] axis_inverted = new boolean[AxisType.values().length];
 
-    private final HashMap<String, Trigger> m_triggers = new HashMap<>();
+    private final HashMap<String, Trigger> triggers = new HashMap<>();
 
     private boolean hasThrottle;
 
     public SmartController(int port) {
         super(port);
 
-        System.out.printf("Info: SmartController(%d)\n"+
-                        "\tName: \"%s\"\n"+
-                        "\tType: HIDType.%s\n", port, getName(), getType());
+        System.out.printf("""
+                Info: SmartController(%d)
+                \tName: "%s"
+                \tType: HIDType.%s
+                """, port, getName(), getType());
         configure();
     }
 
     public void configure() {
         System.out.printf("Info: SmartController(%d) ", getPort());
 
-        m_axis_inverted[AxisType.kStrafe.value] = default_axis_inverted[AxisType.kStrafe.value];
-        m_axis_inverted[AxisType.kForward.value] = default_axis_inverted[AxisType.kForward.value];
-        m_axis_inverted[AxisType.kTwist.value] = default_axis_inverted[AxisType.kTwist.value];
-        m_axis_inverted[AxisType.kThrottle.value] = default_axis_inverted[AxisType.kThrottle.value];
+        axis_inverted[AxisType.Strafe.value] = default_axis_inverted[AxisType.Strafe.value];
+        axis_inverted[AxisType.Forward.value] = default_axis_inverted[AxisType.Forward.value];
+        axis_inverted[AxisType.Twist.value] = default_axis_inverted[AxisType.Twist.value];
+        axis_inverted[AxisType.Throttle.value] = default_axis_inverted[AxisType.Throttle.value];
 
         if (getName().equals("Logitech Extreme 3D")) {
             System.out.println("Logitech Extreme 3D detected!");
-            m_axes[AxisType.kStrafe.value] = 0;
-            m_axes[AxisType.kForward.value] = 1;
-            m_axes[AxisType.kTwist.value] = 2;
-            m_axes[AxisType.kThrottle.value] = 3;
+            axes[AxisType.Strafe.value] = 0;
+            axes[AxisType.Forward.value] = 1;
+            axes[AxisType.Twist.value] = 2;
+            axes[AxisType.Throttle.value] = 3;
 
             hasThrottle = true;
         } else if (getName().equals("Logitech Attack 3")) {
             System.out.println("Logitech Attack 3 detected!");
-            m_axes[AxisType.kStrafe.value] = -1;
-            m_axes[AxisType.kForward.value] = 1;
-            m_axes[AxisType.kTwist.value] = 0;
-            m_axes[AxisType.kThrottle.value] = 3;
+            axes[AxisType.Strafe.value] = -1;
+            axes[AxisType.Forward.value] = 1;
+            axes[AxisType.Twist.value] = 0;
+            axes[AxisType.Throttle.value] = 3;
 
             hasThrottle = true;
         } else if (getName().contains("Logitech Dual Action")) {
             System.out.println("Logitech Dual Action detected!");
-            m_axes[AxisType.kStrafe.value] = (byte) XboxController.Axis.kLeftX.value;
-            m_axes[AxisType.kForward.value] = (byte) XboxController.Axis.kLeftY.value;
-            m_axes[AxisType.kTwist.value] = (byte) XboxController.Axis.kRightX.value;
-            m_axes[AxisType.kThrottle.value] = -1;
+            axes[AxisType.Strafe.value] = (byte) XboxController.Axis.kLeftX.value;
+            axes[AxisType.Forward.value] = (byte) XboxController.Axis.kLeftY.value;
+            axes[AxisType.Twist.value] = (byte) XboxController.Axis.kRightX.value;
+            axes[AxisType.Throttle.value] = -1;
 
             hasThrottle = false;
         } else if (getName().equals("Wireless Controller")) {
             System.out.println("Playstation 4 Controller detected!");
-            m_axes[AxisType.kStrafe.value] = (byte) PS4Controller.Axis.kLeftX.value;
-            m_axes[AxisType.kForward.value] = (byte) PS4Controller.Axis.kLeftY.value;
-            m_axes[AxisType.kTwist.value] = (byte) PS4Controller.Axis.kRightX.value;
-            m_axes[AxisType.kThrottle.value] = -1;
+            axes[AxisType.Strafe.value] = (byte) PS4Controller.Axis.kLeftX.value;
+            axes[AxisType.Forward.value] = (byte) PS4Controller.Axis.kLeftY.value;
+            axes[AxisType.Twist.value] = (byte) PS4Controller.Axis.kRightX.value;
+            axes[AxisType.Throttle.value] = -1;
 
             hasThrottle = false;
         } else if (getName().contains("Keyboard")) {
             System.out.println("Keyboard detected!");
-            m_axes[AxisType.kStrafe.value] = 0;
-            m_axes[AxisType.kForward.value] = 1;
-            m_axes[AxisType.kTwist.value] = 2;
-            m_axes[AxisType.kThrottle.value] = 3;
+            axes[AxisType.Strafe.value] = 0;
+            axes[AxisType.Forward.value] = 1;
+            axes[AxisType.Twist.value] = 2;
+            axes[AxisType.Throttle.value] = 3;
 
             hasThrottle = true;
         } else if (getName().contains("Xbox Controller")) {
             System.out.println("Xbox Controller detected!");
-            m_axes[AxisType.kStrafe.value] = (byte) XboxController.Axis.kLeftX.value;
-            m_axes[AxisType.kForward.value] = (byte) XboxController.Axis.kLeftY.value;
-            m_axes[AxisType.kTwist.value] = (byte) XboxController.Axis.kRightX.value;
-            m_axes[AxisType.kThrottle.value] = -1;
+            axes[AxisType.Strafe.value] = (byte) XboxController.Axis.kLeftX.value;
+            axes[AxisType.Forward.value] = (byte) XboxController.Axis.kLeftY.value;
+            axes[AxisType.Twist.value] = (byte) XboxController.Axis.kRightX.value;
+            axes[AxisType.Throttle.value] = -1;
 
             hasThrottle = false;
         } else {
             System.out.println("No special controller detected; using default (Xbox) controls.");
-            m_axes[AxisType.kStrafe.value] = (byte) XboxController.Axis.kLeftX.value;
-            m_axes[AxisType.kForward.value] = (byte) XboxController.Axis.kLeftY.value;
-            m_axes[AxisType.kTwist.value] = (byte) XboxController.Axis.kRightX.value;
-            m_axes[AxisType.kThrottle.value] = -1;
+            axes[AxisType.Strafe.value] = (byte) XboxController.Axis.kLeftX.value;
+            axes[AxisType.Forward.value] = (byte) XboxController.Axis.kLeftY.value;
+            axes[AxisType.Twist.value] = (byte) XboxController.Axis.kRightX.value;
+            axes[AxisType.Throttle.value] = -1;
 
             hasThrottle = false;
         }
@@ -127,94 +130,94 @@ public class SmartController extends GenericHID {
     }
 
     public int getStrafeChannel() {
-        return m_axes[AxisType.kStrafe.value];
+        return axes[AxisType.Strafe.value];
     }
 
     public void setStrafeChannel(int channel) {
-        m_axes[AxisType.kStrafe.value] = (byte) channel;
+        axes[AxisType.Strafe.value] = (byte) channel;
     }
     
     public int getForwardChannel() {
-        return m_axes[AxisType.kForward.value];
+        return axes[AxisType.Forward.value];
     }
 
     public void setForwardChannel(int channel) {
-        m_axes[AxisType.kForward.value] = (byte) channel;
+        axes[AxisType.Forward.value] = (byte) channel;
     }
 
     public int getTwistChannel() {
-        return m_axes[AxisType.kTwist.value];
+        return axes[AxisType.Twist.value];
     }
 
     public void setTwistChannel(int channel) {
-        m_axes[AxisType.kTwist.value] = (byte) channel;
+        axes[AxisType.Twist.value] = (byte) channel;
     }
 
     public int getThrottleChannel() {
-        return m_axes[AxisType.kThrottle.value];
+        return axes[AxisType.Throttle.value];
     }
 
     public void setThrottleChannel(int channel) {
-        m_axes[AxisType.kThrottle.value] = (byte) channel;
+        axes[AxisType.Throttle.value] = (byte) channel;
     }
 
     public void invertStrafeAxis(boolean bool) {
-        m_axis_inverted[AxisType.kStrafe.value] = bool;
+        axis_inverted[AxisType.Strafe.value] = bool;
     }
 
     public void invertForwardAxis(boolean bool) {
-        m_axis_inverted[AxisType.kForward.value] = bool;
+        axis_inverted[AxisType.Forward.value] = bool;
     }
 
     public void invertTwistAxis(boolean bool) {
-        m_axis_inverted[AxisType.kTwist.value] = bool;
+        axis_inverted[AxisType.Twist.value] = bool;
     }
 
     public void invertThrottleAxis(boolean bool) {
-        m_axis_inverted[AxisType.kThrottle.value] = bool;
+        axis_inverted[AxisType.Throttle.value] = bool;
     }
 
     public double getStrafeAxis() {
-        if (m_axes[AxisType.kStrafe.value] != -1) {
-            return getRawAxis(m_axes[AxisType.kStrafe.value]) * (m_axis_inverted[AxisType.kStrafe.value] ? -1 : 1);
+        if (axes[AxisType.Strafe.value] != -1) {
+            return getRawAxis(axes[AxisType.Strafe.value]) * (axis_inverted[AxisType.Strafe.value] ? -1 : 1);
         }
         return 0;
     }
 
     public double getForwardAxis() {
-        if (m_axes[AxisType.kForward.value] != -1) {
-            return getRawAxis(m_axes[AxisType.kForward.value]) * (m_axis_inverted[AxisType.kForward.value] ? -1 : 1);
+        if (axes[AxisType.Forward.value] != -1) {
+            return getRawAxis(axes[AxisType.Forward.value]) * (axis_inverted[AxisType.Forward.value] ? -1 : 1);
         }
         return 0;
     }
 
     public double getTwistAxis() {
-        if (m_axes[AxisType.kTwist.value] != -1) {
-            return getRawAxis(m_axes[AxisType.kTwist.value]) * (m_axis_inverted[AxisType.kTwist.value] ? -1 : 1);
+        if (axes[AxisType.Twist.value] != -1) {
+            return getRawAxis(axes[AxisType.Twist.value]) * (axis_inverted[AxisType.Twist.value] ? -1 : 1);
         }
         return 0;
     }
 
     public double getThrottle() {
         if (hasThrottle) {
-            return getRawAxis(m_axes[AxisType.kThrottle.value]) * (m_axis_inverted[AxisType.kThrottle.value] ? -1 : 1);
+            return getRawAxis(axes[AxisType.Throttle.value]) * (axis_inverted[AxisType.Throttle.value] ? -1 : 1);
         }
         return 0;
     }
 
     public String[] getTriggerActions() {
-        return m_triggers.keySet().toArray(new String[m_triggers.size()]);
+        return triggers.keySet().toArray(new String[triggers.size()]);
     }
 
     public Trigger getTrigger(String action) {
-        return m_triggers.get(action);
+        return triggers.get(action);
     }
 
     public void setTrigger(String action, Trigger trigger) {
-        m_triggers.put(action, trigger);
+        triggers.put(action, trigger);
     }
 
     public void setTrigger(String action, int triggerNumber) {
-        m_triggers.put(action, new JoystickButton(this, triggerNumber));
+        triggers.put(action, new JoystickButton(this, triggerNumber));
     }
 }

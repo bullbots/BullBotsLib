@@ -12,6 +12,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Button triggers when the given POV is active.
  */
+@SuppressWarnings("unused")
 public class POVTrigger extends Trigger {
     public enum POV {
         NORTH(0),
@@ -25,7 +26,7 @@ public class POVTrigger extends Trigger {
 
         NONE(-1);
 
-        private int value;
+        private final int value;
         POV(int value) {
             this.value = value;
         }
@@ -64,6 +65,15 @@ public class POVTrigger extends Trigger {
 
         Direction(POV pov) {
             this.pov = pov;
+        }
+
+        public static Direction fromPOV(POV pov) {
+            for(Direction direction: Direction.values()) {
+                if(direction.pov == pov) {
+                    return direction;
+                }
+            }
+            return null; // not found
         }
     }
 

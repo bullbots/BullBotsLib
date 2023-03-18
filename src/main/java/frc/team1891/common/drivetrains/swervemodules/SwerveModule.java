@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.team1891.common.LazyDashboard;
 
+@SuppressWarnings("unused")
 public class SwerveModule {
     /**
      * Converts from the module angle in degrees to the motor position in encoder ticks.

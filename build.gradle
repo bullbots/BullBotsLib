@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'frc.team1891'
-version '2023.2.4'
+version '2023.3.0'
 
 repositories {
     mavenCentral()
@@ -21,7 +21,7 @@ repositories {
 //    maven { url = uri("https://jitpack.io")}
 
     // KauaiLabs
-    maven { url = uri("https://dev.studica.com/maven/release/2023/")}
+    maven { url = uri('https://dev.studica.com/maven/release/2023/')}
 }
 
 dependencies {
@@ -36,8 +36,8 @@ dependencies {
     implementation 'edu.wpi.first.hal:hal-java:2023.4.2'
 
     // CTRE is implementation because it is not a hard requirement
-    implementation 'com.ctre.phoenix:api-java:5.30.2'
-    implementation 'com.ctre.phoenix:wpiapi-java:5.30.2'
+    implementation 'com.ctre.phoenix:api-java:5.30.4'
+    implementation 'com.ctre.phoenix:wpiapi-java:5.30.4'
 
     // REV is implementation because it is not a hard requirement
     implementation 'com.revrobotics.frc:REVLib-java:2023.1.3'

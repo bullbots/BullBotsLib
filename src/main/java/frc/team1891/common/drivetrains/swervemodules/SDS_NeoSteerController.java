@@ -6,6 +6,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.team1891.common.hardware.WPI_CANSparkMax;
 
 /**
  * An implementation of the {@link SteerController} interface, intended to drive a Neo and use a CANCoder as the
@@ -13,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
  *
  * A direct copy of how SDS would control a steer Neo.
  */
+@SuppressWarnings("unused")
 public class SDS_NeoSteerController implements SteerController {
     private final CANSparkMax steerMotor;
     private final CANCoder encoder;
@@ -22,14 +24,11 @@ public class SDS_NeoSteerController implements SteerController {
 
     private double resetIteration = 0;
 
-    public SDS_NeoSteerController(CANSparkMax steerMotor, CANCoder encoder, double steeringGearRatio) {
+    public SDS_NeoSteerController(WPI_CANSparkMax steerMotor, CANCoder encoder, double steeringGearRatio) {
         this.steerMotor = steerMotor;
         this.encoder = encoder;
 
-        // checkNeoError(motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100), "Failed to set periodic status frame 0 rate");
-        // checkNeoError(motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20), "Failed to set periodic status frame 1 rate");
-        // checkNeoError(motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 20), "Failed to set periodic status frame 2 rate");
-        this.steerMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        this.steerMotor.setIdleMode(WPI_CANSparkMax.IdleMode.kBrake);
         this.steerMotor.enableVoltageCompensation(12);
         this.steerMotor.setSmartCurrentLimit(20);
         this.motorEncoder = steerMotor.getEncoder();

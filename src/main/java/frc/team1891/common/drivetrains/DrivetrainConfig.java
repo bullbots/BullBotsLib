@@ -6,57 +6,43 @@ package frc.team1891.common.drivetrains;
 
 /**
  * Structure to hold useful information about a {@link Drivetrain} and makes unit conversions easier.
- *
+ * <p>
  * Used throughout BullBotsLib.
  */
-public class DrivetrainConfig {
-    public final double chassisMaxVelocityMetersPerSecond,
-                        chassisMaxAccelerationMetersPerSecondSquared,
-                        chassisMaxAngularVelocityRadiansPerSecond,
-                        chassisMaxAngularAccelerationRadiansPerSecondSquared;
-    public final double wheelRadiusMeters, gearRatio, encoderCountsPerMotorRevolution;
-
+@SuppressWarnings("unused")
+public record DrivetrainConfig(double chassisMaxVelocityMetersPerSecond,
+                               double chassisMaxAccelerationMetersPerSecondSquared,
+                               double chassisMaxAngularVelocityRadiansPerSecond,
+                               double chassisMaxAngularAccelerationRadiansPerSecondSquared, double wheelRadiusMeters,
+                               double gearRatio, double encoderCountsPerMotorRevolution) {
     /**
      * Creates a new drivetrain configuration
-     * @param chassisMaxVelocityMetersPerSecond max attainable velocity of the drivetrain
-     * @param chassisMaxAccelerationMetersPerSecondSquared max attainable acceleration of the drivetrain
-     * @param chassisMaxAngularVelocityRadiansPerSecond max attainable angular velocity of the drivetrain
+     *
+     * @param chassisMaxVelocityMetersPerSecond                    max attainable velocity of the drivetrain
+     * @param chassisMaxAccelerationMetersPerSecondSquared         max attainable acceleration of the drivetrain
+     * @param chassisMaxAngularVelocityRadiansPerSecond            max attainable angular velocity of the drivetrain
      * @param chassisMaxAngularAccelerationRadiansPerSecondSquared max attainable angular acceleration of the drivetrain
-     * @param wheelRadiusMeters radius of the wheels
-     * @param gearRatio gear ratio of wheels (motor rotations / wheel rotations)
-     * @param encoderCountsPerMotorRevolution encoder counts of motor per revolution (e.g. TalonFX = 2048)
+     * @param wheelRadiusMeters                                    radius of the wheels
+     * @param gearRatio                                            gear ratio of wheels (motor rotations / wheel rotations)
+     * @param encoderCountsPerMotorRevolution                      encoder counts of motor per revolution (e.g. TalonFX = 2048)
      */
-    public DrivetrainConfig(
-        double chassisMaxVelocityMetersPerSecond,
-        double chassisMaxAccelerationMetersPerSecondSquared,
-        double chassisMaxAngularVelocityRadiansPerSecond,
-        double chassisMaxAngularAccelerationRadiansPerSecondSquared,
-        double wheelRadiusMeters,
-        double gearRatio,
-        double encoderCountsPerMotorRevolution
-    ) {
-        this.chassisMaxVelocityMetersPerSecond = chassisMaxVelocityMetersPerSecond;
-        this.chassisMaxAccelerationMetersPerSecondSquared = chassisMaxAccelerationMetersPerSecondSquared;
-        this.chassisMaxAngularVelocityRadiansPerSecond = chassisMaxAngularVelocityRadiansPerSecond;
-        this.chassisMaxAngularAccelerationRadiansPerSecondSquared = chassisMaxAngularAccelerationRadiansPerSecondSquared;
-        this.wheelRadiusMeters = wheelRadiusMeters;
-        this.gearRatio = gearRatio;
-        this.encoderCountsPerMotorRevolution = encoderCountsPerMotorRevolution;
-    }
+    public DrivetrainConfig {}
 
     /**
      * Converts a position in meters into encoder ticks.
+     *
      * @param positionMeters position
      * @return position in encoder ticks
      */
     public int distanceToEncoderTicks(double positionMeters) {
         double wheelRotations = positionMeters / (wheelRadiusMeters * 2 * Math.PI);
         double motorRotations = wheelRotations * gearRatio;
-        return (int)(motorRotations * encoderCountsPerMotorRevolution);
+        return (int) (motorRotations * encoderCountsPerMotorRevolution);
     }
 
     /**
      * Converts a position in encoder ticks into meters.
+     *
      * @param sensorCounts position
      * @return position in meters
      */
@@ -68,6 +54,7 @@ public class DrivetrainConfig {
 
     /**
      * Converts encoder ticks per 100ms into meters per second.
+     *
      * @param sensorCountsPer100ms velocity
      * @return velocity in meters per second
      */
@@ -80,6 +67,7 @@ public class DrivetrainConfig {
 
     /**
      * Converts a velocity in m/s into encoder ticks per 100ms.
+     *
      * @param velocityMetersPerSecond velocity
      * @return velocity in encoder ticks per 100ms
      */
@@ -87,7 +75,6 @@ public class DrivetrainConfig {
         double wheelRotationsPerSecond = velocityMetersPerSecond / (wheelRadiusMeters * 2 * Math.PI);
         double motorRotationsPerSecond = wheelRotationsPerSecond * gearRatio;
         double motorRotationsPer100ms = motorRotationsPerSecond / 10;
-        double sensorCountsPer100ms = motorRotationsPer100ms * encoderCountsPerMotorRevolution;
-        return sensorCountsPer100ms;
+        return motorRotationsPer100ms * encoderCountsPerMotorRevolution;
     }
 }

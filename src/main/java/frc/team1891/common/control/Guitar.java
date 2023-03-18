@@ -7,6 +7,7 @@ package frc.team1891.common.control;
 import edu.wpi.first.wpilibj.Joystick;
 
 /** Control your robot with a Guitar Hero guitar. */
+@SuppressWarnings("unused")
 public class Guitar extends Joystick {
     public static final int GREEN = 1;
     public static final int RED = 2;

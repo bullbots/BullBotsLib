@@ -6,6 +6,7 @@ package frc.team1891.common.hardware;
 
 import com.kauailabs.navx.frc.AHRS;
 
+@SuppressWarnings("unused")
 public class NavX extends AHRS {
     /**
      * Returns the angle in degrees.

@@ -15,7 +15,8 @@ import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base for a mecanum drivetrain. */
-public class MecanumDrivetrain extends HolonomicDrivetrain {
+@SuppressWarnings("unused")
+public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
   protected final MecanumDrivePoseEstimator poseEstimator;
   protected final MecanumDriveKinematics kinematics;
 
@@ -95,9 +96,9 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
 
   @Override
   public void holonomicDrive(double xSpeed, double ySpeed, double rot, boolean fieldOriented) {
-    xSpeed *= config.chassisMaxVelocityMetersPerSecond;
-    ySpeed *= config.chassisMaxVelocityMetersPerSecond;
-    rot *= config.chassisMaxAngularVelocityRadiansPerSecond;
+    xSpeed *= config.chassisMaxVelocityMetersPerSecond();
+    ySpeed *= config.chassisMaxVelocityMetersPerSecond();
+    rot *= config.chassisMaxAngularVelocityRadiansPerSecond();
 
     MecanumDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(
       fieldOriented?
@@ -110,8 +111,8 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
   }
 
   @Override
-  public void fromChassisSpeeds(ChassisSpeeds speeds) {
-    setWheelSpeeds(kinematics.toWheelSpeeds(speeds));
+  public void fromChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    setWheelSpeeds(kinematics.toWheelSpeeds(chassisSpeeds));
   }
 
   @Override
@@ -124,13 +125,13 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
    * @param wheelSpeeds the desired wheel speeds
    */
   public void setWheelSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
-    wheelSpeeds.desaturate(config.chassisMaxVelocityMetersPerSecond);
+    wheelSpeeds.desaturate(config.chassisMaxVelocityMetersPerSecond());
 
     // TODO: This could - and probably should be ControlMode.Velocity
-    frontLeft.set(ControlMode.PercentOutput, wheelSpeeds.frontLeftMetersPerSecond / config.chassisMaxVelocityMetersPerSecond);
-    frontRight.set(ControlMode.PercentOutput, wheelSpeeds.frontRightMetersPerSecond / config.chassisMaxVelocityMetersPerSecond);
-    backLeft.set(ControlMode.PercentOutput, wheelSpeeds.rearLeftMetersPerSecond / config.chassisMaxVelocityMetersPerSecond);
-    backRight.set(ControlMode.PercentOutput, wheelSpeeds.rearRightMetersPerSecond / config.chassisMaxVelocityMetersPerSecond);
+    frontLeft.set(ControlMode.PercentOutput, wheelSpeeds.frontLeftMetersPerSecond / config.chassisMaxVelocityMetersPerSecond());
+    frontRight.set(ControlMode.PercentOutput, wheelSpeeds.frontRightMetersPerSecond / config.chassisMaxVelocityMetersPerSecond());
+    backLeft.set(ControlMode.PercentOutput, wheelSpeeds.rearLeftMetersPerSecond / config.chassisMaxVelocityMetersPerSecond());
+    backRight.set(ControlMode.PercentOutput, wheelSpeeds.rearRightMetersPerSecond / config.chassisMaxVelocityMetersPerSecond());
   }
 
   /**
@@ -192,6 +193,7 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
 
   @Override
   protected void configureSmartDashboard() {
+    super.configureSmartDashboard();
     LazyDashboard.addNumber("Drivetrain/frontLeftPosition", frontLeft::getSelectedSensorPosition);
     LazyDashboard.addNumber("Drivetrain/frontLeftVelocity", frontLeft::getSelectedSensorVelocity);
     LazyDashboard.addNumber("Drivetrain/frontRightPosition", frontRight::getSelectedSensorPosition);
@@ -200,9 +202,7 @@ public class MecanumDrivetrain extends HolonomicDrivetrain {
     LazyDashboard.addNumber("Drivetrain/backLeftVelocity", backLeft::getSelectedSensorVelocity);
     LazyDashboard.addNumber("Drivetrain/backRightPosition", backRight::getSelectedSensorPosition);
     LazyDashboard.addNumber("Drivetrain/backRightVelocity", backRight::getSelectedSensorVelocity);
-    LazyDashboard.addNumber("Drivetrain/gyroRadians", gyro::getRadians);
-    LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getDegrees);
-    LazyDashboard.addNumber("Drivetrain/gyroDegreesLooped", gyro::getDegreesLooped);
+    LazyDashboard.addNumber("Drivetrain/gyroRadians", gyro::getAngle);
     LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
     LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
     LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);

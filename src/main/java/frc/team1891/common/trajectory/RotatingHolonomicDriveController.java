@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Recreation of {@link HolonomicDriveController} to allow for free rotation of the chassis. */
+@SuppressWarnings("unused")
 public class RotatingHolonomicDriveController {
     private static boolean smartDashboardEnabled = false;
     /**
@@ -23,16 +24,16 @@ public class RotatingHolonomicDriveController {
         smartDashboardEnabled = enable;
     }
 
-    private Pose2d m_poseError = new Pose2d();
-    private Rotation2d m_rotationError = new Rotation2d();
-    private Pose2d m_poseTolerance = new Pose2d();
-    private boolean m_enabled = true;
+    private Pose2d poseError = new Pose2d();
+    private Rotation2d rotationError = new Rotation2d();
+    private Pose2d poseTolerance = new Pose2d();
+    private boolean enabled = true;
   
-    private final PIDController m_xController;
-    private final PIDController m_yController;
-    private final ProfiledPIDController m_thetaController;
+    private final PIDController xController;
+    private final PIDController yController;
+    private final ProfiledPIDController thetaController;
   
-    private boolean m_firstRun = true;
+    private boolean firstRun = true;
   
     /**
      * Constructs a holonomic drive controller.
@@ -44,9 +45,9 @@ public class RotatingHolonomicDriveController {
     @SuppressWarnings("ParameterName")
     public RotatingHolonomicDriveController(
             PIDController xController, PIDController yController, ProfiledPIDController thetaController) {
-        m_xController = xController;
-        m_yController = yController;
-        m_thetaController = thetaController;
+        this.xController = xController;
+        this.yController = yController;
+        this.thetaController = thetaController;
     }
   
     /**
@@ -55,10 +56,10 @@ public class RotatingHolonomicDriveController {
      * @return True if the pose error is within tolerance of the reference.
      */
     public boolean atReference() {
-        final var eTranslate = m_poseError.getTranslation();
-        final var eRotate = m_rotationError;
-        final var tolTranslate = m_poseTolerance.getTranslation();
-        final var tolRotate = m_poseTolerance.getRotation();
+        final var eTranslate = poseError.getTranslation();
+        final var eRotate = rotationError;
+        final var tolTranslate = poseTolerance.getTranslation();
+        final var tolRotate = poseTolerance.getRotation();
         return Math.abs(eTranslate.getX()) < tolTranslate.getX()
             && Math.abs(eTranslate.getY()) < tolTranslate.getY()
             && Math.abs(eRotate.getRadians()) < tolRotate.getRadians();
@@ -70,7 +71,7 @@ public class RotatingHolonomicDriveController {
      * @param tolerance The pose error which is tolerable.
      */
     public void setTolerance(Pose2d tolerance) {
-        m_poseTolerance = tolerance;
+        poseTolerance = tolerance;
     }
   
     /**
@@ -87,11 +88,11 @@ public class RotatingHolonomicDriveController {
             Pose2d currentPose, Pose2d poseRef, Rotation2d directionOfMovement, double linearVelocityRefMeters, Rotation2d angleRef) {
         // If this is the first run, then we need to reset the theta controller to the current pose's
         // heading.
-        if (m_firstRun) {
-            m_thetaController.reset(currentPose.getRotation().getRadians());
-            m_xController.reset();
-            m_yController.reset();
-            m_firstRun = false;
+        if (firstRun) {
+            thetaController.reset(currentPose.getRotation().getRadians());
+            xController.reset();
+            yController.reset();
+            firstRun = false;
         }
     
         // Calculate feedforward velocities (field-relative).
@@ -99,7 +100,7 @@ public class RotatingHolonomicDriveController {
         double yFF = linearVelocityRefMeters * directionOfMovement.getSin();
         // Theta seems to need to be inverted (at least for sim)
         double thetaFF =
-            m_thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians());
+            thetaController.calculate(currentPose.getRotation().getRadians(), angleRef.getRadians());
         
         if (smartDashboardEnabled) {
             SmartDashboard.putNumber("RotatingHolonomicDriveController/currentRadians", currentPose.getRotation().getRadians());
@@ -115,16 +116,16 @@ public class RotatingHolonomicDriveController {
             SmartDashboard.putNumber("RotatingHolonomicDriveController/yFF", yFF);
         }
     
-        m_poseError = poseRef.relativeTo(currentPose);
-        m_rotationError = angleRef.minus(currentPose.getRotation());
+        poseError = poseRef.relativeTo(currentPose);
+        rotationError = angleRef.minus(currentPose.getRotation());
     
-        if (!m_enabled) {
+        if (!enabled) {
             return ChassisSpeeds.fromFieldRelativeSpeeds(xFF, yFF, thetaFF, currentPose.getRotation());
         }
     
         // Calculate feedback velocities (based on position error).
-        double xFeedback = m_xController.calculate(currentPose.getX(), poseRef.getX());
-        double yFeedback = m_yController.calculate(currentPose.getY(), poseRef.getY());
+        double xFeedback = xController.calculate(currentPose.getX(), poseRef.getX());
+        double yFeedback = yController.calculate(currentPose.getY(), poseRef.getY());
     
         // Return next output.
         return ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -151,13 +152,13 @@ public class RotatingHolonomicDriveController {
      * @param enabled If the controller is enabled or not.
      */
     public void setEnabled(boolean enabled) {
-        m_enabled = enabled;
+        this.enabled = enabled;
     }
 
     /**
      * Makes the controller run as if it's running for the first time.
      */
     public void reset() {
-        m_firstRun = true;
+        firstRun = true;
     }
 }

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * AxisTrigger triggers when the given axis is beyond the threshold in the desired direction.
  * The default direction is {@link Direction#BOTH_WAYS}, and the default threshold is 0.2.
  */
+@SuppressWarnings("unused")
 public class AxisTrigger extends Trigger {
     public enum Direction {
         BOTH_WAYS,

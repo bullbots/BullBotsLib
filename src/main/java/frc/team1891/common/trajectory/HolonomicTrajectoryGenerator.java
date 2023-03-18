@@ -18,14 +18,14 @@ import edu.wpi.first.math.spline.SplineParameterizer.MalformedSplineException;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+@SuppressWarnings("unused")
 public class HolonomicTrajectoryGenerator {
-    private static final HolonomicTrajectory kDoNothingTrajectory =
-        new HolonomicTrajectory(Arrays.asList(new HolonomicTrajectory.State()));
+    private static final HolonomicTrajectory DO_NOTHING_TRAJECTORY =
+        new HolonomicTrajectory(List.of(new HolonomicTrajectory.State()));
     private static BiConsumer<String, StackTraceElement[]> errorFunc;
 
     /** Private constructor because this is a utility class. */
@@ -88,7 +88,7 @@ public class HolonomicTrajectoryGenerator {
                         newInitial, interiorWaypoints.toArray(new Translation2d[0]), newEnd));
         } catch (MalformedSplineException ex) {
             reportError(ex.getMessage(), ex.getStackTrace());
-            return kDoNothingTrajectory;
+            return DO_NOTHING_TRAJECTORY;
         }
 
         // Change the points back to their original orientation.
@@ -165,7 +165,7 @@ public class HolonomicTrajectoryGenerator {
                         newControlVectors.toArray(new Spline.ControlVector[] {})));
         } catch (MalformedSplineException ex) {
             reportError(ex.getMessage(), ex.getStackTrace());
-            return kDoNothingTrajectory;
+            return DO_NOTHING_TRAJECTORY;
         }
 
         // Change the points back to their original orientation.
@@ -215,7 +215,7 @@ public class HolonomicTrajectoryGenerator {
             points = splinePointsFromSplines(SplineHelper.getQuinticSplinesFromWaypoints(newWaypoints));
         } catch (MalformedSplineException ex) {
             reportError(ex.getMessage(), ex.getStackTrace());
-            return kDoNothingTrajectory;
+            return DO_NOTHING_TRAJECTORY;
         }
 
         // Change the points back to their original orientation.
@@ -271,7 +271,7 @@ public class HolonomicTrajectoryGenerator {
             points = splinePointsFromSplines(SplineHelper.getQuinticSplinesFromWaypoints(newWaypoints));
         } catch (MalformedSplineException ex) {
             reportError(ex.getMessage(), ex.getStackTrace());
-            return kDoNothingTrajectory;
+            return DO_NOTHING_TRAJECTORY;
         }
 
         ArrayList<Integer> timePoints = new ArrayList<>();
@@ -286,7 +286,7 @@ public class HolonomicTrajectoryGenerator {
 
         ArrayList<Pair<Rotation2d, Integer>> timeBoundHeadings = new ArrayList<>();
         for (int i = 0; i < newWaypoints.size(); i++) {
-            timeBoundHeadings.add(new Pair<Rotation2d, Integer>(newHeadings.get(i), timePoints.get(i)));
+            timeBoundHeadings.add(new Pair<>(newHeadings.get(i), timePoints.get(i)));
         }
         List<Rotation2d> interpolatedHeadings = AngleInterpolator.interpolate(
             timeBoundHeadings
@@ -350,22 +350,10 @@ public class HolonomicTrajectoryGenerator {
             splinePoints.addAll(points.subList(1, points.size()));
         }
 
-        // var first = splinePoints.get(0).poseMeters;
-        // var second = splinePoints.get(1).poseMeters;
-        // var secondToLast = splinePoints.get(splinePoints.size()-2).poseMeters;
-        // var last = splinePoints.get(splinePoints.size()-1).poseMeters;
-
-        // var firstToSecond = first.minus(second);
-        // // first.getRotation().fromDegrees(new Rotation2d(firstToSecond.getX(), firstToSecond.getY()).getDegrees());
-        // splinePoints.get(0).poseMeters = new Pose2d(splinePoints.get(0).poseMeters.getTranslation(), new Rotation2d(firstToSecond.getX(), firstToSecond.getY()));
-
-        // var lastToSecondToLast = last.minus(secondToLast);
-        // splinePoints.get(splinePoints.size()-1).poseMeters = new Pose2d(splinePoints.get(splinePoints.size()-1).poseMeters.getTranslation(), new Rotation2d(lastToSecondToLast.getX(), lastToSecondToLast.getY()));
         return splinePoints;
     }
 
     // Work around type erasure signatures
-    @SuppressWarnings("serial")
     public static class ControlVectorList extends ArrayList<Spline.ControlVector> {
         public ControlVectorList(int initialCapacity) {
          super(initialCapacity);
@@ -386,23 +374,7 @@ public class HolonomicTrajectoryGenerator {
         @SafeVarargs
         public static List<Rotation2d> interpolate(Pair<Rotation2d, Integer> ... headings) {
             List<CoefficientWave> coefficients = new ArrayList<>();
-            // coefficients.add(new CoefficientWave(
-            //     0,
-            //     0,
-            //     headings[1].getSecond() - headings[0].getSecond()
-            // ));
-            // for (int i = 1; i < headings.length-1; i++) {
-            //     coefficients.add(new CoefficientWave(
-            //         headings[i].getSecond() - headings[i-1].getSecond(),
-            //         headings[i].getSecond(),
-            //         headings[i+1].getSecond() - headings[i].getSecond()
-            //     ));
-            // }
-            // coefficients.add(new CoefficientWave(
-            //     headings[headings.length-1].getSecond() - headings[headings.length-2].getSecond(),
-            //     headings[headings.length-1].getSecond(),
-            //     0
-            // ));
+
             coefficients.add(new CoefficientWave(null, headings[0], headings[1]));
             for (int i = 1; i < headings.length-1; i++) {
                 coefficients.add(new CoefficientWave(headings[i-1], headings[i], headings[i+1]));
@@ -423,23 +395,7 @@ public class HolonomicTrajectoryGenerator {
 
         public static List<Rotation2d> interpolate(ArrayList<Pair<Rotation2d, Integer>> headings) {
             List<CoefficientWave> coefficients = new ArrayList<>();
-            // coefficients.add(new CoefficientWave(
-            //     0,
-            //     0,
-            //     headings.get(1).getSecond() - headings.get(0).getSecond()
-            // ));
-            // for (int i = 1; i < headings.size()-1; i++) {
-            //     coefficients.add(new CoefficientWave(
-            //         headings.get(i).getSecond() - headings.get(i-1).getSecond(),
-            //         headings.get(i).getSecond(),
-            //         headings.get(i+1).getSecond() - headings.get(i).getSecond()
-            //     ));
-            // }
-            // coefficients.add(new CoefficientWave(
-            //     headings.get(headings.size()-1).getSecond() - headings.get(headings.size()-2).getSecond(),
-            //     headings.get(headings.size()-1).getSecond(),
-            //     0
-            // ));
+
             coefficients.add(new CoefficientWave(null, headings.get(0), headings.get(1)));
             for (int i = 1; i < headings.size()-1; i++) {
                 coefficients.add(new CoefficientWave(headings.get(i-1), headings.get(i), headings.get(i+1)));
@@ -469,8 +425,7 @@ public class HolonomicTrajectoryGenerator {
         public static class CoefficientWave {
             int leftLength, rightLength;
             int location;
-            // boolean leftInverted, rightInverted;
-            // boolean inverted = false;
+
             boolean rotClockWise, rotCounterClockWise;
             public CoefficientWave(int leftLength, int location, int rightLength) {
                 this.leftLength = leftLength;
@@ -481,19 +436,15 @@ public class HolonomicTrajectoryGenerator {
             public CoefficientWave(Pair<Rotation2d, Integer> left, Pair<Rotation2d, Integer> here, Pair<Rotation2d, Integer> right) {
                 if (left == null) {
                     this.leftLength = 0;
-                    // this.leftInverted = false;
                 } else {
                     this.leftLength = here.getSecond() - left.getSecond();
-                    // this.leftInverted = false;
                     tryInvert(left.getFirst(), here.getFirst());
                 }
                 this.location = here.getSecond();
                 if (right == null) {
                     this.rightLength = 0;
-                    // this.rightInverted = false;
                 } else {
                     this.rightLength = right.getSecond() - here.getSecond();
-                    // this.rightInverted = false;
                 }
             }
 
@@ -526,7 +477,6 @@ public class HolonomicTrajectoryGenerator {
             private void tryInvert(Rotation2d r1, Rotation2d r2) {
                 double a1 = r1.getRadians();
                 double a2 = r2.getRadians();
-                // return (Math.min(Math.abs(2*Math.PI - a1 - a2), Math.abs(2*Math.PI - a2 - a1)) < Math.abs(a1 - a2));
                 rotCounterClockWise = Math.abs(2*Math.PI - (a1 - a2)) < Math.abs(a1 - a2);
                 rotClockWise = Math.abs(2*Math.PI - (a2 - a1)) < Math.abs(a1 - a2);
             }

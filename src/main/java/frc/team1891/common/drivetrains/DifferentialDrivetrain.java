@@ -16,7 +16,8 @@ import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base for a differential drivetrain. */
-public class DifferentialDrivetrain extends Drivetrain {
+@SuppressWarnings("unused")
+public abstract class DifferentialDrivetrain extends Drivetrain {
   protected final DifferentialDriveKinematics kinematics;
   protected final DifferentialDriveOdometry odometry;
 
@@ -117,13 +118,12 @@ public class DifferentialDrivetrain extends Drivetrain {
 
   @Override
   protected void configureSmartDashboard() {
+    super.configureSmartDashboard();
     LazyDashboard.addNumber("Drivetrain/leftPosition", left::getSelectedSensorPosition);
     LazyDashboard.addNumber("Drivetrain/leftVelocity", left::getSelectedSensorVelocity);
     LazyDashboard.addNumber("Drivetrain/rightPosition", right::getSelectedSensorPosition);
     LazyDashboard.addNumber("Drivetrain/rightVelocity", right::getSelectedSensorVelocity);
-    LazyDashboard.addNumber("Drivetrain/gyroRadians", gyro::getRadians);
-    LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getDegrees);
-    LazyDashboard.addNumber("Drivetrain/gyroDegreesLooped", gyro::getDegreesLooped);
+    LazyDashboard.addNumber("Drivetrain/gyroAngle", gyro::getAngle);
     LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
     LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
     LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);

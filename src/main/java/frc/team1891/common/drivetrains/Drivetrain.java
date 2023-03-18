@@ -6,17 +6,21 @@ package frc.team1891.common.drivetrains;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team1891.common.Subsystem;
 import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base. */
+@SuppressWarnings("unused")
 public abstract class Drivetrain extends Subsystem {
     protected final Field2d field = new Field2d();
 
     protected final DrivetrainConfig config;
-    protected final NavX gyro;
+    protected final Gyro gyro;
+
+    protected boolean smartDashboardEnabled = false;
 
     /**
      * Creates a new Drivetrain
@@ -29,6 +33,8 @@ public abstract class Drivetrain extends Subsystem {
     ) {
         this.config = config;
         this.gyro = gyro;
+
+        resetGyro();
 
         SmartDashboard.putData("Robot (Field2d)", field);
     }
@@ -72,6 +78,11 @@ public abstract class Drivetrain extends Subsystem {
      * super.periodic() this will not work.
      */
     public abstract void updateOdometry();
+
+    @Override
+    protected void configureSmartDashboard() {
+        smartDashboardEnabled = true;
+    }
 
     @Override
     public void periodic() {

@@ -1,11 +1,6 @@
 package frc.team1891.common.logger;
 
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.Files;
-
 import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.util.datalog.IntegerLogEntry;
@@ -14,6 +9,11 @@ import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * A logger class that uses the DataLog class. Use parameters to also output to the
@@ -37,19 +37,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * 
  * If wanting driver station info to be logged, call logDriverStation().
  */
+@SuppressWarnings("unused")
 public class BullLogger {
-    private DataLog m_dataLogger;
-    private boolean m_ShowInConsole;
-    private boolean m_liveOutput;
+    private DataLog dataLogger;
+    private final boolean showInConsole;
+    private final boolean liveOutput;
 
-    private StringLogEntry m_stringLog;
-    private IntegerLogEntry m_intLog;
-    private DoubleLogEntry m_doubleLog;
+    private StringLogEntry stringLog;
+    private IntegerLogEntry intLog;
+    private DoubleLogEntry doubleLog;
 
-    private String m_logName;
+    private final String logName;
 
-    public static enum LogType {STRING, INT, DOUBLE}
-    public static enum LogLevel {
+    public enum LogType {STRING, INT, DOUBLE}
+    public enum LogLevel {
         DEBUG(1),
         INFO(2), 
         WARNING(3),
@@ -58,7 +59,7 @@ public class BullLogger {
 
         public int levelNumber;
 
-        private LogLevel(int number) {
+        LogLevel(int number) {
             this.levelNumber = number;
         }
 
@@ -67,14 +68,14 @@ public class BullLogger {
         }
     }
 
-    private LogLevel m_LogLevel;
-    private LogType m_LogType;
+    private LogLevel logLevel;
+    private LogType logType;
 
     public BullLogger(String logName, boolean showInConsole, boolean liveOutput) {
         // save the logger settings
-        m_logName = logName;
-        m_ShowInConsole = showInConsole;
-        m_liveOutput = liveOutput;
+        this.logName = logName;
+        this.showInConsole = showInConsole;
+        this.liveOutput = liveOutput;
 
         // make sure we are using a USB directory on a real robot
         boolean useDataLogger = true;
@@ -82,17 +83,17 @@ public class BullLogger {
             if (!this.loggerIsUSBDrive()) {
                 // don't use the data logger
                 logException("***** Logger not available: no usb drive found *****");
-                m_dataLogger = null;
+                dataLogger = null;
                 useDataLogger = false;
             }
         }
 
         if (useDataLogger) {
-            m_dataLogger = DataLogManager.getLog();
+            dataLogger = DataLogManager.getLog();
         }
 
         // default log level is CRITICAL
-        m_LogLevel = LogLevel.CRITICAL;
+        logLevel = LogLevel.CRITICAL;
     }
 
     private boolean loggerIsUSBDrive() {
@@ -118,24 +119,24 @@ public class BullLogger {
     }
 
     public void setLogLevel(LogLevel logLevel) {
-        this.m_LogLevel = logLevel;
+        this.logLevel = logLevel;
     }
 
     public void setLogType(LogType logType) {
-        this.m_LogType = logType;
+        this.logType = logType;
 
-        if (m_dataLogger == null) {
+        if (dataLogger == null) {
             logException("***** Logger not available *****");
         } else {
             if (logType == LogType.STRING) {
                 // set up a string logger
-                m_stringLog = new StringLogEntry(m_dataLogger, this.m_logName);
+                stringLog = new StringLogEntry(dataLogger, this.logName);
             } else if (logType == LogType.INT) {
                 // set up an int logger
-                m_intLog = new IntegerLogEntry(m_dataLogger, this.m_logName);
+                intLog = new IntegerLogEntry(dataLogger, this.logName);
             } else if (logType == LogType.DOUBLE) {
                 // set up an int logger
-                m_doubleLog = new DoubleLogEntry(m_dataLogger, this.m_logName);
+                doubleLog = new DoubleLogEntry(dataLogger, this.logName);
             } else {
                 logException("Invalid log type: " + logType);
             }
@@ -144,20 +145,20 @@ public class BullLogger {
 
     private void showInConsole(String entry) {
         // show in console if asked
-        if (m_ShowInConsole) {
+        if (showInConsole) {
             System.out.println(entry);
         }
     }
 
     private void logToDataLogger(String entry) {
-        if (m_dataLogger != null) {
-            if (m_stringLog == null) {
+        if (dataLogger != null) {
+            if (stringLog == null) {
                 System.out.println("String logger not set up\n");
                 return;
             }
 
             try {
-                m_stringLog.append(entry);
+                stringLog.append(entry);
             } catch (Exception e) {
                 System.out.println("Exception trying to log string: " + entry);
             }
@@ -165,8 +166,8 @@ public class BullLogger {
     }
 
     private void showLiveOutput(String entry) {
-        if (m_liveOutput) {
-            SmartDashboard.putString(m_logName, entry);
+        if (liveOutput) {
+            SmartDashboard.putString(logName, entry);
         }
     }
 
@@ -177,26 +178,26 @@ public class BullLogger {
 
     public void logEntry(String entry, LogLevel level) {
         // only log if at the right level
-        if (level.getValue() < this.m_LogLevel.getValue()) {
+        if (level.getValue() < this.logLevel.getValue()) {
             return;
         }
 
         logToDataLogger(entry);
 
-        showInConsole(m_logName + ": " + entry);
+        showInConsole(logName + ": " + entry);
 
         showLiveOutput(entry);
     }
 
     private void logToDataLogger(int entry) {
-        if (m_dataLogger != null) {
-            if (m_intLog == null) {
+        if (dataLogger != null) {
+            if (intLog == null) {
                 System.out.println("Integer logger not set up\n");
                 return;
             }
 
             try {
-                m_intLog.append(entry);
+                intLog.append(entry);
             } catch (Exception e) {
                 System.out.println("Exception trying to log int: " + entry);
             }
@@ -204,8 +205,8 @@ public class BullLogger {
     }
 
     private void showLiveOutput(int entry) {
-        if (m_liveOutput) {
-            SmartDashboard.putNumber(m_logName, entry);
+        if (liveOutput) {
+            SmartDashboard.putNumber(logName, entry);
         }
     }
 
@@ -215,26 +216,26 @@ public class BullLogger {
     }
 
     public void logEntry(int entry, LogLevel level) {
-        if (level.getValue() < this.m_LogLevel.getValue()) {
+        if (level.getValue() < this.logLevel.getValue()) {
             return;
         }
 
         logToDataLogger(entry);
 
-        showInConsole(m_logName + ": " + entry);
+        showInConsole(logName + ": " + entry);
 
         showLiveOutput(entry);
     }
 
     private void logToDataLogger(double entry) {
-        if (m_dataLogger != null) {
-            if (m_doubleLog == null) {
+        if (dataLogger != null) {
+            if (doubleLog == null) {
                 System.out.println("Double logger not set up\n");
                 return;
             }
 
             try {
-                m_doubleLog.append(entry);
+                doubleLog.append(entry);
             } catch (Exception e) {
                 System.out.println("Exception trying to log double: " + entry);
             }
@@ -242,8 +243,8 @@ public class BullLogger {
     }
 
     private void showLiveOutput(double entry) {
-        if (m_liveOutput) {
-            SmartDashboard.putNumber(m_logName, entry);
+        if (liveOutput) {
+            SmartDashboard.putNumber(logName, entry);
         }
     }
 
@@ -253,24 +254,24 @@ public class BullLogger {
     }
 
     public void logEntry(double entry, LogLevel level) {
-        if (level.getValue() < this.m_LogLevel.getValue()) {
+        if (level.getValue() < this.logLevel.getValue()) {
             return;
         }
 
         logToDataLogger(entry);
 
-        showInConsole(m_logName + ": " + entry);
+        showInConsole(logName + ": " + entry);
 
         showLiveOutput(entry);
     }
 
     public void logDriverStation() {
-        if (m_dataLogger != null) {
+        if (dataLogger != null) {
             // start data logging
             DataLogManager.start();
 
             // Record both DS control and joystick data
-            DriverStation.startDataLog(m_dataLogger);
+            DriverStation.startDataLog(dataLogger);
         }
    }
 }

@@ -4,30 +4,30 @@
 
 package frc.team1891.common.trajectory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 /**
  * Represents a time-parameterized trajectory. The trajectory contains of various States that
  * represent the pose, curvature, time elapsed, velocity, acceleration, and chassis direction at that point.
  * */
+@SuppressWarnings("unused")
 public class HolonomicTrajectory {
-    private final double m_totalTimeSeconds;
-    private final List<State> m_states;
+    private final double totalTimeSeconds;
+    private final List<State> states;
 
     /** Constructs an empty swerve trajectory */
     HolonomicTrajectory() {
-        m_states = new ArrayList<>();
-        m_totalTimeSeconds = 0.0;
+        states = new ArrayList<>();
+        totalTimeSeconds = 0.0;
     }
 
     /**
@@ -36,13 +36,13 @@ public class HolonomicTrajectory {
      * @param states A vector of states.
      */
     public HolonomicTrajectory(final List<State> states) {
-        m_states = states;
-        m_totalTimeSeconds = m_states.get(m_states.size() - 1).timeSeconds;
+        this.states = states;
+        totalTimeSeconds = this.states.get(this.states.size() - 1).timeSeconds;
     }
 
     public Trajectory getAsTrajectory() {
         List<Trajectory.State> states = new ArrayList<>();
-        for (State m_state : m_states) {
+        for (State m_state : this.states) {
             states.add(new Trajectory.State(
                 m_state.timeSeconds,
                 m_state.velocityMetersPerSecond,
@@ -111,7 +111,7 @@ public class HolonomicTrajectory {
      * @return The duration of the trajectory.
      */
     public double getTotalTimeSeconds() {
-        return m_totalTimeSeconds;
+        return totalTimeSeconds;
     }
 
     /**
@@ -120,7 +120,7 @@ public class HolonomicTrajectory {
      * @return The states of the trajectory.
      */
     public List<State> getStates() {
-        return m_states;
+        return states;
     }
 
 
@@ -131,11 +131,11 @@ public class HolonomicTrajectory {
      * @return The state at that point in time.
      */
     public State sample(double timeSeconds) {
-        if (timeSeconds <= m_states.get(0).timeSeconds) {
-        return m_states.get(0);
+        if (timeSeconds <= states.get(0).timeSeconds) {
+        return states.get(0);
         }
-        if (timeSeconds >= m_totalTimeSeconds) {
-        return m_states.get(m_states.size() - 1);
+        if (timeSeconds >= totalTimeSeconds) {
+        return states.get(states.size() - 1);
         }
 
         // To get the element that we want, we will use a binary search algorithm
@@ -145,11 +145,11 @@ public class HolonomicTrajectory {
         // This starts at 1 because we use the previous state later on for
         // interpolation.
         int low = 1;
-        int high = m_states.size() - 1;
+        int high = states.size() - 1;
 
         while (low != high) {
         int mid = (low + high) / 2;
-        if (m_states.get(mid).timeSeconds < timeSeconds) {
+        if (states.get(mid).timeSeconds < timeSeconds) {
             // This index and everything under it are less than the requested
             // timestamp. Therefore, we can discard them.
             low = mid + 1;
@@ -166,8 +166,8 @@ public class HolonomicTrajectory {
         // timestamp. If it is greater, we need to interpolate between the
         // previous state and the current state to get the exact state that we
         // want.
-        final State sample = m_states.get(low);
-        final State prevSample = m_states.get(low - 1);
+        final State sample = states.get(low);
+        final State prevSample = states.get(low - 1);
 
         // If the difference in states is negligible, then we are spot on!
         if (Math.abs(sample.timeSeconds - prevSample.timeSeconds) < 1E-9) {
@@ -189,7 +189,7 @@ public class HolonomicTrajectory {
      * @return The transformed trajectory.
      */
     public HolonomicTrajectory transformBy(Transform2d transform) {
-        var firstState = m_states.get(0);
+        var firstState = states.get(0);
         var firstPose = firstState.poseMeters;
 
         // Calculate the transformed first pose.
@@ -205,8 +205,8 @@ public class HolonomicTrajectory {
                 firstState.directionOfMovement,
                 firstState.curvatureRadPerMeter));
 
-        for (int i = 1; i < m_states.size(); i++) {
-        var state = m_states.get(i);
+        for (int i = 1; i < states.size(); i++) {
+        var state = states.get(i);
         // We are transforming relative to the coordinate frame of the new initial pose.
         newStates.add(
             new State(
@@ -231,7 +231,7 @@ public class HolonomicTrajectory {
      */
     public HolonomicTrajectory relativeTo(Pose2d pose) {
         return new HolonomicTrajectory(
-            m_states.stream()
+            states.stream()
                 .map(
                     state ->
                         new State(
@@ -255,13 +255,13 @@ public class HolonomicTrajectory {
     public HolonomicTrajectory concatenate(HolonomicTrajectory other) {
         // If this is a default constructed trajectory with no states, then we can
         // simply return the rhs trajectory.
-        if (m_states.isEmpty()) {
+        if (states.isEmpty()) {
             return other;
         }
 
         // Deep copy the current states.
         List<State> states =
-            m_states.stream()
+            this.states.stream()
                 .map(
                     state ->
                         new State(
@@ -281,7 +281,7 @@ public class HolonomicTrajectory {
         var s = other.getStates().get(i);
         states.add(
             new State(
-                s.timeSeconds + m_totalTimeSeconds,
+                s.timeSeconds + totalTimeSeconds,
                 s.velocityMetersPerSecond,
                 s.accelerationMetersPerSecondSq,
                 s.poseMeters,
@@ -421,10 +421,9 @@ public class HolonomicTrajectory {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof State)) {
+        if (!(obj instanceof State state)) {
             return false;
         }
-        State state = (State) obj;
         return Double.compare(state.timeSeconds, timeSeconds) == 0
             && Double.compare(state.velocityMetersPerSecond, velocityMetersPerSecond) == 0
             && Double.compare(state.accelerationMetersPerSecondSq, accelerationMetersPerSecondSq) == 0
@@ -445,17 +444,17 @@ public class HolonomicTrajectory {
 
     @Override
     public String toString() {
-        String stateList = m_states.stream().map(State::toString).collect(Collectors.joining(", \n"));
-        return String.format("Trajectory - Seconds: %.2f, States:\n%s", m_totalTimeSeconds, stateList);
+        String stateList = states.stream().map(State::toString).collect(Collectors.joining(", \n"));
+        return String.format("Trajectory - Seconds: %.2f, States:\n%s", totalTimeSeconds, stateList);
     }
 
     @Override
     public int hashCode() {
-        return m_states.hashCode();
+        return states.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof HolonomicTrajectory && m_states.equals(((HolonomicTrajectory) obj).getStates());
+        return obj instanceof HolonomicTrajectory && states.equals(((HolonomicTrajectory) obj).getStates());
     }
 }

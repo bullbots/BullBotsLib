@@ -10,9 +10,10 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public abstract class LazyDashboard {
-    private static int DEFAULT_INTERVAL = 50;
-    private static ArrayList<LazyDashboard> lazyDashboards = new ArrayList<>();
+    private static final int DEFAULT_INTERVAL = 50;
+    private static final ArrayList<LazyDashboard> lazyDashboards = new ArrayList<>();
 
     /**
      * This should be called in robotPeriodic or some other periodic method.
