@@ -80,7 +80,7 @@ public class BullLogger {
         if (Robot.isReal()) {
             if (!this.loggerIsUSBDrive()) {
                 // don't use the data logger
-                LogException("***** Logger not available: no usb drive found *****");
+                logException("***** Logger not available: no usb drive found *****");
                 m_dataLogger = null;
                 useDataLogger = false;
             }
@@ -112,8 +112,8 @@ public class BullLogger {
 
     // We don't want to throw exceptions out of the logger, so log anything that might 
     // normally be an exception as an error to the console.
-    private void LogException(String exception) {
-        System.out.println(exception);
+    private void logException(String exception) {
+        DriverStation.reportWarning(eexception);
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -124,7 +124,7 @@ public class BullLogger {
         this.m_LogType = logType;
 
         if (m_dataLogger == null) {
-            LogException("***** Logger not available *****");
+            logException("***** Logger not available *****");
         } else {
             if (logType == LogType.STRING) {
                 // set up a string logger
@@ -136,7 +136,7 @@ public class BullLogger {
                 // set up an int logger
                 m_doubleLog = new DoubleLogEntry(m_dataLogger, this.m_logName);
             } else {
-                LogException("Invalid log type: " + logType);
+                logException("Invalid log type: " + logType);
             }
         }
     }
