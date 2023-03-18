@@ -1,5 +1,6 @@
 package frc.team1891.common.logger;
 
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,8 +12,8 @@ import edu.wpi.first.util.datalog.IntegerLogEntry;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Robot;
 
 /**
  * A logger class that uses the DataLog class. Use parameters to also output to the
@@ -77,7 +78,7 @@ public class BullLogger {
 
         // make sure we are using a USB directory on a real robot
         boolean useDataLogger = true;
-        if (Robot.isReal()) {
+        if (RobotBase.isReal()) {
             if (!this.loggerIsUSBDrive()) {
                 // don't use the data logger
                 logException("***** Logger not available: no usb drive found *****");
@@ -113,7 +114,7 @@ public class BullLogger {
     // We don't want to throw exceptions out of the logger, so log anything that might 
     // normally be an exception as an error to the console.
     private void logException(String exception) {
-        DriverStation.reportWarning(eexception);
+        DriverStation.reportWarning(exception, true);
     }
 
     public void setLogLevel(LogLevel logLevel) {
