@@ -5,12 +5,12 @@
 package frc.team1891.common.drivetrains;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.team1891.common.hardware.NavX;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 
 /** Drivetrain base for any drivetrain with holonomic movement. */
 @SuppressWarnings("unused")
 public abstract class HolonomicDrivetrain extends Drivetrain {
-    public HolonomicDrivetrain(DrivetrainConfig config, NavX gyro) {
+    public HolonomicDrivetrain(DrivetrainConfig config, Gyro gyro) {
         super(config, gyro);
     }
 

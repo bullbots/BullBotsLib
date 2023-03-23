@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team1891.common.Subsystem;
-import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base. */
 @SuppressWarnings("unused")
@@ -25,11 +24,11 @@ public abstract class Drivetrain extends Subsystem {
     /**
      * Creates a new Drivetrain
      * @param config the drivetrain config
-     * @param gyro the gyro used by the drivetrian ({@link NavX})
+     * @param gyro the gyro used by the drivetrian ({@link Gyro})
      */
     public Drivetrain(
         DrivetrainConfig config,
-        NavX gyro
+        Gyro gyro
     ) {
         this.config = config;
         this.gyro = gyro;

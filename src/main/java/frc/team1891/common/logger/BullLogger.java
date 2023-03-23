@@ -20,7 +20,7 @@ import java.nio.file.Paths;
  * standard output or live in SmartDashboard. Log levels can be used to only output
  * entries that are at or above the level set (default is LogLevel.CRITICAL).
  *
- * Paramters
+ * Parameters
  *  String logName          Name of log; also prefix for console
  *  boolean showInConsole   Flag to also show output in system console
  *  boolean liveOutput      Flag to also send output to SmartDashboard
@@ -71,14 +71,14 @@ public class BullLogger {
     private LogLevel logLevel;
     private LogType logType;
 
-    public BullLogger(String logName, boolean showInConsole, boolean liveOutput) {
+    public BullLogger(String logName, boolean showInConsole, boolean liveOutput, boolean logInSim) {
         // save the logger settings
         this.logName = logName;
         this.showInConsole = showInConsole;
         this.liveOutput = liveOutput;
 
-        // make sure we are using a USB directory on a real robot
-        boolean useDataLogger = true;
+        // make sure we are using a USB directory when on a real robot
+        boolean useDataLogger = RobotBase.isReal() || logInSim;
         if (RobotBase.isReal()) {
             if (!this.loggerIsUSBDrive()) {
                 // don't use the data logger

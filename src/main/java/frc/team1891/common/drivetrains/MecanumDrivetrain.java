@@ -5,14 +5,16 @@
 package frc.team1891.common.drivetrains;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.*;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
+import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.team1891.common.LazyDashboard;
-import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base for a mecanum drivetrain. */
 @SuppressWarnings("unused")
@@ -37,7 +39,7 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
     DrivetrainConfig config,
     double driveBaseWidth,
     double driveBaseLength,
-    NavX gyro,
+    Gyro gyro,
     WPI_TalonFX frontLeft,
     WPI_TalonFX frontRight,
     WPI_TalonFX backLeft,
@@ -76,7 +78,7 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
     Translation2d frontRightLocation,
     Translation2d backLeftLocation,
     Translation2d backRightLocation,
-    NavX gyro,
+    Gyro gyro,
     WPI_TalonFX frontLeft,
     WPI_TalonFX frontRight,
     WPI_TalonFX backLeft,

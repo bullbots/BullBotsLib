@@ -12,8 +12,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.team1891.common.LazyDashboard;
-import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base for a differential drivetrain. */
 @SuppressWarnings("unused")
@@ -30,7 +30,7 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
    * @param config the drivetrain config
    * @param kinematics the kinematics for this drivetrain
    * @param odometry the odometry for this drivetrain
-   * @param gyro the gyro used by the drivetrain ({@link NavX})
+   * @param gyro the gyro used by the drivetrain ({@link Gyro})
    * @param leftMaster the left drive motor
    * @param rightMaster the right drive motor
    */
@@ -38,7 +38,7 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
     DrivetrainConfig config,
     DifferentialDriveKinematics kinematics,
     DifferentialDriveOdometry odometry,
-    NavX gyro,
+    Gyro gyro,
     WPI_TalonFX leftMaster,
     WPI_TalonFX rightMaster
   ) {
