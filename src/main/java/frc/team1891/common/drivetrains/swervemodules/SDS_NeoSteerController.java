@@ -1,7 +1,6 @@
 package frc.team1891.common.drivetrains.swervemodules;
 
 import com.ctre.phoenix.sensors.CANCoder;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,7 +15,7 @@ import frc.team1891.common.hardware.WPI_CANSparkMax;
  */
 @SuppressWarnings("unused")
 public class SDS_NeoSteerController implements SteerController {
-    private final CANSparkMax steerMotor;
+    private final WPI_CANSparkMax steerMotor;
     private final CANCoder encoder;
 
     private final RelativeEncoder motorEncoder;
@@ -77,7 +76,7 @@ public class SDS_NeoSteerController implements SteerController {
 
         // this.referenceAngleRadians = referenceAngleRadians;
 
-        motorPIDController.setReference(adjustedReferenceAngleRadians, CANSparkMax.ControlType.kPosition);
+        motorPIDController.setReference(adjustedReferenceAngleRadians, WPI_CANSparkMax.ControlType.kPosition);
     }
 
     @Override
