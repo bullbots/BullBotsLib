@@ -48,7 +48,7 @@ public class BSF_FalconSteerController implements SteerController {
     }
 
     private void resetToAbsolute(){
-        double absolutePosition = SwerveModule.degreesToMotorEncoderTicks(encoder.getAbsolutePosition() - encoderOffset, 150/7., 2048);
+        double absolutePosition = SwerveModule.degreesToMotorEncoderTicks(encoder.getAbsolutePosition() - encoderOffset, steeringGearRatio, 2048);
         steerMotor.setSelectedSensorPosition(absolutePosition);
     }
 

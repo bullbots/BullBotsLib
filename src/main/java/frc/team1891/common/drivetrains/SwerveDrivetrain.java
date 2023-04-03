@@ -261,6 +261,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
   @Override
   protected void configureSmartDashboard() {
+    super.configureSmartDashboard();
     frontLeft.configureSmartDashboard("Front Left");
     frontRight.configureSmartDashboard("Front Right");
     backLeft.configureSmartDashboard("Back Left");
