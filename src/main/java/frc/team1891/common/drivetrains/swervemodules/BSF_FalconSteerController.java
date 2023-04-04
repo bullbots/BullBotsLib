@@ -20,17 +20,22 @@ public class BSF_FalconSteerController implements SteerController {
 
     private final double encoderOffset;
 
-    public BSF_FalconSteerController(WPI_TalonFX steerMotor, CANCoder encoder, double steeringGearRatio, double encoderOffset) {
+    // Uses the defaults based on an MK4i module from team 364's code
+    public BSF_FalconSteerController(WPI_TalonFX steerMotor, CANCoder encoder, double encoderOffset) {
+        this(steerMotor, encoder, (150/7.), encoderOffset, .3, 0, 0, 0);
+    }
+
+    public BSF_FalconSteerController(WPI_TalonFX steerMotor, CANCoder encoder, double steeringGearRatio, double encoderOffset, double kP, double kI, double kD, double kFF) {
         this.steerMotor = steerMotor;
         this.encoder = encoder;
         this.steeringGearRatio = steeringGearRatio;
         this.encoderOffset = encoderOffset;
 
         // TODO: configureCANCoder
-        configureSteerMotor();
+        configureSteerMotor(kP, kI, kD, kFF);
     }
 
-    private void configureSteerMotor() {
+    private void configureSteerMotor(double kP, double kI, double kD, double kFF) {
         steerMotor.configFactoryDefault();
         SupplyCurrentLimitConfiguration angleSupplyLimit = new SupplyCurrentLimitConfiguration(
                 true,
@@ -41,6 +46,10 @@ public class BSF_FalconSteerController implements SteerController {
         TalonFXConfiguration configuration = new TalonFXConfiguration();
 
         configuration.supplyCurrLimit = angleSupplyLimit;
+        configuration.slot0.kP = kP;
+        configuration.slot0.kI = kI;
+        configuration.slot0.kD = kD;
+        configuration.slot0.kF = kFF;
         steerMotor.configAllSettings(configuration);
         steerMotor.setInverted(false);
         steerMotor.setNeutralMode(NeutralMode.Brake);
