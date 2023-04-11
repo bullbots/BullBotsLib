@@ -129,9 +129,9 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     this.modulesFieldXOffset = Math.abs(frontLeftLocation.getX()) + Math.abs(backLeftLocation.getX());
     this.modulesFieldYOffset = Math.abs(frontLeftLocation.getY()) + Math.abs(backLeftLocation.getY());
     modulesField.setRobotPose(modulesFieldXOffset, modulesFieldYOffset, new Rotation2d());
-    SmartDashboard.putBoolean("Modules Robot Relative", true);
-    SmartDashboard.putBoolean("Modules Show Desired States", true);
-    SmartDashboard.putData("Modules (Field2d)", modulesField);
+    SmartDashboard.putBoolean("Drivetrain/Modules Robot Relative", true);
+    SmartDashboard.putBoolean("Drivetrain/Modules Show Desired States", true);
+    SmartDashboard.putData("Drivetrain/Modules (Field2d)", modulesField);
   }
 
   @Override
@@ -266,7 +266,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     frontRight.configureSmartDashboard("Front Right");
     backLeft.configureSmartDashboard("Back Left");
     backRight.configureSmartDashboard("Back Right");
-    LazyDashboard.addNumber("Drivetrain/gyroRadians", gyro::getAngle);
+    LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getAngle);
     LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
     LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
     LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);

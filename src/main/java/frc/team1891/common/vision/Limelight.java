@@ -135,7 +135,7 @@ public class Limelight {
         boolean validTarget = validTargetEntry.getDouble(0) > 0.5;
 
         if (POST_TO_SMART_DASHBOARD) {
-            SmartDashboard.putBoolean("Valid Target", validTarget);
+            SmartDashboard.putBoolean("Limelight/Valid Target", validTarget);
         }
 
         return validTarget;
@@ -149,7 +149,7 @@ public class Limelight {
         boolean validHeight = getTargetYAngle() < targetHeightThreshold;
 
         if (POST_TO_SMART_DASHBOARD) {
-            SmartDashboard.putBoolean("Valid Height", validHeight);
+            SmartDashboard.putBoolean("Limelight/Valid Height", validHeight);
         }
 
         return validHeight;
@@ -168,8 +168,8 @@ public class Limelight {
         boolean validRatio = aspectRatio > minRatio && aspectRatio < maxRatio;
 
         if (POST_TO_SMART_DASHBOARD) {
-            SmartDashboard.putBoolean("Valid Ratio", validRatio);
-            SmartDashboard.putNumber("Aspect Ratio", aspectRatio);
+            SmartDashboard.putBoolean("Limelight/Valid Ratio", validRatio);
+            SmartDashboard.putNumber("Limelight/Aspect Ratio", aspectRatio);
         }
 
         return validRatio;
@@ -184,8 +184,8 @@ public class Limelight {
         boolean validOrientation = Math.min(skew, 90.0 - skew) <= angleThreshold;
 
         if (POST_TO_SMART_DASHBOARD) {
-            SmartDashboard.putBoolean("Valid Skew", validOrientation);
-            SmartDashboard.putNumber("Skew Value", Math.min(skew, 90.0 - skew));
+            SmartDashboard.putBoolean("Limelight/Valid Skew", validOrientation);
+            SmartDashboard.putNumber("Limelight/Skew Value", Math.min(skew, 90.0 - skew));
         }
 
         return validOrientation;
@@ -202,8 +202,8 @@ public class Limelight {
      */
     public double getTargetXAngle() {
 
-        double X_SHIFT = SmartDashboard.getNumber("X_SHIFT", 1000);
-        if(X_SHIFT > 694) SmartDashboard.putNumber("X_SHIFT", X_ANGLE_SHIFT);
+        double X_SHIFT = SmartDashboard.getNumber("Limelight/X_SHIFT", 1000);
+        if(X_SHIFT > 694) SmartDashboard.putNumber("Limelight/X_SHIFT", X_ANGLE_SHIFT);
         return xAngleEntry.getDouble(0) + X_SHIFT;
     }
 

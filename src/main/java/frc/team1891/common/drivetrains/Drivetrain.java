@@ -35,7 +35,7 @@ public abstract class Drivetrain extends Subsystem {
 
         resetGyro();
 
-        SmartDashboard.putData("Robot (Field2d)", field);
+        SmartDashboard.putData("Drivetrain/Robot (Field2d)", field);
     }
 
     /**

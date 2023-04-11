@@ -204,7 +204,7 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
     LazyDashboard.addNumber("Drivetrain/backLeftVelocity", backLeft::getSelectedSensorVelocity);
     LazyDashboard.addNumber("Drivetrain/backRightPosition", backRight::getSelectedSensorPosition);
     LazyDashboard.addNumber("Drivetrain/backRightVelocity", backRight::getSelectedSensorVelocity);
-    LazyDashboard.addNumber("Drivetrain/gyroRadians", gyro::getAngle);
+    LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getAngle);
     LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
     LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
     LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);
