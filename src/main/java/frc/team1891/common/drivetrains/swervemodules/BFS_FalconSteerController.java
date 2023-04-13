@@ -17,7 +17,7 @@ public class BFS_FalconSteerController implements SteerController {
 
     private final double encoderOffsetDegrees;
 
-    // Uses the defaults based on an MK4i module from team 364's code
+    // Uses the gear ratio from an MK4i module
     public BFS_FalconSteerController(WPI_TalonFX steerMotor, WPI_CANCoder encoder, double encoderOffsetDegrees) {
         this(steerMotor, encoder, (150/7.), encoderOffsetDegrees);
     }

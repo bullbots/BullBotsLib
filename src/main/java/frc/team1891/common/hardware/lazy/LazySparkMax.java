@@ -2,6 +2,7 @@ package frc.team1891.common.hardware.lazy;
 
 import frc.team1891.common.hardware.WPI_CANSparkMax;
 
+@SuppressWarnings("unused")
 public class LazySparkMax extends WPI_CANSparkMax {
     protected double lastSet = Double.NaN;
 
