@@ -6,6 +6,7 @@ import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.team1891.common.hardware.WPI_CANSparkMax;
 
 /**
@@ -104,16 +105,25 @@ public class MAX_NeoSteerController implements SteerController {
 
     @Override
     public Rotation2d getRotation2d() {
-        return new Rotation2d(turningEncoder.getPosition() - chassisAngularOffsetRadians);
+        if (RobotBase.isReal()) {
+            return new Rotation2d(turningEncoder.getPosition() - chassisAngularOffsetRadians);
+        }
+        return new Rotation2d();
     }
 
     @Override
     public double getRadians() {
-        return turningEncoder.getPosition() - chassisAngularOffsetRadians;
+        if (RobotBase.isReal()) {
+            return turningEncoder.getPosition() - chassisAngularOffsetRadians;
+        }
+        return 0;
     }
 
     @Override
     public double getDegrees() {
-        return getRotation2d().getDegrees();
+        if (RobotBase.isReal()) {
+            return getRotation2d().getDegrees();
+        }
+        return 0;
     }
 }
