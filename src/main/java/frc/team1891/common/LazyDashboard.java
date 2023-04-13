@@ -40,14 +40,27 @@ public abstract class LazyDashboard {
         if (dashboard == null) {
             return false;
         }
-        dashboard.updateInterval = newInterval;
+        dashboard.changeUpdateInterval(newInterval);
         return true;
     }
 
+    /**
+     * Periodically (default is every 50ms) updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addBoolean(String name, BooleanSupplier supplier) {
         return addBoolean(name, DEFAULT_INTERVAL, supplier);
     }
 
+    /**
+     * Periodically updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param updateInterval the number of periodic loops between updates
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addBoolean(String name, int updateInterval, BooleanSupplier supplier) {
         LazyDashboard lazyDashboardObject = new LazyDashboard(name, updateInterval) {
             @Override
@@ -63,10 +76,23 @@ public abstract class LazyDashboard {
         return null;
     }
 
+    /**
+     * Periodically (default is every 50ms) updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addNumber(String name, DoubleSupplier supplier) {
         return addNumber(name, DEFAULT_INTERVAL, supplier);
     }
 
+    /**
+     * Periodically updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param updateInterval the number of periodic loops between updates
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addNumber(String name, int updateInterval, DoubleSupplier supplier) {
         LazyDashboard lazyDashboardObject = new LazyDashboard(name, updateInterval) {
             @Override
@@ -82,10 +108,23 @@ public abstract class LazyDashboard {
         return null;
     }
 
+    /**
+     * Periodically (default is every 50ms) updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addString(String name, Supplier<String> supplier) {
         return addString(name, DEFAULT_INTERVAL, supplier);
     }
 
+    /**
+     * Periodically updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param updateInterval the number of periodic loops between updates
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addString(String name, int updateInterval, Supplier<String> supplier) {
         LazyDashboard lazyDashboardObject = new LazyDashboard(name, updateInterval) {
             @Override
@@ -101,10 +140,23 @@ public abstract class LazyDashboard {
         return null;
     }
 
+    /**
+     * Periodically (default is every 50ms) updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addBooleanArray(String name, Supplier<Boolean[]> supplier) {
         return addBooleanArray(name, DEFAULT_INTERVAL, supplier);
     }
 
+    /**
+     * Periodically updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param updateInterval the number of periodic loops between updates
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addBooleanArray(String name, int updateInterval, Supplier<Boolean[]> supplier) {
         LazyDashboard lazyDashboardObject = new LazyDashboard(name, updateInterval) {
             @Override
@@ -120,10 +172,23 @@ public abstract class LazyDashboard {
         return null;
     }
 
+    /**
+     * Periodically (default is every 50ms) updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addNumberArray(String name, Supplier<Double[]> supplier) {
         return addNumberArray(name, DEFAULT_INTERVAL, supplier);
     }
 
+    /**
+     * Periodically updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param updateInterval the number of periodic loops between updates
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addNumberArray(String name, int updateInterval, Supplier<Double[]> supplier) {
         LazyDashboard lazyDashboardObject = new LazyDashboard(name, updateInterval) {
             @Override
@@ -139,10 +204,23 @@ public abstract class LazyDashboard {
         return null;
     }
 
+    /**
+     * Periodically (default is every 50ms) updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addStringArray(String name, Supplier<String[]> supplier) {
         return addStringArray(name, DEFAULT_INTERVAL, supplier);
     }
 
+    /**
+     * Periodically updates a SmartDashboard value with the given supplier
+     * @param name SmartDashboard value name
+     * @param updateInterval the number of periodic loops between updates
+     * @param supplier supplier value
+     * @return the object used to periodically update SmartDashboard (this can be ignored)
+     */
     public static LazyDashboard addStringArray(String name, int updateInterval, Supplier<String[]> supplier) {
         LazyDashboard lazyDashboardObject = new LazyDashboard(name, updateInterval) {
             @Override
@@ -171,12 +249,18 @@ public abstract class LazyDashboard {
         this.updateInterval = updateInterval;
     }
 
-    public void update() {
+    public boolean update() {
         count++;
         if (count > updateInterval) {
             count = 0;
             publishToSmartDashboard();
+            return true;
         }
+        return false;
+    }
+
+    public void changeUpdateInterval(int newInterval) {
+        this.updateInterval = newInterval;
     }
 
     protected abstract void publishToSmartDashboard();
