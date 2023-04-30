@@ -91,9 +91,17 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
     this.backLeft = backLeft;
     this.backRight = backRight;
 
-    this.kinematics = new MecanumDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
+    this.kinematics = new MecanumDriveKinematics(
+            frontLeftLocation,
+            frontRightLocation,
+            backLeftLocation,
+            backRightLocation);
 
-    this.poseEstimator = new MecanumDrivePoseEstimator(kinematics, gyro.getRotation2d(), getWheelPositions(), new Pose2d());
+    this.poseEstimator = new MecanumDrivePoseEstimator(
+            kinematics,
+            gyro.getRotation2d(),
+            getWheelPositions(),
+            new Pose2d());
   }
 
   @Override
@@ -172,10 +180,10 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
 
   @Override
   public void stop() {
-    frontLeft.set(ControlMode.Disabled, 0);
-    frontRight.set(ControlMode.Disabled, 0);
-    backLeft.set(ControlMode.Disabled, 0);
-    backRight.set(ControlMode.Disabled, 0);
+    frontLeft.stopMotor();
+    frontRight.stopMotor();
+    backLeft.stopMotor();
+    backRight.stopMotor();
   }
 
   @Override
@@ -204,9 +212,5 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
     LazyDashboard.addNumber("Drivetrain/backLeftVelocity", backLeft::getSelectedSensorVelocity);
     LazyDashboard.addNumber("Drivetrain/backRightPosition", backRight::getSelectedSensorPosition);
     LazyDashboard.addNumber("Drivetrain/backRightVelocity", backRight::getSelectedSensorVelocity);
-    LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getAngle);
-    LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
-    LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
-    LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);
   }
 }

@@ -6,6 +6,7 @@ package frc.team1891.common.drivetrains;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
+import frc.team1891.common.LazyDashboard;
 
 /** Drivetrain base for any drivetrain with holonomic movement. */
 @SuppressWarnings("unused")
@@ -36,5 +37,13 @@ public abstract class HolonomicDrivetrain extends Drivetrain {
      */
     public void fromFieldSpeeds(ChassisSpeeds fieldSpeeds) {
         fromChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(fieldSpeeds, gyro.getRotation2d()));
+    }
+
+    @Override
+    protected void configureSmartDashboard() {
+        super.configureSmartDashboard();
+        LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
+        LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
+        LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);
     }
 }

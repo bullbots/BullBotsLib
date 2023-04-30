@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-@SuppressWarnings("unused")
 public class HolonomicTrajectoryGenerator {
     private static final HolonomicTrajectory DO_NOTHING_TRAJECTORY =
         new HolonomicTrajectory(List.of(new HolonomicTrajectory.State()));
@@ -419,7 +418,7 @@ public class HolonomicTrajectoryGenerator {
 
         
         /**
-         * This is the janky part.  Each point will have a sine wave, with only 1 crest (flat, 0, everywhere else) where
+         * This is the janky part.  Each point will have a sine wave, with only 1 crest (0 everywhere else) where
          * this value has influence.
          */
         public static class CoefficientWave {

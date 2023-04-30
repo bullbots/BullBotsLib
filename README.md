@@ -16,12 +16,22 @@ dependencies {
 ## How to use in an FRC Project
 ### Drivetrains ([frc.team1891.common.drivetrains](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/drivetrains))
 BullBotsLib provides 3 drivetrain types (but the ability to add your own by extending `Drivetrain` or 
-`HolonomicDrivetrain`).  To use an existing drivetrain, create a class that extends it.
+`HolonomicDrivetrain`)  in order to remove code that would be repeated year to year, and make things as easy as 
+possible when getting started.  To use an existing drivetrain, create a class that extends it.
 
 In your constructor you will need to call the super constructor and give it whatever parameters it needs.  It's easiest
 to add all the parameters as private static fields in the top of your class.
 
-Once you do that, your drivetrain is ready to go.  All you need to do is configure your motors (eg. `talon.configFactoryDefault()`), as that's not done for you.
+Once you do that, your drivetrain is ready to go.  All you need to do is configure your motors 
+(eg. `talon.configFactoryDefault()`), as that's not done for you.
+
+You can also call `configureSmartDashboard()` in the constructor (as you can with anything that extends `Subsystem` from
+BullBotsLib) to get extra diagnositic information
+
+###### Swerve
+`SwerveDrivetrain` tries to make it as easy as possible to get started with Swerve.  Each `SwerveModule` holds a 
+`DriveController` and a `SteerController`, which seperates the control over a drive motor and steer motor for easy 
+changes.  These classes, and basic implementations are found under [frc.team1891.common.drivetrains.swervecontrollers](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/drivetrains/swervecontrollers).
 
 ### User Input ([frc.team1891.common.control](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/control))
 ###### Triggers
@@ -37,26 +47,7 @@ this class
 
 `X52ProfessionalHOTAS` is a slightly less simple device, giving the driver access to more buttons than they could ever
 need.
-###### SmartController
-This is a wrapper class hoping to simplify the issues of controlling the robot with different kinds of controllers.  The
-class detects what kind of controller you are using (using a small number of presets) and adjusts its functionality
-slightly based on each.
 
-One issue is the `SmartController` initializes upon robot startup.  Meaning, if you plug in your controller after the
-robot turns on, it won't be detected.  A work-around is to call `configure()` when the robot is enabled, or based on
-some other trigger.
-
-Though it's a little ugly, you can add custom button bindings to it as well by extending the class and overriding
-configure().
-```
-if (getName().equals("Logitech Extreme 3D")) {
-    setButton("resetGyro", 8);
-} else if (getName().contains("Xbox Controller")) {
-    setButton("resetGyro", XboxController.Button.kX.value);
-} 
-...
-super.configure();
-```
 ### Hardware ([frc.team1891.common.hardware](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/hardware))
 ###### NavX
 The `NavX` is a simple wrapper class to `AHRS`, ensuring clarity on the units used by the gyro by implementing

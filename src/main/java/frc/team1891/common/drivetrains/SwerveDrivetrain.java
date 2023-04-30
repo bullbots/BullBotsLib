@@ -14,8 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team1891.common.LazyDashboard;
-import frc.team1891.common.drivetrains.swervemodules.SwerveModule;
+import frc.team1891.common.drivetrains.swervecontrollers.SwerveModule;
 import frc.team1891.common.hardware.NavX;
 
 /** Drivetrain base for a swerve drivetrain. */
@@ -120,9 +119,6 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
 
     this.kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
 
-//    this.odometry = new SwerveDriveOdometry(kinematics, gyro.getRotation2d(), getSwerveModulePositions());
-    // TODO: new Pose2d() assumes the robot starts at 0,0, with isn't a safe assumption.
-    // Potential 'solution' is just expecting them to call resetOdometry() with their starting pose.
     this.poseEstimator = new SwerveDrivePoseEstimator(kinematics, gyro.getRotation2d(), getSwerveModulePositions(), new Pose2d());
 
     this.modulesField = new Field2d();
@@ -266,16 +262,13 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     frontRight.configureSmartDashboard("Front Right");
     backLeft.configureSmartDashboard("Back Left");
     backRight.configureSmartDashboard("Back Right");
-    LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getAngle);
-    LazyDashboard.addNumber("Drivetrain/xSpeed (Meters per Second)", () -> getChassisSpeeds().vxMetersPerSecond);
-    LazyDashboard.addNumber("Drivetrain/ySpeed (Meters per Second)", () -> getChassisSpeeds().vyMetersPerSecond);
-    LazyDashboard.addNumber("Drivetrain/omegaSpeed (Radians per Second)", () -> getChassisSpeeds().omegaRadiansPerSecond);
   }
 
   @Override
   public void periodic() {
     super.periodic();
 
+    // Update current and target positions of all swerve modules on the modulesField
     if (smartDashboardEnabled) {
       // modulesField
       Translation2d frontLeftT = new Translation2d(frontLeftLocation.getX(), frontLeftLocation.getY());

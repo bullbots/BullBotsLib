@@ -2,6 +2,7 @@ package frc.team1891.common;
 
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
@@ -12,13 +13,15 @@ import java.util.function.Supplier;
 
 @SuppressWarnings("unused")
 public abstract class LazyDashboard {
+    private static final Notifier notifier = new Notifier(LazyDashboard::updateAll);
+    static {
+        notifier.setName("LazyDashboard Thread");
+        notifier.startPeriodic(.02);
+    }
     private static final int DEFAULT_INTERVAL = 50;
     private static final ArrayList<LazyDashboard> lazyDashboards = new ArrayList<>();
 
-    /**
-     * This should be called in robotPeriodic or some other periodic method.
-     */
-    public static void updateAll() {
+    private static void updateAll() {
         for (LazyDashboard lazyDashboard : lazyDashboards) {
             lazyDashboard.update();
         }
@@ -259,10 +262,17 @@ public abstract class LazyDashboard {
         return false;
     }
 
+    /**
+     * Change the interval at which this data entry updates
+     * @param newInterval the new update interval
+     */
     public void changeUpdateInterval(int newInterval) {
         this.updateInterval = newInterval;
     }
 
+    /**
+     * Publish an updated value for this entry to SmartDashboard.
+     */
     protected abstract void publishToSmartDashboard();
 
     @Override

@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team1891.common.LazyDashboard;
 import frc.team1891.common.Subsystem;
 
 /** Drivetrain base. */
@@ -80,6 +81,7 @@ public abstract class Drivetrain extends Subsystem {
 
     @Override
     protected void configureSmartDashboard() {
+        LazyDashboard.addNumber("Drivetrain/gyroDegrees", gyro::getAngle);
         smartDashboardEnabled = true;
     }
 

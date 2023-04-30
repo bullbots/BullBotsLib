@@ -201,7 +201,7 @@ public final class HolonomicTrajectoryParameterizer {
             // state.
             double ds = state.distanceMeters - distanceMeters;
 
-            // // Calculcate the change in angle between the current state and the previos state.
+            // // Calculate the change in angle between the current state and the previous state.
             // double da = state.angleRadians - angleRadians;
 
             // Calculate the acceleration between the current state and the previous
