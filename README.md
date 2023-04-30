@@ -1,7 +1,7 @@
 # BullBotsLib
 ## How to add to an FRC Project
 ### .jar
-In your FRC project, and a folder called `libs`. A .jar file is available in 
+In your FRC project, add a folder called `libs`. A .jar file is available in 
 [github releases](https://github.com/bullbots/BullBotsLib/releases).  Download it and add it to 
 your lib folder.
 ### build.gradle
