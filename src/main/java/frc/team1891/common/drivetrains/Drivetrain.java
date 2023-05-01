@@ -40,6 +40,12 @@ public abstract class Drivetrain extends Subsystem {
     }
 
     /**
+     * Drives the robot to the desired {@link ChassisSpeeds}.
+     * @param chassisSpeeds chassis speeds
+     */
+    public abstract void fromChassisSpeeds(ChassisSpeeds chassisSpeeds);
+
+    /**
      * Returns the speed of the robot as a {@link ChassisSpeeds}.
      * @return the speed of the robot
      */

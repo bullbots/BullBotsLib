@@ -64,7 +64,7 @@ public class Drivetrain extends SwerveDrivetrain {
   private static final FalconSteerController backRightSteerController = new FalconSteerController(backRightSteerMotor, backRightEncoder, steerP, steerI, steerD);
   private static final SwerveModule backRight = new SwerveModule(backRightDriveController, backRightSteerController);
 
-  public Drivetrain() {
+  private Drivetrain() {
     super(
       CONFIG, 
       WHEEL_BASE_WIDTH_METERS,
@@ -114,7 +114,7 @@ public class Drivetrain extends SwerveDrivetrain {
     poseEstimator.resetPosition(navX.getRotation2d(), getSwerveModulePositions(), newPose);
   }
 
-  // Don't override periodic without calling super.periodic() because that is how odometry is updated, and updates certain SmartDashboard values
+  // Don't override periodic without calling super.periodic() because that is how odometry and some SmartDashboard values are updated
   // @Override
   // public void periodic() {
   //   // This method will be called once per scheduler run

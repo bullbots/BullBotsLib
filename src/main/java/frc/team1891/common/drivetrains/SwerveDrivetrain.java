@@ -225,9 +225,7 @@ public abstract class SwerveDrivetrain extends HolonomicDrivetrain {
     return kinematics;
   }
 
-  /**
-   * Stops all motors.
-   */
+  @Override
   public void stop() {
     frontLeft.stop();
     frontRight.stop();

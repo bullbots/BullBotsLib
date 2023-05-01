@@ -4,6 +4,7 @@
 
 package frc.team1891.common.drivetrains;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,7 +23,7 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
 
   protected final DifferentialDrive differentialDrive;
 
-  protected final WPI_TalonFX left, right;
+  private final WPI_TalonFX left, right;
 
   /**
    * Creates a new differential drivetrain.
@@ -91,6 +92,16 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
   }
 
   /**
+   * Drives the robot using {@link DifferentialDrive#tankDrive(double, double, boolean)}.
+   * @param leftSpeed speed of left side
+   * @param rightSpeed speed of right side
+   * @param squaredInputs square joystick inputs for more controlled movements at low speed
+   */
+  public void tankDrive(double leftSpeed, double rightSpeed, boolean squaredInputs) {
+    differentialDrive.tankDrive(leftSpeed, rightSpeed, squaredInputs);
+  }
+
+  /**
    * Drives the robot using {@link DifferentialDrive#curvatureDrive(double, double, boolean)}.
    * @param xSpeed forward speed
    * @param zRotation turning speed
@@ -98,6 +109,21 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
    */
   public void curvatureDrive(double xSpeed, double zRotation, boolean allowTurnInPlace) {
     differentialDrive.curvatureDrive(xSpeed, zRotation, allowTurnInPlace);
+  }
+
+  /**
+   * Drive the robot with direct control over the speed of each side of the drivetrain.
+   * @param wheelSpeeds speed of wheels as {@link DifferentialDriveWheelSpeeds}
+   */
+  public void setWheelSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
+    wheelSpeeds.desaturate(config.chassisMaxVelocityMetersPerSecond());
+    left.set(ControlMode.Velocity, config.velocityToEncoderTicksPer100ms(wheelSpeeds.leftMetersPerSecond));
+    right.set(ControlMode.Velocity, config.velocityToEncoderTicksPer100ms(wheelSpeeds.rightMetersPerSecond));
+  }
+
+  @Override
+  public void fromChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    setWheelSpeeds(kinematics.toWheelSpeeds(chassisSpeeds));
   }
 
   @Override
@@ -113,6 +139,10 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
     return new DifferentialDriveWheelSpeeds(left.getSelectedSensorVelocity(), right.getSelectedSensorVelocity());
   }
 
+  public DifferentialDriveKinematics getKinematics() {
+    return kinematics;
+  }
+
   @Override
   public Pose2d getPose2d() {
     return poseEstimator.getEstimatedPosition();
@@ -126,7 +156,11 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
   @Override
   public void resetOdometry(Pose2d pose2d) {
     resetEncoders();
-    poseEstimator.resetPosition(gyro.getRotation2d(), left.getSelectedSensorPosition(), right.getSelectedSensorPosition(), pose2d);
+    poseEstimator.resetPosition(
+            gyro.getRotation2d(),
+            left.getSelectedSensorPosition(),
+            right.getSelectedSensorPosition(),
+            pose2d);
   }
 
   /**
@@ -139,7 +173,10 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
 
   @Override
   public void updateOdometry() {
-    poseEstimator.update(gyro.getRotation2d(), left.getSelectedSensorPosition(), right.getSelectedSensorPosition());
+    poseEstimator.update(
+            gyro.getRotation2d(),
+            config.encoderTicksToDistance(left.getSelectedSensorPosition()),
+            config.encoderTicksToDistance(right.getSelectedSensorPosition()));
   }
 
   @Override
