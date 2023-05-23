@@ -65,6 +65,14 @@ there are wrapper classes that override the "set" methods of the given motor con
 Solenoid).  The new methods help reduce the weight on the CAN bus from repeated calls of the same command by only
 calling the super method when the method parameters are different from before.
 
+### LEDs ([frc.team1891.common.led](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/led))
+The `LEDString` and `LEDMatrix` both exist in order to make controlling LEDs as clean as possible, even with complex 
+animations.  The `LEDPattern` interfaces within each class help with that.
+
+See the [LEDMatrix example](https://github.com/bullbots/BullBotsLib/tree/main/examples/LEDMatrixWithModes) for more 
+information on how to use it.  The only difference between `LEDMatrix` and `LEDString` is that the matrix is meant for
+an LED grid, and supports using x and y coordinates to address individual LEDs.
+
 ### Logging ([frc.team1891.common.logger](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/logger))
 The `BullLogger` is a logger class that uses the `DataLog` class.  It exports it's logs to a USB drive plugged into the
 roboRIO and optionally also outputs to the console.
