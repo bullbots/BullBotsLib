@@ -2,6 +2,9 @@ package frc.team1891.common.led;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 
 import java.util.function.Consumer;
 
@@ -10,6 +13,8 @@ import java.util.function.Consumer;
  */
 @SuppressWarnings("unused")
 public class LEDMatrix {
+    static { System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
+
     protected final AddressableLED leds;
     protected final AddressableLEDBuffer buffer;
     public final int length;
@@ -237,9 +242,7 @@ public class LEDMatrix {
      * @param val value
      */
     public void setAllHSV(int hue, int sat, int val) {
-        // For every pixel
         for (var i = 0; i < length; i++) {
-            // Set the value
             buffer.setHSV(i, hue, sat, val);
         }
     }
@@ -251,10 +254,72 @@ public class LEDMatrix {
      * @param b blue
      */
     public void setAllRGB(int r, int g, int b) {
-        // For every pixel
         for (var i = 0; i < length; i++) {
-            // Set the value
             buffer.setRGB(i, r, g, b);
+        }
+    }
+
+    private boolean checkMatrix(Mat matrix) {
+        return matrix.depth() == 0 && matrix.rows() == numRows && matrix.cols() == numCols && matrix.channels() == 3;
+    }
+
+    /**
+     * Sets the LEDs according to the given matrix
+     * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
+     */
+    public void setMatrixHSV(Mat matrix) {
+        setMatrixHSV(matrix, true);
+    }
+
+    /**
+     * Sets the LEDs according to the given matrix
+     * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
+     * @param clearOthers if false, black pixels will be treated as transparent
+     */
+    public void setMatrixHSV(Mat matrix, boolean clearOthers) {
+        if (checkMatrix(matrix)) {
+            for (int i = 0; i < numRows; ++i) {
+                for (int j = 0; j < numCols; ++j) {
+                    double[] element = matrix.get(i, j);
+                    int curBufIndex = oneDimensionalIndexOf(i, j);
+
+                    if (clearOthers && element[0] == 0 && element[1] == 0 && element[2] == 0) {
+                        buffer.setRGB(curBufIndex, 0, 0, 0);
+                    } else {
+                        buffer.setHSV(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Sets the LEDs according to the given matrix
+     * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
+     */
+    public void setMatrixRGB(Mat matrix) {
+        setMatrixRGB(matrix, true);
+    }
+
+    /**
+     * Sets the LEDs according to the given matrix
+     * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
+     * @param clearOthers if false, black pixels will be treated as transparent
+     */
+    public void setMatrixRGB(Mat matrix, boolean clearOthers) {
+        if (checkMatrix(matrix)) {
+            for (int i = 0; i < numRows; ++i) {
+                for (int j = 0; j < numCols; ++j) {
+                    double[] element = matrix.get(i, j);
+                    int curBufIndex = oneDimensionalIndexOf(i, j);
+
+                    if (clearOthers && element[0] == 0 && element[1] == 0 && element[2] == 0) {
+                        buffer.setRGB(curBufIndex, 0, 0, 0);
+                    } else {
+                        buffer.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
+                    }
+                }
+            }
         }
     }
 
@@ -262,14 +327,10 @@ public class LEDMatrix {
      * Turns all pixels off.
      */
     public void off() {
-        // For every pixel
         for (var i = 0; i < length; ++i) {
-            // Set the value
             buffer.setRGB(i, 0, 0, 0);
         }
     }
-
-
 
     /**
      * An interface for creating custom patterns for controlling LED strips more easily.

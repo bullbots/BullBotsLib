@@ -147,9 +147,7 @@ public class LEDString {
      * @param val value
      */
     public void setAllHSV(int hue, int sat, int val) {
-        // For every pixel
         for (var i = 0; i < length; i++) {
-            // Set the value
             buffer.setHSV(i, hue, sat, val);
         }
     }
@@ -161,9 +159,7 @@ public class LEDString {
      * @param b blue
      */
     public void setAllRGB(int r, int g, int b) {
-        // For every pixel
         for (var i = 0; i < length; i++) {
-            // Set the value
             buffer.setRGB(i, r, g, b);
         }
     }
@@ -172,9 +168,7 @@ public class LEDString {
      * Turns all pixels off.
      */
     public void off() {
-        // For every pixel
         for (var i = 0; i < length; ++i) {
-            // Set the value
             buffer.setRGB(i, 0, 0, 0);
         }
     }
@@ -298,7 +292,7 @@ public class LEDString {
                     // Set the value
                     leds.setHue(i, hue);
                 }
-                // Increase by to make the rainbow "move"
+                // Increase to make the rainbow "move"
                 firstHue ++;
                 // Check bounds
                 firstHue %= 180;
