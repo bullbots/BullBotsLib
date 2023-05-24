@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team1891.common.led.LEDMatrix;
+import frc.team1891.common.led.LEDStrip;
 import frc.team1891.common.led.LEDMatrix.LEDPattern;
 import frc.team1891.common.led.LEDMatrix.LEDPatterns;
 
@@ -30,23 +31,24 @@ public class LEDs extends SubsystemBase {
 
   private LEDMode currentMode = LEDMode.OFF;
   
-  private final LEDMatrix leds;
+  private final LEDStrip leds;
+  private final LEDMatrix matrix;
   private static final int numRows = 16;
   private static final int numCols = 16;
 
-  // See https://github.com/STMARobotics/frc-7028-2023/blob/main/src/main/java/frc/robot/subsystems/LEDSubsystem.java
   private final AtomicReference<LEDPattern> ledPattern = new AtomicReference<LEDPattern>(null);
   // This Notifier acts in place of periodic, so updating the buffer will happen on a seperate thread.
   private final Notifier periodicThread;
   
-  /** Creates a new LEDs. */
-  public LEDs() {
-    leds = new LEDMatrix(9, numRows, numCols, true);
+  /** Initializes the LEDs subsystem. */
+  private LEDs() {
+    leds = new LEDStrip(9, numRows * numCols);
+    matrix = new LEDMatrix(leds, 0, numRows, numCols, true);
 
     periodicThread = new Notifier(() -> {
       LEDPattern pattern = ledPattern.get();
       if (pattern != null) {
-        pattern.run(leds);
+        pattern.run(matrix);
       }
     });
     periodicThread.setName("LED periodic");

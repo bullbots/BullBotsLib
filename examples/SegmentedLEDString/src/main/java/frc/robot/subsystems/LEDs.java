@@ -9,9 +9,9 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team1891.common.led.LEDString;
-import frc.team1891.common.led.LEDStringSegment;
-import frc.team1891.common.led.LEDString.LEDPattern;
+import frc.team1891.common.led.LEDStrip;
+import frc.team1891.common.led.LEDStrip.LEDPattern;
+import frc.team1891.common.led.LEDStripSegment;
 
 public class LEDs extends SubsystemBase {
   private static LEDs instance = null;
@@ -27,24 +27,24 @@ public class LEDs extends SubsystemBase {
     MAIN
   }
   
-  private final LEDString leds;
-  private final LEDStringSegment statusSegment, mainSegment;
+  private final LEDStrip leds;
+  private final LEDStripSegment statusSegment, mainSegment;
   private static final int length = 150, statusLength = 30, mainLength = 120;
 
   // A little hard to read, but this allows for thread same control over the LEDPatterns, and also allows for pattern suppliers
   // Pattern suppliers (such as STATUS_PATTERN inside LEDDefaultCommand.java) allow for different patterns to run with
   // certain conditions, and still ensures that if the same pattern is provided by both segments the the two segments
   // blend together.
-  private final AtomicReference<Supplier<LEDPattern>> statusPattern = new AtomicReference<Supplier<LEDPattern>>(null);
-  private final AtomicReference<Supplier<LEDPattern>> mainPattern = new AtomicReference<Supplier<LEDPattern>>(null);
+  private final AtomicReference<Supplier<LEDPattern>> statusPattern = new AtomicReference<Supplier<LEDPattern>>(() -> null);
+  private final AtomicReference<Supplier<LEDPattern>> mainPattern = new AtomicReference<Supplier<LEDPattern>>(() -> null);
   private final Notifier periodicThread;
   
   /** Creates a new LEDs. */
   public LEDs() {
-    leds = new LEDString(9, length);
+    leds = new LEDStrip(9, length);
 
-    statusSegment = new LEDStringSegment(0, statusLength, leds);
-    mainSegment = new LEDStringSegment(statusLength, mainLength, leds);
+    statusSegment = new LEDStripSegment(leds, 0, statusLength);
+    mainSegment = new LEDStripSegment(leds, statusLength, mainLength);
 
     periodicThread = new Notifier(() -> {
       LEDPattern status = statusPattern.get().get();

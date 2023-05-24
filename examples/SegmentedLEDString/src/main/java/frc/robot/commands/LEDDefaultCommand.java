@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.LEDs.Segment;
-import frc.team1891.common.led.LEDString.LEDPattern;
-import frc.team1891.common.led.LEDString.LEDPatterns;
-import frc.team1891.common.led.LEDStringInterface;
+import frc.team1891.common.led.LEDStripInterface;
+import frc.team1891.common.led.LEDStrip.LEDPattern;
+import frc.team1891.common.led.LEDStrip.LEDPatterns;
 
 public class LEDDefaultCommand extends CommandBase {
   private final LEDs leds;
@@ -58,7 +58,7 @@ public class LEDDefaultCommand extends CommandBase {
   private static final LEDPattern GOOD = new LEDPattern() {
     private int i = 0;
     @Override
-    public void draw(LEDStringInterface leds) {
+    public void draw(LEDStripInterface leds) {
       i -= 2;
       if (i < 0) {
         i = 255;

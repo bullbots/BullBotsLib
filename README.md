@@ -66,17 +66,26 @@ Solenoid).  The new methods help reduce the weight on the CAN bus from repeated 
 calling the super method when the method parameters are different from before.
 
 ### LEDs ([frc.team1891.common.led](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/led))
-The `LEDString` and `LEDMatrix` both exist in order to make controlling LEDs as clean as possible, even with complex 
-animations.  
+The `LEDStrip` exists in order to make controlling LEDs as clean as possible, even with complex animations.  It wraps 
+the `AddressableLED` and `AddressableLEDBuffer` classes from WPILib.
 
-The `LEDPattern` interfaces within each class help with that.  Within each class there is also an `LEDPatterns` class,
-which just holds a few example patterns that you can easily use.
+The `LEDStrip` can be divided up into smaller segments giving more complex control.  `LEDStripSegment` is the simplest, 
+as it just provides the same behavior applied to a subsection of the `LEDStrip`.  `LEDMatrix` allows for control
+over a grid of LEDs.  It can even take `org.opencv.core.Mat` (also provided in WPILib) as an input.
+
+The `LEDPattern` interfaces within each class help you create complex animations without messy code.  Within each class 
+there is also an `LEDPatterns` class, which just holds a few example patterns that you can easily use.
+
+You can create a simple `LEDPattern` with just a lambda:
+```
+
+```
 
 See the [LEDMatrix example](https://github.com/bullbots/BullBotsLib/tree/main/examples/LEDMatrixWithModes) for more 
-information on how to use it.  The only difference between `LEDMatrix` and `LEDString` is that the matrix is meant for
+information on how to use it.  The only difference between `LEDMatrix` and `LEDStrip` is that the matrix is meant for
 an LED grid, and supports using x and y coordinates to address individual LEDs.
 
-The `LEDStringSegment` makes it easy to only apply an `LEDPattern` to a certain segment of an LED strip. See the 
+The `LEDStripSegment` makes it easy to only apply an `LEDPattern` to a certain segment of an LED strip. See the 
 [Segmented LEDString example](https://github.com/bullbots/BullBotsLib/tree/main/examples/SegmentedLEDString)
 
 ### Logging ([frc.team1891.common.logger](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/logger))

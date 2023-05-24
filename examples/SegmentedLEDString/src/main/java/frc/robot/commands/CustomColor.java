@@ -6,8 +6,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LEDs;
-import frc.team1891.common.led.LEDString.LEDPattern;
-import frc.team1891.common.led.LEDString.LEDPatterns;
+import frc.team1891.common.led.LEDStrip.LEDPattern;
+import frc.team1891.common.led.LEDStrip.LEDPatterns;
 
 // Basic command that interrupts the LEDDefaultCommand and sets all LEDs to a given color
 public class CustomColor extends CommandBase {

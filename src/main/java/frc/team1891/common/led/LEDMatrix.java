@@ -1,74 +1,66 @@
 package frc.team1891.common.led;
 
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-
-import java.util.function.Consumer;
 
 /**
  * A wrapper class to handle control over a grid shaped LED strip.
  */
 @SuppressWarnings("unused")
-public class LEDMatrix {
+public class LEDMatrix implements LEDStripInterface {
     static { System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
 
-    protected final AddressableLED leds;
-    protected final AddressableLEDBuffer buffer;
-    public final int length;
-    public final int numRows, numCols;
-    public final boolean serpentine;
+    private final LEDStrip parentStrip;
+    private final int startIndex;
+    private final int length;
+    private final int numRows, numCols;
+    private final boolean serpentine;
 
     /**
      * Creates a new {@link LEDMatrix} with control over an LED strip plugged into the given port.
-     * @param port target PWM port
+     * @param startIndex the first index of the matrix on the parent strip
      * @param numRows number of rows
      * @param numCols number of columns
      */
-    public LEDMatrix(int port, int numRows, int numCols, boolean serpentine) {
-        leds = new AddressableLED(port);
-        buffer = new AddressableLEDBuffer(numRows * numCols);
-        leds.setLength(buffer.getLength());
-        this.length = buffer.getLength();
+    public LEDMatrix(LEDStrip parentStrip, int startIndex, int numRows, int numCols, boolean serpentine) {
+        this.parentStrip = parentStrip;
+        this.startIndex = startIndex;
+        this.length = numRows * numCols;
         this.numRows = numRows;
         this.numCols = numCols;
         this.serpentine = serpentine;
     }
 
-    /**
-     * Starts updating the leds
-     */
-    public void start() {
-        leds.start();
+    @Override
+    public int length() {
+        return length;
     }
 
-    /**
-     * Stops the leds from updating
-     */
-    public void stop() {
-        leds.stop();
+    public int rows() {
+        return numRows;
     }
 
-    /**
-     * Sends the data currently on the buffer to the LED strip.
-     */
+    public int cols() {
+        return numCols;
+    }
+
+    @Override
     public void update() {
-        leds.setData(buffer);
+        parentStrip.update();
     }
 
     /**
      * Returns the index of an (x, y) coordinate, accounting for the serpentine wiring.
      * @param x positive to the left
      * @param y positive downwards
-     * @return the index of the led as it's wired.
+     * @return the index of the LED as it's wired.
      */
     public int oneDimensionalIndexOf(int x, int y) {
         if (serpentine) {
             return ((x % 2) == 0) ? x * numCols + y : (x + 1) * numCols - 1 - y;
         }
-        return x * numCols + y;
+        return startIndex + x * numCols + y;
     }
 
     /**
@@ -78,37 +70,12 @@ public class LEDMatrix {
      * @param hue hue
      */
     public void setHue(int x, int y, int hue) {
-        setHue(oneDimensionalIndexOf(x, y), hue, false);
+        setHSV(oneDimensionalIndexOf(x, y), hue, 255, 128);
     }
 
-    /**
-     * Sets the hue (HSV) of the pixel at the given index using a default saturation and value.
-     * @param index the target pixel
-     * @param hue hue
-     */
+    @Override
     public void setHue(int index, int hue) {
-        setHue(index, hue, false);
-    }
-
-    /**
-     * Sets the hue (HSV) of the pixel at the given index using a default saturation and value.
-     * @param x the target pixel x
-     * @param y the target pixel y
-     * @param hue hue
-     * @param clearOthers turn off the other pixels
-     */
-    public void setHue(int x, int y, int hue, boolean clearOthers) {
-        setHSV(oneDimensionalIndexOf(x, y), hue, 255, 128, clearOthers);
-    }
-
-    /**
-     * Sets the hue (HSV) of the pixel at the given index using a default saturation and value.
-     * @param index the target pixel
-     * @param hue hue
-     * @param clearOthers turn off the other pixels
-     */
-    public void setHue(int index, int hue, boolean clearOthers) {
-        setHSV(index, hue, 255, 128, clearOthers);
+        setHSV(startIndex + index, hue, 255, 128);
     }
 
     /**
@@ -120,53 +87,12 @@ public class LEDMatrix {
      * @param val value
      */
     public void setHSV(int x, int y, int hue, int sat, int val) {
-        setHSV(oneDimensionalIndexOf(x, y), hue, sat, val, false);
+        setHSV(oneDimensionalIndexOf(x, y), hue, sat, val);
     }
 
-    /**
-     * Sets the HSV of the pixel at the given index.
-     * @param index the target pixel
-     * @param hue hue
-     * @param sat saturation
-     * @param val value
-     */
+    @Override
     public void setHSV(int index, int hue, int sat, int val) {
-        setHSV(index, hue, sat, val, false);
-    }
-
-    /**
-     * Sets the HSV of the pixel at the given index.
-     * @param x the target pixel x
-     * @param y the target pixel y
-     * @param hue hue
-     * @param sat saturation
-     * @param val value
-     * @param clearOthers turn off the other pixels
-     */
-    public void setHSV(int x, int y, int hue, int sat, int val, boolean clearOthers) {
-        setHSV(oneDimensionalIndexOf(x, y), hue, sat, val, clearOthers);
-    }
-
-    /**
-     * Sets the HSV of the pixel at the given index.
-     * @param index the target pixel
-     * @param hue hue
-     * @param sat saturation
-     * @param val value
-     * @param clearOthers turn off the other pixels
-     */
-    public void setHSV(int index, int hue, int sat, int val, boolean clearOthers) {
-        if (clearOthers) {
-            for (int i = 0; i < length; i++) {
-                if (i == index) {
-                    buffer.setHSV(i, hue, sat, val);
-                } else {
-                    buffer.setRGB(i, 0, 0, 0);
-                }
-            }
-        } else {
-            buffer.setHSV(index, hue, sat, val);
-        }
+        parentStrip.setHSV(startIndex + index, hue, sat, val);
     }
 
     /**
@@ -178,84 +104,30 @@ public class LEDMatrix {
      * @param b blue
      */
     public void setRGB(int x, int y, int r, int g, int b) {
-        setRGB(oneDimensionalIndexOf(x, y), r, g, b, false);
+        setRGB(oneDimensionalIndexOf(x, y), r, g, b);
     }
 
-    /**
-     * Sets the RGB of the pixel at the given index.
-     * @param index the target pixel
-     * @param r red
-     * @param g green
-     * @param b blue
-     */
+    @Override
     public void setRGB(int index, int r, int g, int b) {
-        setRGB(index, r, g, b, false);
+        parentStrip.setRGB(startIndex + index, r, g, b);
     }
 
-    /**
-     * Sets the RGB of the pixel at the given index.
-     * @param x the target pixel x
-     * @param y the target pixel y
-     * @param r red
-     * @param g green
-     * @param b blue
-     * @param clearOthers turn off the other pixels
-     */
-    public void setRGB(int x, int y, int r, int g, int b, boolean clearOthers) {
-        setRGB(oneDimensionalIndexOf(x, y), r, g, b, clearOthers);
-    }
-
-    /**
-     * Sets the RGB of the pixel at the given index.
-     * @param index the target pixel
-     * @param r red
-     * @param g green
-     * @param b blue
-     * @param clearOthers turn off the other pixels
-     */
-    public void setRGB(int index, int r, int g, int b, boolean clearOthers) {
-        if (clearOthers) {
-            for (int i = 0; i < length; i++) {
-                if (i == index) {
-                    buffer.setRGB(i, r, g, b);
-                } else {
-                    buffer.setRGB(i, 0, 0, 0);
-                }
-            }
-        } else {
-            buffer.setRGB(index, r, g, b);
-        }
-    }
-
-    /**
-     * Sets the hue (HSV) of all the pixels using a default saturation and value.
-     * @param hue hue
-     */
+    @Override
     public void setAllHue(int hue) {
         setAllHSV(hue, 255, 128);
     }
 
-    /**
-     * Sets the HSV of all the pixels.
-     * @param hue hue
-     * @param sat saturation
-     * @param val value
-     */
+    @Override
     public void setAllHSV(int hue, int sat, int val) {
-        for (var i = 0; i < length; i++) {
-            buffer.setHSV(i, hue, sat, val);
+        for (var i = startIndex; i < length; i++) {
+            parentStrip.setHSV(i, hue, sat, val);
         }
     }
 
-    /**
-     * Sets the RGB of all the pixels.
-     * @param r red
-     * @param g green
-     * @param b blue
-     */
+    @Override
     public void setAllRGB(int r, int g, int b) {
-        for (var i = 0; i < length; i++) {
-            buffer.setRGB(i, r, g, b);
+        for (var i = startIndex; i < length; i++) {
+            parentStrip.setRGB(i, r, g, b);
         }
     }
 
@@ -268,26 +140,12 @@ public class LEDMatrix {
      * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
      */
     public void setMatrixHSV(Mat matrix) {
-        setMatrixHSV(matrix, true);
-    }
-
-    /**
-     * Sets the LEDs according to the given matrix
-     * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
-     * @param clearOthers if false, black pixels will be treated as transparent
-     */
-    public void setMatrixHSV(Mat matrix, boolean clearOthers) {
         if (checkMatrix(matrix)) {
             for (int i = 0; i < numRows; ++i) {
                 for (int j = 0; j < numCols; ++j) {
                     double[] element = matrix.get(i, j);
                     int curBufIndex = oneDimensionalIndexOf(i, j);
-
-                    if (clearOthers && element[0] == 0 && element[1] == 0 && element[2] == 0) {
-                        buffer.setRGB(curBufIndex, 0, 0, 0);
-                    } else {
-                        buffer.setHSV(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
-                    }
+                    parentStrip.setHSV(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
                 }
             }
         }
@@ -298,37 +156,21 @@ public class LEDMatrix {
      * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
      */
     public void setMatrixRGB(Mat matrix) {
-        setMatrixRGB(matrix, true);
-    }
-
-    /**
-     * Sets the LEDs according to the given matrix
-     * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
-     * @param clearOthers if false, black pixels will be treated as transparent
-     */
-    public void setMatrixRGB(Mat matrix, boolean clearOthers) {
         if (checkMatrix(matrix)) {
             for (int i = 0; i < numRows; ++i) {
                 for (int j = 0; j < numCols; ++j) {
                     double[] element = matrix.get(i, j);
                     int curBufIndex = oneDimensionalIndexOf(i, j);
-
-                    if (clearOthers && element[0] == 0 && element[1] == 0 && element[2] == 0) {
-                        buffer.setRGB(curBufIndex, 0, 0, 0);
-                    } else {
-                        buffer.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
-                    }
+                    parentStrip.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
                 }
             }
         }
     }
 
-    /**
-     * Turns all pixels off.
-     */
+    @Override
     public void off() {
-        for (var i = 0; i < length; ++i) {
-            buffer.setRGB(i, 0, 0, 0);
+        for (var i = startIndex; i < length; ++i) {
+            parentStrip.setRGB(i, 0, 0, 0);
         }
     }
 
@@ -380,17 +222,6 @@ public class LEDMatrix {
          */
         static LEDPattern setHue(int hue, int sat, int val) {
             return leds -> leds.setAllHSV(hue, sat, val);
-        }
-
-        /**
-         * Creates a basic {@link LEDPattern} from a consumer.
-         *
-         * Consumers can be written like this: (myLEDMatrix) -> {myLEDMatrix.off();}
-         * @param consumer consumer
-         * @return the created {@link LEDPattern}.
-         */
-        static LEDPattern fromConsumer(Consumer<LEDMatrix> consumer) {
-            return consumer::accept;
         }
     }
 
