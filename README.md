@@ -23,15 +23,15 @@ In your constructor you will need to call the super constructor and give it what
 to add all the parameters as private static fields in the top of your class.
 
 Once you do that, your drivetrain is ready to go.  All you need to do is configure your motors 
-(eg. `talon.configFactoryDefault()`), as that's not done for you.
+(e.g. `talon.configFactoryDefault()`), as that's not done for you.
 
 You can also call `configureSmartDashboard()` in the constructor (as you can with anything that extends `Subsystem` from
-BullBotsLib) to get extra diagnositic information
+BullBotsLib) to get extra diagnostic information
 
 ###### Swerve
 `SwerveDrivetrain` tries to make it as easy as possible to get started with Swerve.  Each `SwerveModule` holds a 
-`DriveController` and a `SteerController`, which seperates the control over a drive motor and steer motor for easy 
-changes.  These classes, and basic implementations are found under [frc.team1891.common.drivetrains.swervecontrollers](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/drivetrains/swervecontrollers).
+`DriveController` and a `SteerController`, which separates the control over a drive motor and steer motor for easy 
+changes.  These classes and basic implementations are found under [frc.team1891.common.drivetrains.swervecontrollers](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/drivetrains/swervecontrollers).
 
 ### User Input ([frc.team1891.common.control](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/control))
 ###### Triggers
@@ -67,14 +67,20 @@ calling the super method when the method parameters are different from before.
 
 ### LEDs ([frc.team1891.common.led](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/led))
 The `LEDString` and `LEDMatrix` both exist in order to make controlling LEDs as clean as possible, even with complex 
-animations.  The `LEDPattern` interfaces within each class help with that.
+animations.  
+
+The `LEDPattern` interfaces within each class help with that.  Within each class there is also an `LEDPatterns` class,
+which just holds a few example patterns that you can easily use.
 
 See the [LEDMatrix example](https://github.com/bullbots/BullBotsLib/tree/main/examples/LEDMatrixWithModes) for more 
 information on how to use it.  The only difference between `LEDMatrix` and `LEDString` is that the matrix is meant for
 an LED grid, and supports using x and y coordinates to address individual LEDs.
 
+The `LEDStringSegment` makes it easy to only apply an `LEDPattern` to a certain segment of an LED strip. See the 
+[Segmented LEDString example](https://github.com/bullbots/BullBotsLib/tree/main/examples/SegmentedLEDString)
+
 ### Logging ([frc.team1891.common.logger](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/logger))
-The `BullLogger` is a logger class that uses the `DataLog` class.  It exports it's logs to a USB drive plugged into the
+The `BullLogger` is a logger class that uses the `DataLog` class.  It exports its logs to a USB drive plugged into the
 roboRIO and optionally also outputs to the console.
 
 ### Trajectories ([frc.team1891.common.trajectory](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/trajectory))
