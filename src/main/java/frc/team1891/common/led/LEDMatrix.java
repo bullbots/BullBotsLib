@@ -19,9 +19,11 @@ public class LEDMatrix implements LEDStripInterface {
 
     /**
      * Creates a new {@link LEDMatrix} with control over an LED strip plugged into the given port.
+     * @param parentStrip the parent LEDStrip this is a part of
      * @param startIndex the first index of the matrix on the parent strip
      * @param numRows number of rows
      * @param numCols number of columns
+     * @param serpentine wiring of LEDs winds back and forth
      */
     public LEDMatrix(LEDStrip parentStrip, int startIndex, int numRows, int numCols, boolean serpentine) {
         this.parentStrip = parentStrip;
@@ -58,9 +60,9 @@ public class LEDMatrix implements LEDStripInterface {
      */
     public int oneDimensionalIndexOf(int x, int y) {
         if (serpentine) {
-            return ((x % 2) == 0) ? x * numCols + y : (x + 1) * numCols - 1 - y;
+            return ((x % 2) == 0) ? startIndex + (x * numCols + y) : startIndex + ((x + 1) * numCols - 1 - y);
         }
-        return startIndex + x * numCols + y;
+        return startIndex + (x * numCols + y);
     }
 
     /**
@@ -70,12 +72,12 @@ public class LEDMatrix implements LEDStripInterface {
      * @param hue hue
      */
     public void setHue(int x, int y, int hue) {
-        setHSV(oneDimensionalIndexOf(x, y), hue, 255, 128);
+        parentStrip.setHSV(oneDimensionalIndexOf(x, y), hue, 255, 128);
     }
 
     @Override
     public void setHue(int index, int hue) {
-        setHSV(startIndex + index, hue, 255, 128);
+        parentStrip.setHSV(startIndex + index, hue, 255, 128);
     }
 
     /**
@@ -87,7 +89,7 @@ public class LEDMatrix implements LEDStripInterface {
      * @param val value
      */
     public void setHSV(int x, int y, int hue, int sat, int val) {
-        setHSV(oneDimensionalIndexOf(x, y), hue, sat, val);
+        parentStrip.setHSV(oneDimensionalIndexOf(x, y), hue, sat, val);
     }
 
     @Override
@@ -104,7 +106,7 @@ public class LEDMatrix implements LEDStripInterface {
      * @param b blue
      */
     public void setRGB(int x, int y, int r, int g, int b) {
-        setRGB(oneDimensionalIndexOf(x, y), r, g, b);
+        parentStrip.setRGB(oneDimensionalIndexOf(x, y), r, g, b);
     }
 
     @Override
@@ -119,15 +121,15 @@ public class LEDMatrix implements LEDStripInterface {
 
     @Override
     public void setAllHSV(int hue, int sat, int val) {
-        for (var i = startIndex; i < length; i++) {
-            parentStrip.setHSV(i, hue, sat, val);
+        for (var i = 0; i < length; i++) {
+            parentStrip.setHSV(startIndex + i, hue, sat, val);
         }
     }
 
     @Override
     public void setAllRGB(int r, int g, int b) {
-        for (var i = startIndex; i < length; i++) {
-            parentStrip.setRGB(i, r, g, b);
+        for (var i = 0; i < length; i++) {
+            parentStrip.setRGB(startIndex + i, r, g, b);
         }
     }
 
@@ -169,8 +171,8 @@ public class LEDMatrix implements LEDStripInterface {
 
     @Override
     public void off() {
-        for (var i = startIndex; i < length; ++i) {
-            parentStrip.setRGB(i, 0, 0, 0);
+        for (var i = 0; i < length; ++i) {
+            parentStrip.setRGB(startIndex + i, 0, 0, 0);
         }
     }
 

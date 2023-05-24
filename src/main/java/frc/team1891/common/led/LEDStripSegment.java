@@ -48,29 +48,29 @@ public class LEDStripSegment implements LEDStripInterface {
 
     @Override
     public void setAllHue(int hue) {
-        for (var i = startIndex; i < length; ++i) {
-            parentStrip.setHue(i, hue);
+        for (var i = 0; i < length; ++i) {
+            parentStrip.setHue(startIndex + i, hue);
         }
     }
 
     @Override
     public void setAllHSV(int hue, int sat, int val) {
-        for (var i = startIndex; i < length; ++i) {
-            parentStrip.setHSV(i, hue, sat, val);
+        for (var i = 0; i < length; ++i) {
+            parentStrip.setHSV(startIndex + i, hue, sat, val);
         }
     }
 
     @Override
     public void setAllRGB(int r, int g, int b) {
-        for (var i = startIndex; i < length; ++i) {
-            parentStrip.setRGB(i, r, g, b);
+        for (var i = 0; i < length; ++i) {
+            parentStrip.setRGB(startIndex + i, r, g, b);
         }
     }
 
     @Override
     public void off() {
-        for (var i = startIndex; i < length; ++i) {
-            parentStrip.setRGB(i, 0, 0, 0);
+        for (var i = 0; i < length; ++i) {
+            parentStrip.setRGB(startIndex + i, 0, 0, 0);
         }
     }
 }

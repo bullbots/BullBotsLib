@@ -28,7 +28,7 @@ public class LEDDefaultCommand extends CommandBase {
   @Override
   public void initialize() {
     leds.start();
-    leds.setPattern(Segment.MAIN, LEDPatterns.RAINBOW);
+    leds.setPattern(Segment.MAIN, MAIN_PATTERN);
     leds.setPattern(Segment.STATUS, STATUS_PATTERN);
   }
 
@@ -72,6 +72,37 @@ public class LEDDefaultCommand extends CommandBase {
       return LEDPatterns.ERROR;
     } else if (DriverStation.isDisabled()) {
       return GOOD;
+    } else {
+      return LEDPatterns.RAINBOW;
+    }
+  };
+
+  private static final LEDPattern LIGHTNING = new LEDPattern() {
+    int index = 0;
+    int size = 0;
+    boolean active = false;
+    public void draw(LEDStripInterface leds) {
+      leds.setAllRGB(40, 40, 100);
+      if (Math.random() < .01 || active) {
+        size = (int) (Math.random() * 10 + 1); 
+        index = (int) (Math.random() * (leds.length() - size));
+        for (int i = 0; i < size; i++) {
+          leds.setRGB(index + i, 200, 200, 200);
+        }
+        if (Math.random() < .25) {
+          active = false;
+        } else {
+          active = true;
+        }
+      }
+    };
+  };
+
+  private static final Supplier<LEDPattern> MAIN_PATTERN = () -> {
+    if (!DriverStation.isDSAttached()) {
+      return LEDPatterns.OFF;
+    } else if (DriverStation.isDisabled()) {
+      return LIGHTNING;
     } else {
       return LEDPatterns.RAINBOW;
     }

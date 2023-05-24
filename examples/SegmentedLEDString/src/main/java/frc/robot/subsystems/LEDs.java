@@ -29,7 +29,7 @@ public class LEDs extends SubsystemBase {
   
   private final LEDStrip leds;
   private final LEDStripSegment statusSegment, mainSegment;
-  private static final int length = 150, statusLength = 30, mainLength = 120;
+  private static final int length = 150, statusLength = 10, mainLength = 140;
 
   // A little hard to read, but this allows for thread same control over the LEDPatterns, and also allows for pattern suppliers
   // Pattern suppliers (such as STATUS_PATTERN inside LEDDefaultCommand.java) allow for different patterns to run with
