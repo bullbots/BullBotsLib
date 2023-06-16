@@ -10,6 +10,10 @@ public interface LEDStripInterface {
      */
     int length();
 
+    default boolean indexCheck(int index) {
+        return 0 <= index && index < length();
+    }
+
     /**
      * Sends the data currently on the buffer to the LED strip.
      */

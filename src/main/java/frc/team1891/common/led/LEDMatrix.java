@@ -1,14 +1,13 @@
 package frc.team1891.common.led;
 
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
 /**
  * A wrapper class to handle control over a grid shaped LED strip.
  */
 @SuppressWarnings("unused")
-public class LEDMatrix implements LEDStripInterface {
+public class LEDMatrix implements LEDMatrixInterface {
     static { System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
 
     private final LEDStrip parentStrip;
@@ -18,7 +17,7 @@ public class LEDMatrix implements LEDStripInterface {
     private final boolean serpentine;
 
     /**
-     * Creates a new {@link LEDMatrix} with control over an LED strip plugged into the given port.
+     * Creates a new {@link LEDMatrix} to control a rectangular LED panel.
      * @param parentStrip the parent LEDStrip this is a part of
      * @param startIndex the first index of the matrix on the parent strip
      * @param numRows number of rows
@@ -39,10 +38,12 @@ public class LEDMatrix implements LEDStripInterface {
         return length;
     }
 
+    @Override
     public int rows() {
         return numRows;
     }
 
+    @Override
     public int cols() {
         return numCols;
     }
@@ -53,26 +54,42 @@ public class LEDMatrix implements LEDStripInterface {
     }
 
     /**
-     * Returns the index of an (x, y) coordinate, accounting for the serpentine wiring.
+     * Returns the index of an (x, y) coordinate, accounting for serpentine wiring.
      * @param x positive to the left
      * @param y positive downwards
      * @return the index of the LED as it's wired.
      */
     public int oneDimensionalIndexOf(int x, int y) {
         if (serpentine) {
-            return ((x % 2) == 0) ? startIndex + (x * numCols + y) : startIndex + ((x + 1) * numCols - 1 - y);
+            return ((y % 2) == 0) ? startIndex + (y * numCols + x) : startIndex + ((y + 1) * numCols - 1 - x);
         }
-        return startIndex + (x * numCols + y);
+        return (y * numCols + x);
     }
 
     /**
-     * Sets the hue (HSV) of the pixel at the given index using a default saturation and value.
-     * @param x the target pixel x
-     * @param y the target pixel y
-     * @param hue hue
+     * Returns x coordinate from top left corner.
+     * @param index one dimensional index, accounting for serpentine wiring
+     * @return x coordinate of the index
      */
+    public int xOf(int index) {
+        if (serpentine && (index / numCols) % 2 == 1) {
+            return numCols - (index % numCols);
+        }
+        return index % numCols;
+    }
+
+    /**
+     * Returns y coordinate from top left corner (down being positive).
+     * @param index one dimensional index, accounting for serpentine wiring
+     * @return y coordinate of the index
+     */
+    public int yOf(int index) {
+        return index / numCols;
+    }
+
+    @Override
     public void setHue(int x, int y, int hue) {
-        parentStrip.setHSV(oneDimensionalIndexOf(x, y), hue, 255, 128);
+        this.setHSV(oneDimensionalIndexOf(x, y), hue, 255, 128);
     }
 
     @Override
@@ -80,16 +97,9 @@ public class LEDMatrix implements LEDStripInterface {
         parentStrip.setHSV(startIndex + index, hue, 255, 128);
     }
 
-    /**
-     * Sets the HSV of the pixel at the given index.
-     * @param x the target pixel x
-     * @param y the target pixel y
-     * @param hue hue
-     * @param sat saturation
-     * @param val value
-     */
+    @Override
     public void setHSV(int x, int y, int hue, int sat, int val) {
-        parentStrip.setHSV(oneDimensionalIndexOf(x, y), hue, sat, val);
+        this.setHSV(oneDimensionalIndexOf(x, y), hue, sat, val);
     }
 
     @Override
@@ -97,16 +107,9 @@ public class LEDMatrix implements LEDStripInterface {
         parentStrip.setHSV(startIndex + index, hue, sat, val);
     }
 
-    /**
-     * Sets the RGB of the pixel at the given index.
-     * @param x the target pixel x
-     * @param y the target pixel y
-     * @param r red
-     * @param g green
-     * @param b blue
-     */
+    @Override
     public void setRGB(int x, int y, int r, int g, int b) {
-        parentStrip.setRGB(oneDimensionalIndexOf(x, y), r, g, b);
+        this.setRGB(oneDimensionalIndexOf(x, y), r, g, b);
     }
 
     @Override
@@ -133,36 +136,26 @@ public class LEDMatrix implements LEDStripInterface {
         }
     }
 
-    private boolean checkMatrix(Mat matrix) {
-        return matrix.depth() == 0 && matrix.rows() == numRows && matrix.cols() == numCols && matrix.channels() == 3;
-    }
-
-    /**
-     * Sets the LEDs according to the given matrix
-     * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
-     */
+    @Override
     public void setMatrixHSV(Mat matrix) {
         if (checkMatrix(matrix)) {
             for (int i = 0; i < numRows; ++i) {
                 for (int j = 0; j < numCols; ++j) {
                     double[] element = matrix.get(i, j);
-                    int curBufIndex = oneDimensionalIndexOf(i, j);
+                    int curBufIndex = startIndex + oneDimensionalIndexOf(i, j);
                     parentStrip.setHSV(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
                 }
             }
         }
     }
 
-    /**
-     * Sets the LEDs according to the given matrix
-     * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
-     */
+    @Override
     public void setMatrixRGB(Mat matrix) {
         if (checkMatrix(matrix)) {
             for (int i = 0; i < numRows; ++i) {
                 for (int j = 0; j < numCols; ++j) {
                     double[] element = matrix.get(i, j);
-                    int curBufIndex = oneDimensionalIndexOf(i, j);
+                    int curBufIndex = startIndex + oneDimensionalIndexOf(i, j);
                     parentStrip.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
                 }
             }
@@ -179,85 +172,85 @@ public class LEDMatrix implements LEDStripInterface {
     /**
      * An interface for creating custom patterns for controlling LED strips more easily.
      */
-    public interface LEDPattern {
+    public interface LEDMatrixPattern {
         /**
          * Set the buffer of the LEDMatrix with a pattern.
-         * @param leds target {@link LEDMatrix}
+         * @param leds target {@link LEDMatrixInterface}
          */
-        void draw(LEDMatrix leds);
+        void draw(LEDMatrixInterface leds);
 
         /**
          * Sets the buffer of the LEDMatrix with a pattern, and updates it to the physical LED strip.
-         * @param leds target {@link LEDMatrix}
+         * @param leds target {@link LEDMatrixInterface}
          */
-        default void run(LEDMatrix leds) {
+        default void run(LEDMatrixInterface leds) {
             draw(leds);
             leds.update();
         }
 
         /**
-         * Creates a basic {@link LEDPattern} that sets all the pixels in the LED strip to a given RGB color.
+         * Creates a basic {@link LEDMatrixPattern} that sets all the pixels in the LED strip to a given RGB color.
          * @param r red
          * @param g green
          * @param b blue
-         * @return the created {@link LEDPattern}
+         * @return the created {@link LEDMatrixPattern}
          */
-        static LEDPattern setRGB(int r, int g, int b) {
+        static LEDMatrixPattern setRGB(int r, int g, int b) {
             return leds -> leds.setAllRGB(r, g, b);
         }
 
         /**
-         * Creates a basic {@link LEDPattern} that sets all the pixels in the LED strip to a given hue (HSV with default saturation and value).
+         * Creates a basic {@link LEDMatrixPattern} that sets all the pixels in the LED strip to a given hue (HSV with default saturation and value).
          * @param hue hue
-         * @return the created {@link LEDPattern}.
+         * @return the created {@link LEDMatrixPattern}.
          */
-        static LEDPattern setHue(int hue) {
+        static LEDMatrixPattern setHue(int hue) {
             return leds -> leds.setAllHue(hue);
         }
 
         /**
-         * Creates a basic {@link LEDPattern} that sets all the pixels in the LED strip to a given HSV color.
+         * Creates a basic {@link LEDMatrixPattern} that sets all the pixels in the LED strip to a given HSV color.
          * @param hue hue
          * @param sat saturation
          * @param val value
-         * @return the created {@link LEDPattern}.
+         * @return the created {@link LEDMatrixPattern}.
          */
-        static LEDPattern setHue(int hue, int sat, int val) {
+        static LEDMatrixPattern setHue(int hue, int sat, int val) {
             return leds -> leds.setAllHSV(hue, sat, val);
         }
     }
 
     /**
-     * An {@link LEDPattern} that alternates between two other {@link LEDPattern}.
+     * An {@link LEDMatrixPattern} that alternates between two other {@link LEDMatrixPattern}.
      */
-    public static class AlternatingPattern implements LEDPattern {
+    public static class AlternatingPattern implements LEDMatrixPattern {
         private final double timeInterval;
-        private final LEDPattern pattern1, pattern2;
+        private final LEDMatrixPattern pattern1, pattern2;
         /**
-         * Creates a new {@link LEDPattern} that alternates between two other {@link LEDPattern}.
+         * Creates a new {@link LEDMatrixPattern} that alternates between two other {@link LEDMatrixPattern}.
          * @param timeInterval the time interval between switching patterns
          * @param pattern1 first pattern
          * @param pattern2 second pattern
          */
-        public AlternatingPattern(double timeInterval, LEDPattern pattern1, LEDPattern pattern2) {
+        public AlternatingPattern(double timeInterval, LEDMatrixPattern pattern1, LEDMatrixPattern pattern2) {
             this.timeInterval = timeInterval;
             this.pattern1 = pattern1;
             this.pattern2 = pattern2;
         }
 
         /**
-         * Creates a new {@link LEDPattern} that flashes the given pattern on and off.
+         * Creates a new {@link LEDMatrixPattern} that flashes the given pattern on and off.
          * @param timeInterval the time interval between on and off
          * @param pattern pattern
          */
-        public AlternatingPattern(double timeInterval, LEDPattern pattern) {
+        public AlternatingPattern(double timeInterval, LEDMatrixPattern pattern) {
             this.timeInterval = timeInterval;
             this.pattern1 = pattern;
-            this.pattern2 = LEDPatterns.OFF;
+            this.pattern2 = LEDMatrixPatterns.OFF;
         }
 
         @Override
-        public void draw(LEDMatrix leds) {
+        public void draw(LEDMatrixInterface leds) {
             long currentTime = System.currentTimeMillis();
             if ((currentTime % (int) (timeInterval * 2000)) < (int) (timeInterval * 1000)) {
                 pattern1.draw(leds);
@@ -267,20 +260,20 @@ public class LEDMatrix implements LEDStripInterface {
         }
     }
 
-    public static class LEDPatterns {
+    public static class LEDMatrixPatterns {
         /** Does nothing. */
-        public static final LEDPattern NONE = leds -> {};
+        public static final LEDMatrixPattern NONE = leds -> {};
         /** Turns the LEDs off */
-        public static final LEDPattern OFF = LEDMatrix::off;
+        public static final LEDMatrixPattern OFF = LEDMatrixInterface::off;
         /** Animates a simple rainbow moving diagonally along the LED grid. */
-        public static final LEDPattern RAINBOW = new LEDPattern() {
+        public static final LEDMatrixPattern RAINBOW = new LEDMatrixPattern() {
             private int rainbowFirstPixelHue = 0;
-            public void draw(LEDMatrix leds) {
+            public void draw(LEDMatrixInterface leds) {
                 // Diagonal rainbow
-                for (int i = 0; i < leds.numRows; i++) {
-                    final int rowStartHue = (rainbowFirstPixelHue + (i * 180 / (2 * leds.numRows))) % 180;
-                    for (int j = 0; j < leds.numCols; j++) {
-                        final int hue = (rowStartHue + (j * 180 / (2 * leds.numCols))) % 180;
+                for (int i = 0; i < leds.rows(); i++) {
+                    final int rowStartHue = (rainbowFirstPixelHue + (i * 180 / (leds.rows() + leds.cols()))) % 180;
+                    for (int j = 0; j < leds.cols(); j++) {
+                        final int hue = (rowStartHue + (j * 180 / (2 * leds.cols()))) % 180;
                         leds.setHSV(i, j, hue, 255, 128);
                     }
                 }
@@ -292,8 +285,8 @@ public class LEDMatrix implements LEDStripInterface {
         };
 
         /** Flashes between red and bright red. */
-        public static final LEDPattern ERROR = new AlternatingPattern(.25, LEDPattern.setRGB(200, 0, 0), LEDPattern.setRGB(150, 0, 0));
+        public static final LEDMatrixPattern ERROR = new AlternatingPattern(.25, LEDMatrixPattern.setRGB(200, 0, 0), LEDMatrixPattern.setRGB(150, 0, 0));
         /** Flashes yellow. */
-        public static final LEDPattern WARNING = new AlternatingPattern(.25, LEDPattern.setRGB(160, 160, 50));
+        public static final LEDMatrixPattern WARNING = new AlternatingPattern(.25, LEDMatrixPattern.setRGB(160, 160, 50));
     }
 }

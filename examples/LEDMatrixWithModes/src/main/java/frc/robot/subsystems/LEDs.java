@@ -9,9 +9,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team1891.common.led.LEDMatrix;
+import frc.team1891.common.led.LEDMatrixInterface;
 import frc.team1891.common.led.LEDStrip;
-import frc.team1891.common.led.LEDMatrix.LEDPattern;
-import frc.team1891.common.led.LEDMatrix.LEDPatterns;
+import frc.team1891.common.led.LEDMatrix.LEDMatrixPattern;
+import frc.team1891.common.led.LEDMatrix.LEDMatrixPatterns;
 
 public class LEDs extends SubsystemBase {
   private static LEDs instance = null;
@@ -36,7 +37,7 @@ public class LEDs extends SubsystemBase {
   private static final int numRows = 16;
   private static final int numCols = 16;
 
-  private final AtomicReference<LEDPattern> ledPattern = new AtomicReference<LEDPattern>(null);
+  private final AtomicReference<LEDMatrixPattern> ledPattern = new AtomicReference<LEDMatrixPattern>(null);
   // This Notifier acts in place of periodic, so updating the buffer will happen on a seperate thread.
   private final Notifier periodicThread;
   
@@ -46,7 +47,7 @@ public class LEDs extends SubsystemBase {
     matrix = new LEDMatrix(leds, 0, numRows, numCols, true);
 
     periodicThread = new Notifier(() -> {
-      LEDPattern pattern = ledPattern.get();
+      LEDMatrixPattern pattern = ledPattern.get();
       if (pattern != null) {
         pattern.run(matrix);
       }
@@ -65,7 +66,7 @@ public class LEDs extends SubsystemBase {
     leds.stop();
   }
 
-  public void setCustomPattern(LEDPattern customPattern, boolean nonLooping) {
+  public void setCustomPattern(LEDMatrixPattern customPattern, boolean nonLooping) {
     if (nonLooping) {
       ledPattern.set(new NonLoopingPattern(customPattern));
     } else {
@@ -74,7 +75,7 @@ public class LEDs extends SubsystemBase {
     currentMode = null;
   }
 
-  public void setCustomPattern(LEDPattern customPattern) {
+  public void setCustomPattern(LEDMatrixPattern customPattern) {
     ledPattern.set(customPattern);
     currentMode = null;
   }
@@ -84,47 +85,45 @@ public class LEDs extends SubsystemBase {
       currentMode = mode;
       switch (currentMode) {
         case OFF:
-          ledPattern.set(LEDPatterns.OFF);
+          ledPattern.set(LEDMatrixPatterns.OFF);
           break;
         case DISCONNECTED:
           ledPattern.set(LEDs.CRAZY);
           break;
         case DISABLED:
-          ledPattern.set(new NonLoopingPattern(LEDPattern.setRGB(0, 50, 0)));
+          ledPattern.set(new NonLoopingPattern(LEDMatrixPattern.setRGB(0, 50, 0)));
           break;
         case RAINBOW:
-          ledPattern.set(LEDPatterns.RAINBOW);
+          ledPattern.set(LEDMatrixPatterns.RAINBOW);
           break;
       }
     }
   }
 
   @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+  public void periodic() {}
 
-  public class NonLoopingPattern implements LEDPattern {
-    private final LEDPattern pattern;
-    public NonLoopingPattern(LEDPattern pattern) {
+  public class NonLoopingPattern implements LEDMatrixPattern {
+    private final LEDMatrixPattern pattern;
+    public NonLoopingPattern(LEDMatrixPattern pattern) {
       this.pattern = pattern;
     }
 
     @Override
-    public void run(LEDMatrix leds) {
+    public void run(LEDMatrixInterface leds) {
       pattern.run(leds);
       ledPattern.set(null);
     }
 
     @Override
-    public void draw(LEDMatrix leds) {
+    public void draw(LEDMatrixInterface leds) {
       pattern.draw(leds);
     }
   }
 
-  public static final LEDPattern CRAZY = new LEDPattern() {
+  public static final LEDMatrixPattern CRAZY = new LEDMatrixPattern() {
     private int rainbowFirstPixelHue = 0;
-    public void draw(LEDMatrix leds) {
+    public void draw(LEDMatrixInterface leds) {
         for (int i = 0; i < numRows; i++) {
             final int rowStartHue = (rainbowFirstPixelHue + (i * 180 / (2 * numRows))) % 180;
             for (int j = 0; j < numCols; j++) {

@@ -33,17 +33,23 @@ public class LEDStripSegment implements LEDStripInterface {
 
     @Override
     public void setHue(int index, int hue) {
-        parentStrip.setHue(startIndex + index, hue);
+        if (indexCheck(startIndex + index)) {
+            parentStrip.setHue((startIndex + index), hue);
+        }
     }
 
     @Override
     public void setHSV(int index, int hue, int sat, int val) {
-        parentStrip.setHSV(startIndex + index, hue, sat, val);
+        if (indexCheck(startIndex + index)) {
+            parentStrip.setHSV(startIndex + index, hue, sat, val);
+        }
     }
 
     @Override
     public void setRGB(int index, int r, int g, int b) {
-        parentStrip.setRGB(startIndex + index, r, g, b);
+        if (indexCheck(startIndex + index)) {
+            parentStrip.setRGB(startIndex + index, r, g, b);
+        }
     }
 
     @Override

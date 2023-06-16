@@ -7,7 +7,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.LEDs.LEDMode;
-import frc.team1891.common.led.LEDMatrix.LEDPattern;
+import frc.team1891.common.led.LEDMatrix.LEDMatrixPattern;
 
 // Basic command that interrupts the LEDDefaultCommand and sets all LEDs to a given color
 public class CustomColor extends CommandBase {
@@ -25,7 +25,7 @@ public class CustomColor extends CommandBase {
   @Override
   public void initialize() {
     leds.start();
-    leds.setCustomPattern(LEDPattern.setRGB(r, g, b), true);
+    leds.setCustomPattern(LEDMatrixPattern.setRGB(r, g, b), true);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
