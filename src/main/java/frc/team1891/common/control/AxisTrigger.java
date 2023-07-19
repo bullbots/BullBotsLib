@@ -7,12 +7,20 @@ package frc.team1891.common.control;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import java.util.function.DoubleSupplier;
+
 /**
  * AxisTrigger triggers when the given axis is beyond the threshold in the desired direction.
  * The default direction is {@link Direction#BOTH_WAYS}, and the default threshold is 0.2.
  */
 @SuppressWarnings("unused")
 public class AxisTrigger extends Trigger {
+    private static final double DEFAULT_THRESHOLD = .2;
+    private static final Direction DEFAULT_DIRECTION = Direction.BOTH_WAYS;
+
+    /**
+     * The direction the axis must move in order to trigger.
+     */
     public enum Direction {
         BOTH_WAYS,
         POSITIVE_ONLY,
@@ -25,7 +33,7 @@ public class AxisTrigger extends Trigger {
      * @param axis the axis
      */
     public AxisTrigger(GenericHID stick, int axis) {
-        this(stick, axis, Direction.BOTH_WAYS);
+        this(stick, axis, DEFAULT_DIRECTION);
     }
 
     /**
@@ -37,7 +45,7 @@ public class AxisTrigger extends Trigger {
      * @param direction the direction that activates the trigger
      */
     public AxisTrigger(GenericHID stick, int axis, Direction direction) {
-        this(stick, axis, direction, .2);
+        this(stick, axis, direction, DEFAULT_THRESHOLD);
     }
 
     /**
@@ -49,7 +57,7 @@ public class AxisTrigger extends Trigger {
      * @param axisThreshold the threshold that must be passed to activate the trigger
      */
     public AxisTrigger(GenericHID stick, int axis, double axisThreshold) {
-        this(stick, axis, Direction.BOTH_WAYS, axisThreshold);
+        this(stick, axis, DEFAULT_DIRECTION, axisThreshold);
     }
 
     /**
@@ -62,10 +70,53 @@ public class AxisTrigger extends Trigger {
      * @param axisThreshold the threshold that must be passed to activate the trigger
      */
     public AxisTrigger(GenericHID stick, int axis, Direction direction, double axisThreshold) {
+        this(() -> stick.getRawAxis(axis), direction, axisThreshold);
+    }
+
+    /**
+     * Creates a trigger on the given {@link DoubleSupplier}.
+     *
+     * @param axis the axis
+     */
+    public AxisTrigger(DoubleSupplier axis) {
+        this(axis, DEFAULT_DIRECTION);
+    }
+
+    /**
+     * Creates a trigger on the given {@link DoubleSupplier}.
+     *
+     * It will only activate when the threshold is exceeded in the given direction.
+     * @param axis the axis
+     * @param direction the direction that activates the trigger
+     */
+    public AxisTrigger(DoubleSupplier axis, Direction direction) {
+        this(axis, direction, DEFAULT_THRESHOLD);
+    }
+
+    /**
+     * Creates a trigger on the given {@link DoubleSupplier}.
+     *
+     * It will only activate when the threshold is exceeded.
+     * @param axis the axis
+     * @param axisThreshold the threshold that must be passed to activate the trigger
+     */
+    public AxisTrigger(DoubleSupplier axis, double axisThreshold) {
+        this(axis, DEFAULT_DIRECTION, axisThreshold);
+    }
+
+    /**
+     * Creates a trigger on the given {@link DoubleSupplier}.
+     *
+     * It will only activate when the threshold is exceeded in the given direction.
+     * @param axis the axis
+     * @param direction the direction that activates the trigger
+     * @param axisThreshold the threshold that must be passed to activate the trigger
+     */
+    public AxisTrigger(DoubleSupplier axis, Direction direction, double axisThreshold) {
         super(() -> switch (direction) {
-            case BOTH_WAYS -> Math.abs(stick.getRawAxis(axis)) > axisThreshold;
-            case POSITIVE_ONLY -> stick.getRawAxis(axis) > axisThreshold;
-            case NEGATIVE_ONLY -> stick.getRawAxis(axis) < -axisThreshold;
+            case BOTH_WAYS -> Math.abs(axis.getAsDouble()) > axisThreshold;
+            case POSITIVE_ONLY -> axis.getAsDouble() > axisThreshold;
+            case NEGATIVE_ONLY -> axis.getAsDouble() < -axisThreshold;
         });
     }
 }

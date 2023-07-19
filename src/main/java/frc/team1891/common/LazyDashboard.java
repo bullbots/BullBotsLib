@@ -11,6 +11,14 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+/**
+ * A helper class to make working with SmartDashboard simpler while also adding protection against overloading
+ * NetworkTables.
+ * <p>When you use this class, a new {@link Notifier} will be created that updates all entries fed to
+ * LazyDashboard with a certain update interval - meaning it only updates every n loops.  The default is 50.
+ * The notifier runs every .02 seconds, meaning each value will update once a second, but all values will be staggered
+ * from each other</p>
+ */
 @SuppressWarnings("unused")
 public abstract class LazyDashboard {
     private static final Notifier notifier = new Notifier(LazyDashboard::updateAll);
@@ -252,9 +260,14 @@ public abstract class LazyDashboard {
         this.updateInterval = updateInterval;
     }
 
+    /**
+     * Attempts to update the SmartDashboard value.  It will update successfully if the number of loops since the last
+     * successful update is equal to the update interval.
+     * @return true if the update was successful
+     */
     public boolean update() {
         count++;
-        if (count > updateInterval) {
+        if (count == updateInterval) {
             count = 0;
             publishToSmartDashboard();
             return true;

@@ -133,6 +133,19 @@ public class LEDStrip implements LEDStripInterface {
         }
 
         /**
+         * If an implemented pattern has an end to it this should return true
+         */
+        default boolean isFinished() {
+            return false;
+        }
+
+        /**
+         * If an implemented pattern doesn't loop, or has a specific starting state, this should revert the pattern to
+         * that state.
+         */
+        default void reset() {}
+
+        /**
          * Creates a basic {@link LEDPattern} that sets all the pixels in the LED strip to a given RGB color.
          * @param r red
          * @param g green
@@ -140,7 +153,17 @@ public class LEDStrip implements LEDStripInterface {
          * @return the created {@link LEDPattern}
          */
         static LEDPattern setRGB(int r, int g, int b) {
-            return leds -> leds.setAllRGB(r, g, b);
+            return new LEDPattern() {
+                @Override
+                public void draw(LEDStripInterface leds) {
+                    leds.setAllRGB(r, g, b);
+                }
+
+                @Override
+                public boolean isFinished() {
+                    return true;
+                }
+            };
         }
 
         /**
@@ -149,7 +172,17 @@ public class LEDStrip implements LEDStripInterface {
          * @return the created {@link LEDPattern}.
          */
         static LEDPattern setHue(int hue) {
-            return leds -> leds.setAllHue(hue);
+            return new LEDPattern() {
+                @Override
+                public void draw(LEDStripInterface leds) {
+                    leds.setAllHue(hue);
+                }
+
+                @Override
+                public boolean isFinished() {
+                    return true;
+                }
+            };
         }
 
         /**
@@ -160,7 +193,17 @@ public class LEDStrip implements LEDStripInterface {
          * @return the created {@link LEDPattern}.
          */
         static LEDPattern setHSV(int hue, int sat, int val) {
-            return leds -> leds.setAllHSV(hue, sat, val);
+            return new LEDPattern() {
+                @Override
+                public void draw(LEDStripInterface leds) {
+                    leds.setAllHSV(hue, sat, val);
+                }
+
+                @Override
+                public boolean isFinished() {
+                    return true;
+                }
+            };
         }
     }
 
@@ -210,27 +253,33 @@ public class LEDStrip implements LEDStripInterface {
         /** Turns the LEDs off */
         public static final LEDPattern OFF = LEDStripInterface::off;
         /** Animates a simple rainbow moving along the LED strip. */
-        public static final LEDPattern RAINBOW = new LEDPattern() {
-            private int firstHue = 0;
-            public void draw(LEDStripInterface leds) {
-                for (var i = 0; i < leds.length(); i++) {
-                    // Calculate the hue - hue is easier for rainbows because the color
-                    // shape is a circle so only one value needs to precess
-                    final var hue = (firstHue + (i * 180 / leds.length())) % 180;
-                    // Set the value
-                    leds.setHue(i, hue);
+        public static LEDPattern RAINBOW() {
+            return new LEDPattern() {
+                private int firstHue = 0;
+                public void draw(LEDStripInterface leds) {
+                    for (var i = 0; i < leds.length(); i++) {
+                        // Calculate the hue - hue is easier for rainbows because the color
+                        // shape is a circle so only one value needs to precess
+                        final var hue = (firstHue + (i * 180 / leds.length())) % 180;
+                        // Set the value
+                        leds.setHue(i, hue);
+                    }
+                    // Increase to make the rainbow "move"
+                    firstHue ++;
+                    // Check bounds
+                    firstHue %= 180;
                 }
-                // Increase to make the rainbow "move"
-                firstHue ++;
-                // Check bounds
-                firstHue %= 180;
-            }
-        };
+            };
+        }
 
         /** Flashes between red and bright red. */
-        public static final LEDPattern ERROR = new AlternatingPattern(.25, LEDPattern.setRGB(200, 0, 0), LEDPattern.setRGB(150, 0, 0));
+        public static LEDPattern ERROR() {
+            return new AlternatingPattern(.25, LEDPattern.setRGB(200, 0, 0), LEDPattern.setRGB(150, 0, 0));
+        }
         /** Flashes yellow. */
-        public static final LEDPattern WARNING = new AlternatingPattern(.25, LEDPattern.setRGB(160, 160, 50));
+        public static LEDPattern WARNING() {
+            return new AlternatingPattern(.25, LEDPattern.setRGB(160, 160, 50));
+        }
     }
 
     private int[] limitRGBBrightness(int r, int g, int b) {

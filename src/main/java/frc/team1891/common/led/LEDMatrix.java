@@ -189,6 +189,19 @@ public class LEDMatrix implements LEDMatrixInterface {
         }
 
         /**
+         * If an implemented pattern has an end to it this should return true
+         */
+        default boolean isFinished() {
+            return false;
+        }
+
+        /**
+         * If an implemented pattern doesn't loop, or has a specific starting state, this should revert the pattern to
+         * that state.
+         */
+        default void reset() {}
+
+        /**
          * Creates a basic {@link LEDMatrixPattern} that sets all the pixels in the LED strip to a given RGB color.
          * @param r red
          * @param g green
@@ -196,7 +209,17 @@ public class LEDMatrix implements LEDMatrixInterface {
          * @return the created {@link LEDMatrixPattern}
          */
         static LEDMatrixPattern setRGB(int r, int g, int b) {
-            return leds -> leds.setAllRGB(r, g, b);
+            return new LEDMatrixPattern() {
+                @Override
+                public void draw(LEDMatrixInterface leds) {
+                    leds.setAllRGB(r, g, b);
+                }
+
+                @Override
+                public boolean isFinished() {
+                    return true;
+                }
+            };
         }
 
         /**
@@ -205,7 +228,17 @@ public class LEDMatrix implements LEDMatrixInterface {
          * @return the created {@link LEDMatrixPattern}.
          */
         static LEDMatrixPattern setHue(int hue) {
-            return leds -> leds.setAllHue(hue);
+            return new LEDMatrixPattern() {
+                @Override
+                public void draw(LEDMatrixInterface leds) {
+                    leds.setAllHue(hue);
+                }
+
+                @Override
+                public boolean isFinished() {
+                    return true;
+                }
+            };
         }
 
         /**
@@ -216,7 +249,17 @@ public class LEDMatrix implements LEDMatrixInterface {
          * @return the created {@link LEDMatrixPattern}.
          */
         static LEDMatrixPattern setHue(int hue, int sat, int val) {
-            return leds -> leds.setAllHSV(hue, sat, val);
+            return new LEDMatrixPattern() {
+                @Override
+                public void draw(LEDMatrixInterface leds) {
+                    leds.setAllHSV(hue, sat, val);
+                }
+
+                @Override
+                public boolean isFinished() {
+                    return true;
+                }
+            };
         }
     }
 
@@ -266,27 +309,33 @@ public class LEDMatrix implements LEDMatrixInterface {
         /** Turns the LEDs off */
         public static final LEDMatrixPattern OFF = LEDMatrixInterface::off;
         /** Animates a simple rainbow moving diagonally along the LED grid. */
-        public static final LEDMatrixPattern RAINBOW = new LEDMatrixPattern() {
-            private int rainbowFirstPixelHue = 0;
-            public void draw(LEDMatrixInterface leds) {
-                // Diagonal rainbow
-                for (int i = 0; i < leds.rows(); i++) {
-                    final int rowStartHue = (rainbowFirstPixelHue + (i * 180 / (leds.rows() + leds.cols()))) % 180;
-                    for (int j = 0; j < leds.cols(); j++) {
-                        final int hue = (rowStartHue + (j * 180 / (2 * leds.cols()))) % 180;
-                        leds.setHSV(i, j, hue, 255, 128);
+        public static LEDMatrixPattern RAINBOW() {
+            return new LEDMatrixPattern() {
+                private int rainbowFirstPixelHue = 0;
+                public void draw(LEDMatrixInterface leds) {
+                    // Diagonal rainbow
+                    for (int i = 0; i < leds.rows(); i++) {
+                        final int rowStartHue = (rainbowFirstPixelHue + (i * 180 / (leds.rows() + leds.cols()))) % 180;
+                        for (int j = 0; j < leds.cols(); j++) {
+                            final int hue = (rowStartHue + (j * 180 / (2 * leds.cols()))) % 180;
+                            leds.setHSV(i, j, hue, 255, 128);
+                        }
                     }
+                    // Increase by to make the rainbow "move"
+                    rainbowFirstPixelHue++;
+                    // Check bounds
+                    rainbowFirstPixelHue %= 180;
                 }
-                // Increase by to make the rainbow "move"
-                rainbowFirstPixelHue++;
-                // Check bounds
-                rainbowFirstPixelHue %= 180;
-            }
-        };
+            };
+        }
 
         /** Flashes between red and bright red. */
-        public static final LEDMatrixPattern ERROR = new AlternatingPattern(.25, LEDMatrixPattern.setRGB(200, 0, 0), LEDMatrixPattern.setRGB(150, 0, 0));
+        public static LEDMatrixPattern ERROR() {
+            return new AlternatingPattern(.25, LEDMatrixPattern.setRGB(200, 0, 0), LEDMatrixPattern.setRGB(150, 0, 0));
+        }
         /** Flashes yellow. */
-        public static final LEDMatrixPattern WARNING = new AlternatingPattern(.25, LEDMatrixPattern.setRGB(160, 160, 50));
+        public static LEDMatrixPattern WARNING() {
+            return new AlternatingPattern(.25, LEDMatrixPattern.setRGB(160, 160, 50));
+        }
     }
 }

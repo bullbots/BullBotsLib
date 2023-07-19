@@ -14,6 +14,7 @@ import java.util.function.BooleanSupplier;
  */
 @SuppressWarnings("unused")
 public class POVTrigger extends Trigger {
+    /** Controller POV directions */
     public enum POV {
         NORTH(0),
         NORTHEAST(45),
@@ -55,6 +56,9 @@ public class POVTrigger extends Trigger {
         );
     }
 
+    /**
+     * Simplifing POVm allowing triggers to work when two directions are pressed at the same time (a diagonal POV).
+     */
     public enum Direction {
         UP(POV.NORTH),
         DOWN(POV.SOUTH),
@@ -67,6 +71,11 @@ public class POVTrigger extends Trigger {
             this.pov = pov;
         }
 
+        /**
+         * Returns the {@link Direction} corresponding to the given {@link POV}.
+         *
+         * <p>Returns null if a diagonal POV is given</p>
+         */
         public static Direction fromPOV(POV pov) {
             for(Direction direction: Direction.values()) {
                 if(direction.pov == pov) {

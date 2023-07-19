@@ -17,6 +17,9 @@ public class JoystickRotation2d {
         this.yAxis = yAxis;
     }
 
+    /**
+     * Get the {@link Rotation2d} created by the pair of axis.
+     */
     public Rotation2d get() {
         return new Rotation2d(xAxis.getAsDouble(), yAxis.getAsDouble());
     }
