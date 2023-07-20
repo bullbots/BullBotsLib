@@ -56,7 +56,7 @@ public abstract class LazyDashboard {
     }
 
     /**
-     * Periodically (default is every 50ms) updates a SmartDashboard value with the given supplier
+     * Periodically (default is every second) updates a SmartDashboard value with the given supplier
      * @param name SmartDashboard value name
      * @param supplier supplier value
      * @return the object used to periodically update SmartDashboard (this can be ignored)

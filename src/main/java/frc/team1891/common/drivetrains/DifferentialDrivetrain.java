@@ -4,7 +4,6 @@
 
 package frc.team1891.common.drivetrains;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.estimator.DifferentialDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,6 +13,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.team1891.common.LazyDashboard;
+import frc.team1891.common.drivetrains.motorcontrollers.TalonFXController;
 
 /** Drivetrain base for a differential drivetrain. */
 @SuppressWarnings("unused")
@@ -23,7 +23,7 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
 
   protected final DifferentialDrive differentialDrive;
 
-  private final WPI_TalonFX left, right;
+  private final TalonFXController left, right;
 
   /**
    * Creates a new differential drivetrain.
@@ -64,14 +64,56 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
     WPI_TalonFX leftMaster,
     WPI_TalonFX rightMaster
   ) {
+    this(config, kinematics, gyro, new TalonFXController(leftMaster, config), new TalonFXController(rightMaster, config));
+  }
+
+  /**
+   * Creates a new differential drivetrain.
+   * @param config the drivetrain config
+   * @param trackWidthMeters the width of the wheel base
+   * @param gyro the gyro used by the drivetrain ({@link Gyro})
+   * @param leftMaster the left drive motor
+   * @param rightMaster the right drive motor
+   */
+  public DifferentialDrivetrain(
+    DrivetrainConfig config,
+    double trackWidthMeters,
+    Gyro gyro,
+    TalonFXController leftMaster,
+    TalonFXController rightMaster
+  ) {
+    this(
+      config,
+      new DifferentialDriveKinematics(trackWidthMeters),
+      gyro,
+      leftMaster,
+      rightMaster
+    );
+  }
+
+  /**
+   * Creates a new differential drivetrain.
+   * @param config the drivetrain config
+   * @param kinematics the kinematics for this drivetrain
+   * @param gyro the gyro used by the drivetrain ({@link Gyro})
+   * @param leftMaster the left drive motor
+   * @param rightMaster the right drive motor
+   */
+  public DifferentialDrivetrain(
+    DrivetrainConfig config,
+    DifferentialDriveKinematics kinematics,
+    Gyro gyro,
+    TalonFXController leftMaster,
+    TalonFXController rightMaster
+  ) {
     super(config, gyro);
 
     this.kinematics = kinematics;
     this.poseEstimator = new DifferentialDrivePoseEstimator(
             kinematics,
             gyro.getRotation2d(),
-            leftMaster.getSelectedSensorPosition(),
-            rightMaster.getSelectedSensorPosition(),
+            leftMaster.getPosition(),
+            rightMaster.getPosition(),
             new Pose2d());
 
     differentialDrive = new DifferentialDrive(leftMaster, rightMaster);
@@ -117,8 +159,8 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
    */
   public void setWheelSpeeds(DifferentialDriveWheelSpeeds wheelSpeeds) {
     wheelSpeeds.desaturate(config.chassisMaxVelocityMetersPerSecond());
-    left.set(ControlMode.Velocity, config.velocityToEncoderTicksPer100ms(wheelSpeeds.leftMetersPerSecond));
-    right.set(ControlMode.Velocity, config.velocityToEncoderTicksPer100ms(wheelSpeeds.rightMetersPerSecond));
+    left.setVelocity(wheelSpeeds.leftMetersPerSecond);
+    right.setVelocity(wheelSpeeds.rightMetersPerSecond);
   }
 
   @Override
@@ -136,7 +178,7 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
    * @return the speeds of the wheels
    */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(left.getSelectedSensorVelocity(), right.getSelectedSensorVelocity());
+    return new DifferentialDriveWheelSpeeds(left.getVelocity(), right.getVelocity());
   }
 
   public DifferentialDriveKinematics getKinematics() {
@@ -158,8 +200,8 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
     resetEncoders();
     poseEstimator.resetPosition(
             gyro.getRotation2d(),
-            left.getSelectedSensorPosition(),
-            right.getSelectedSensorPosition(),
+            left.getPosition(),
+            right.getPosition(),
             pose2d);
   }
 
@@ -167,24 +209,24 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
    * Resets the encoders of the left and right motors
    */
   public void resetEncoders() {
-    left.setSelectedSensorPosition(0);
-    right.setSelectedSensorPosition(0);
+    left.resetPosition();
+    right.resetPosition();
   }
 
   @Override
   public void updateOdometry() {
     poseEstimator.update(
             gyro.getRotation2d(),
-            config.encoderTicksToDistance(left.getSelectedSensorPosition()),
-            config.encoderTicksToDistance(right.getSelectedSensorPosition()));
+            config.encoderTicksToDistance(left.getPosition()),
+            config.encoderTicksToDistance(right.getPosition()));
   }
 
   @Override
   protected void configureSmartDashboard() {
     super.configureSmartDashboard();
-    LazyDashboard.addNumber("Drivetrain/leftPosition", left::getSelectedSensorPosition);
-    LazyDashboard.addNumber("Drivetrain/leftVelocity", left::getSelectedSensorVelocity);
-    LazyDashboard.addNumber("Drivetrain/rightPosition", right::getSelectedSensorPosition);
-    LazyDashboard.addNumber("Drivetrain/rightVelocity", right::getSelectedSensorVelocity);
+    LazyDashboard.addNumber("Drivetrain/leftPosition", left::getPosition);
+    LazyDashboard.addNumber("Drivetrain/leftVelocity", left::getVelocity);
+    LazyDashboard.addNumber("Drivetrain/rightPosition", right::getPosition);
+    LazyDashboard.addNumber("Drivetrain/rightVelocity", right::getVelocity);
   }
 }

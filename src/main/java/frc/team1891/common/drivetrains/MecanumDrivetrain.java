@@ -4,7 +4,6 @@
 
 package frc.team1891.common.drivetrains;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.estimator.MecanumDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,6 +14,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.team1891.common.LazyDashboard;
+import frc.team1891.common.drivetrains.motorcontrollers.TalonFXController;
 
 /** Drivetrain base for a mecanum drivetrain. */
 @SuppressWarnings("unused")
@@ -22,7 +22,7 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
   protected final MecanumDrivePoseEstimator poseEstimator;
   protected final MecanumDriveKinematics kinematics;
 
-  private final WPI_TalonFX frontLeft, frontRight, backLeft, backRight;
+  private final TalonFXController frontLeft, frontRight, backLeft, backRight;
 
   /**
    * Creates a new MecanumDrivetrain, assuming the center of the robot is the center of the drivebase.
@@ -84,6 +84,79 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
     WPI_TalonFX backLeft,
     WPI_TalonFX backRight
   ) {
+    this(
+      config,
+      frontLeftLocation,
+      frontRightLocation,
+      backLeftLocation,
+      backRightLocation,
+      gyro,
+      new TalonFXController(frontLeft, config),
+      new TalonFXController(frontRight, config),
+      new TalonFXController(backLeft, config),
+      new TalonFXController(backRight, config));
+  }
+
+  /**
+   * Creates a new MecanumDrivetrain, assuming the center of the robot is the center of the drivebase.
+   * @param config the config of the drivetrain
+   * @param driveBaseWidth the width between left and right wheels
+   * @param driveBaseLength the length between front and back wheels
+   * @param gyro the gyro of the drivetrain
+   * @param frontLeft the front left wheels
+   * @param frontRight the front right wheels
+   * @param backLeft the back left wheels
+   * @param backRight the back right wheels
+   */
+  public MecanumDrivetrain(
+    DrivetrainConfig config,
+    double driveBaseWidth,
+    double driveBaseLength,
+    Gyro gyro,
+    TalonFXController frontLeft,
+    TalonFXController frontRight,
+    TalonFXController backLeft,
+    TalonFXController backRight
+  ) {
+    this(
+      config,
+      new Translation2d(driveBaseLength / 2d, driveBaseWidth / 2d),
+      new Translation2d(driveBaseLength / 2d, -driveBaseWidth / 2d),
+      new Translation2d(-driveBaseLength / 2d, driveBaseWidth / 2d),
+      new Translation2d(-driveBaseLength / 2d, -driveBaseWidth / 2d),
+      gyro,
+      frontLeft,
+      frontRight,
+      backLeft,
+      backRight
+    );
+  }
+
+  /**
+   * Creates a new MecanumDrivetrain.
+   * @param config the config of the drivetrain
+   * @param frontLeftLocation the location of the front left wheel relative to the robot center
+   * @param frontRightLocation the location of the front right wheel relative to the robot center
+   * @param backLeftLocation the location of the back left wheel relative to the robot center
+   * @param backRightLocation the location of the back right wheel relative to the robot center
+   * @param gyro the gyro of the drivetrain
+   * @param frontLeft the front left wheel
+   * @param frontRight the front right wheel
+   * @param backLeft the back left wheel
+   * @param backRight the back right wheel
+   */
+  public MecanumDrivetrain(
+    DrivetrainConfig config,
+    Translation2d frontLeftLocation,
+    Translation2d frontRightLocation,
+    Translation2d backLeftLocation,
+    Translation2d backRightLocation,
+    Gyro gyro,
+    TalonFXController frontLeft,
+    TalonFXController frontRight,
+    TalonFXController backLeft,
+    TalonFXController backRight
+  ) {
     super(config, gyro);
 
     this.frontLeft = frontLeft;
@@ -137,11 +210,10 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
   public void setWheelSpeeds(MecanumDriveWheelSpeeds wheelSpeeds) {
     wheelSpeeds.desaturate(config.chassisMaxVelocityMetersPerSecond());
 
-    // TODO: This could - and probably should be ControlMode.Velocity
-    frontLeft.set(ControlMode.PercentOutput, wheelSpeeds.frontLeftMetersPerSecond / config.chassisMaxVelocityMetersPerSecond());
-    frontRight.set(ControlMode.PercentOutput, wheelSpeeds.frontRightMetersPerSecond / config.chassisMaxVelocityMetersPerSecond());
-    backLeft.set(ControlMode.PercentOutput, wheelSpeeds.rearLeftMetersPerSecond / config.chassisMaxVelocityMetersPerSecond());
-    backRight.set(ControlMode.PercentOutput, wheelSpeeds.rearRightMetersPerSecond / config.chassisMaxVelocityMetersPerSecond());
+    frontLeft.setVelocity(wheelSpeeds.frontLeftMetersPerSecond);
+    frontRight.setVelocity(wheelSpeeds.frontRightMetersPerSecond);
+    backLeft.setVelocity(wheelSpeeds.rearLeftMetersPerSecond);
+    backRight.setVelocity(wheelSpeeds.rearRightMetersPerSecond);
   }
 
   /**
@@ -150,10 +222,10 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
    */
   public MecanumDriveWheelSpeeds getWheelSpeeds() {
     return new MecanumDriveWheelSpeeds(
-      config.encoderTicksPer100msToVelocity(frontLeft.getSelectedSensorVelocity()),
-      config.encoderTicksPer100msToVelocity(frontRight.getSelectedSensorVelocity()),
-      config.encoderTicksPer100msToVelocity(backLeft.getSelectedSensorVelocity()),
-      config.encoderTicksPer100msToVelocity(backRight.getSelectedSensorVelocity())
+      config.encoderTicksPer100msToVelocity(frontLeft.getVelocity()),
+      config.encoderTicksPer100msToVelocity(frontRight.getVelocity()),
+      config.encoderTicksPer100msToVelocity(backLeft.getVelocity()),
+      config.encoderTicksPer100msToVelocity(backRight.getVelocity())
     );
   }
 
@@ -163,10 +235,10 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
    */
   public MecanumDriveWheelPositions getWheelPositions() {
     return new MecanumDriveWheelPositions(
-      config.encoderTicksToDistance(frontLeft.getSelectedSensorPosition()),
-      config.encoderTicksToDistance(frontRight.getSelectedSensorPosition()),
-      config.encoderTicksToDistance(backLeft.getSelectedSensorPosition()),
-      config.encoderTicksToDistance(backRight.getSelectedSensorPosition())
+      config.encoderTicksToDistance(frontLeft.getPosition()),
+      config.encoderTicksToDistance(frontRight.getPosition()),
+      config.encoderTicksToDistance(backLeft.getPosition()),
+      config.encoderTicksToDistance(backRight.getPosition())
     );
   }
 
@@ -175,7 +247,7 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
    * @return kinematics
    */
   public MecanumDriveKinematics getKinematics() {
-      return kinematics;
+    return kinematics;
   }
 
   @Override
@@ -203,14 +275,14 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
 
   @Override
   protected void configureSmartDashboard() {
-    super.configureSmartDashboard();
-    LazyDashboard.addNumber("Drivetrain/frontLeftPosition", frontLeft::getSelectedSensorPosition);
-    LazyDashboard.addNumber("Drivetrain/frontLeftVelocity", frontLeft::getSelectedSensorVelocity);
-    LazyDashboard.addNumber("Drivetrain/frontRightPosition", frontRight::getSelectedSensorPosition);
-    LazyDashboard.addNumber("Drivetrain/frontRightVelocity", frontRight::getSelectedSensorVelocity);
-    LazyDashboard.addNumber("Drivetrain/backLeftPosition", backLeft::getSelectedSensorPosition);
-    LazyDashboard.addNumber("Drivetrain/backLeftVelocity", backLeft::getSelectedSensorVelocity);
-    LazyDashboard.addNumber("Drivetrain/backRightPosition", backRight::getSelectedSensorPosition);
-    LazyDashboard.addNumber("Drivetrain/backRightVelocity", backRight::getSelectedSensorVelocity);
+     super.configureSmartDashboard();
+    LazyDashboard.addNumber("Drivetrain/frontLeftPosition", frontLeft::getPosition);
+    LazyDashboard.addNumber("Drivetrain/frontLeftVelocity", frontLeft::getVelocity);
+    LazyDashboard.addNumber("Drivetrain/frontRightPosition", frontRight::getPosition);
+    LazyDashboard.addNumber("Drivetrain/frontRightVelocity", frontRight::getVelocity);
+    LazyDashboard.addNumber("Drivetrain/backLeftPosition", backLeft::getPosition);
+    LazyDashboard.addNumber("Drivetrain/backLeftVelocity", backLeft::getVelocity);
+    LazyDashboard.addNumber("Drivetrain/backRightPosition", backRight::getPosition);
+    LazyDashboard.addNumber("Drivetrain/backRightVelocity", backRight::getVelocity);
   }
 }

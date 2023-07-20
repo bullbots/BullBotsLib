@@ -41,6 +41,17 @@ public record DrivetrainConfig(double chassisMaxVelocityMetersPerSecond,
     }
 
     /**
+     * Converts a position in meters into motor rotations.
+     *
+     * @param positionMeters position
+     * @return position in rotations
+     */
+    public double distanceToRotations(double positionMeters) {
+        double wheelRotations = positionMeters / (wheelRadiusMeters * 2 * Math.PI);
+        return wheelRotations * gearRatio;
+    }
+
+    /**
      * Converts a position in encoder ticks into meters.
      *
      * @param sensorCounts position
@@ -48,7 +59,17 @@ public record DrivetrainConfig(double chassisMaxVelocityMetersPerSecond,
      */
     public double encoderTicksToDistance(double sensorCounts) {
         double motorRotations = sensorCounts / encoderCountsPerMotorRevolution;
-        double wheelRotations = motorRotations / gearRatio;
+        return rotationsToDistance(motorRotations);
+    }
+
+    /**
+     * Converts a position in rotations into meters.
+     *
+     * @param rotations position
+     * @return position in meters
+     */
+    public double rotationsToDistance(double rotations) {
+        double wheelRotations = rotations / gearRatio;
         return wheelRotations * (wheelRadiusMeters * 2 * Math.PI);
     }
 
@@ -66,6 +87,18 @@ public record DrivetrainConfig(double chassisMaxVelocityMetersPerSecond,
     }
 
     /**
+     * Converts motor RPM into meters per second.
+     *
+     * @param rotationsPerMinute velocity
+     * @return velocity in meters per second
+     */
+    public double rotationsPerMinuteToVelocity(double rotationsPerMinute) {
+        double motorRotationsPerSecond = rotationsPerMinute / 60.;
+        double wheelRotationsPerSecond = motorRotationsPerSecond / gearRatio;
+        return wheelRotationsPerSecond * (wheelRadiusMeters * 2 * Math.PI);
+    }
+
+    /**
      * Converts a velocity in m/s into encoder ticks per 100ms.
      *
      * @param velocityMetersPerSecond velocity
@@ -76,5 +109,17 @@ public record DrivetrainConfig(double chassisMaxVelocityMetersPerSecond,
         double motorRotationsPerSecond = wheelRotationsPerSecond * gearRatio;
         double motorRotationsPer100ms = motorRotationsPerSecond / 10;
         return motorRotationsPer100ms * encoderCountsPerMotorRevolution;
+    }
+
+    /**
+     * Converts a velocity in m/s into RPM.
+     *
+     * @param velocityMetersPerSecond velocity
+     * @return velocity in RPM
+     */
+    public double velocityToRotationsPerMinute(double velocityMetersPerSecond) {
+        double wheelRotationsPerSecond = velocityMetersPerSecond / (wheelRadiusMeters * 2 * Math.PI);
+        double motorRotationsPerSecond = wheelRotationsPerSecond * gearRatio;
+        return motorRotationsPerSecond * 60;
     }
 }
