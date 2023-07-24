@@ -217,8 +217,8 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
   public void updateOdometry() {
     poseEstimator.update(
             gyro.getRotation2d(),
-            config.encoderTicksToDistance(left.getPosition()),
-            config.encoderTicksToDistance(right.getPosition()));
+            left.getPosition(),
+            right.getPosition());
   }
 
   @Override

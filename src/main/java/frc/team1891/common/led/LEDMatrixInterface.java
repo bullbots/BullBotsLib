@@ -44,6 +44,62 @@ public interface LEDMatrixInterface extends LEDStripInterface {
     void setRGB(int x, int y, int r, int g, int b);
 
     /**
+     * Flashes between two hues on the given time interval.
+     * @param x the target pixel x
+     * @param y the target pixel y
+     * @param timeInterval the interval to flash in seconds
+     * @param hueA first hue
+     * @param hueB second hue
+     */
+    default void flashHue(int x, int y, double timeInterval, int hueA, int hueB) {
+        if ((System.currentTimeMillis() % (int) (timeInterval * 2000)) < (int) (timeInterval * 1000)) {
+            setHue(x, y, hueA);
+        } else {
+            setHue(x, y, hueB);
+        }
+    }
+
+    /**
+     * Flashes between two HSV colors on the given time interval.
+     * @param x the target pixel x
+     * @param y the target pixel y
+     * @param timeInterval the interval to flash in seconds
+     * @param hueA first hue
+     * @param satA first saturation
+     * @param valA first value
+     * @param hueB second hue
+     * @param satB second saturation
+     * @param valB second value
+     */
+    default void flashHSV(int x, int y, double timeInterval, int hueA, int satA, int valA, int hueB, int satB, int valB) {
+        if ((System.currentTimeMillis() % (int) (timeInterval * 2000)) < (int) (timeInterval * 1000)) {
+            setHSV(x, y, hueA, satA, valA);
+        } else {
+            setHSV(x, y, hueB, satB, valB);
+        }
+    }
+
+    /**
+     * Flashes between two RGB colors on the given time interval.
+     * @param x the target pixel x
+     * @param y the target pixel y
+     * @param timeInterval the interval to flash in seconds
+     * @param rA first red
+     * @param gA first green
+     * @param bA first blue
+     * @param rB second red
+     * @param gB second green
+     * @param bB second blue
+     */
+    default void flashRGB(int x, int y, double timeInterval, int rA, int gA, int bA, int rB, int gB, int bB) {
+        if ((System.currentTimeMillis() % (int) (timeInterval * 2000)) < (int) (timeInterval * 1000)) {
+            setRGB(x, y, rA, gA, bA);
+        } else {
+            setRGB(x, y, rB, gB, bB);
+        }
+    }
+
+    /**
      * Checks whether matrix is the correct size.
      */
     default boolean checkMatrix(Mat matrix) {

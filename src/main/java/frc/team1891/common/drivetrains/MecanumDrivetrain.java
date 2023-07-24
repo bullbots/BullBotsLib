@@ -222,10 +222,10 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
    */
   public MecanumDriveWheelSpeeds getWheelSpeeds() {
     return new MecanumDriveWheelSpeeds(
-      config.encoderTicksPer100msToVelocity(frontLeft.getVelocity()),
-      config.encoderTicksPer100msToVelocity(frontRight.getVelocity()),
-      config.encoderTicksPer100msToVelocity(backLeft.getVelocity()),
-      config.encoderTicksPer100msToVelocity(backRight.getVelocity())
+      frontLeft.getVelocity(),
+      frontRight.getVelocity(),
+      backLeft.getVelocity(),
+      backRight.getVelocity()
     );
   }
 
@@ -235,10 +235,10 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
    */
   public MecanumDriveWheelPositions getWheelPositions() {
     return new MecanumDriveWheelPositions(
-      config.encoderTicksToDistance(frontLeft.getPosition()),
-      config.encoderTicksToDistance(frontRight.getPosition()),
-      config.encoderTicksToDistance(backLeft.getPosition()),
-      config.encoderTicksToDistance(backRight.getPosition())
+      frontLeft.getPosition(),
+      frontRight.getPosition(),
+      backLeft.getPosition(),
+      backRight.getPosition()
     );
   }
 

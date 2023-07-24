@@ -86,27 +86,6 @@ public class LEDStrip implements LEDStripInterface {
     }
 
     @Override
-    public void setAllHue(int hue) {
-        setAllHSV(hue, 255, maxValue);
-    }
-
-    @Override
-    public void setAllHSV(int hue, int sat, int val) {
-        val = Math.min(val, maxValue);
-        for (var i = 0; i < length; i++) {
-            buffer.setHSV(i, hue, sat, val);
-        }
-    }
-
-    @Override
-    public void setAllRGB(int r, int g, int b) {
-        int[] rgb = limitRGBBrightness(r, g, b);
-        for (var i = 0; i < length; i++) {
-            buffer.setRGB(i, rgb[0], rgb[1], rgb[2]);
-        }
-    }
-
-    @Override
     public void off() {
         for (var i = 0; i < length; ++i) {
             buffer.setRGB(i, 0, 0, 0);
@@ -238,8 +217,7 @@ public class LEDStrip implements LEDStripInterface {
 
         @Override
         public void draw(LEDStripInterface leds) {
-            long currentTime = System.currentTimeMillis();
-            if ((currentTime % (int) (timeInterval * 2000)) < (int) (timeInterval * 1000)) {
+            if ((System.currentTimeMillis() % (int) (timeInterval * 2000)) < (int) (timeInterval * 1000)) {
                 pattern1.draw(leds);
             } else {
                 pattern2.draw(leds);

@@ -136,22 +136,22 @@ public class LEDMatrixSegment implements LEDMatrixInterface {
     }
 
     @Override
-    public void setAllHue(int hue) {
-        for (int i = 0; i < length; i++) {
+    public void setRangeHue(int startIndex, int endIndex, int hue) {
+        for (int i = startIndex; i < endIndex; i++) {
             this.setHue(i, hue);
         }
     }
 
     @Override
-    public void setAllHSV(int hue, int sat, int val) {
-        for (int i = 0; i < length; i++) {
+    public void setRangeHSV(int startIndex, int endIndex, int hue, int sat, int val) {
+        for (int i = startIndex; i < endIndex; i++) {
             this.setHSV(i, hue, sat, val);
         }
     }
 
     @Override
-    public void setAllRGB(int r, int g, int b) {
-        for (int i = 0; i < length; i++) {
+    public void setRangeRGB(int startIndex, int endIndex, int r, int g, int b) {
+        for (int i = startIndex; i < endIndex; i++) {
             this.setRGB(i, r, g, b);
         }
     }
