@@ -124,11 +124,11 @@ public interface LEDMatrixInterface extends LEDStripInterface {
      * Sets the LEDs according to the given matrix
      * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
      */
-    void setMatrixHSV(Mat matrix);
+    boolean setMatrixHSV(Mat matrix);
 
     /**
      * Sets the LEDs according to the given matrix
      * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
      */
-    void setMatrixRGB(Mat matrix);
+    boolean setMatrixRGB(Mat matrix);
 }

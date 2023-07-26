@@ -157,7 +157,7 @@ public class LEDMatrixSegment implements LEDMatrixInterface {
     }
 
     @Override
-    public void setMatrixHSV(Mat matrix) {
+    public boolean setMatrixHSV(Mat matrix) {
         if (checkMatrix(matrix)) {
             for (int i = 0; i < numRows; ++i) {
                 for (int j = 0; j < numCols; ++j) {
@@ -166,11 +166,13 @@ public class LEDMatrixSegment implements LEDMatrixInterface {
                     this.setHSV(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
                 }
             }
+            return true;
         }
+        return false;
     }
 
     @Override
-    public void setMatrixRGB(Mat matrix) {
+    public boolean setMatrixRGB(Mat matrix) {
         if (checkMatrix(matrix)) {
             for (int i = 0; i < numRows; ++i) {
                 for (int j = 0; j < numCols; ++j) {
@@ -179,7 +181,9 @@ public class LEDMatrixSegment implements LEDMatrixInterface {
                     this.setRGB(curBufIndex, (int) element[2], (int) element[1], (int) element[0]);
                 }
             }
+            return true;
         }
+        return false;
     }
 
     @Override
