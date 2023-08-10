@@ -38,6 +38,40 @@ public interface LEDMatrixPattern {
     default void reset() {}
 
     /**
+     * Creates a basic {@link LEDMatrixPattern} that sets all the pixels according to a {@link Mat}.
+     */
+    static LEDMatrixPattern setFromRGBMatrix(Mat matrix) {
+        return new LEDMatrixPattern() {
+            @Override
+            public void draw(LEDMatrixInterface leds) {
+                leds.setMatrixRGB(matrix);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return true;
+            }
+        };
+    }
+
+    /**
+     * Creates a basic {@link LEDMatrixPattern} that sets all the pixels according to a {@link Mat}.
+     */
+    static LEDMatrixPattern setFromHSVMatrix(Mat matrix) {
+        return new LEDMatrixPattern() {
+            @Override
+            public void draw(LEDMatrixInterface leds) {
+                leds.setMatrixHSV(matrix);
+            }
+
+            @Override
+            public boolean isFinished() {
+                return true;
+            }
+        };
+    }
+
+    /**
      * Creates a basic {@link LEDMatrixPattern} that sets all the pixels in the LED strip to a given RGB color.
      * @param r red
      * @param g green

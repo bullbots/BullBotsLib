@@ -28,6 +28,11 @@ Once you do that, your drivetrain is ready to go.  All you need to do is configu
 You can also call `configureSmartDashboard()` in the constructor (as you can with anything that extends `Subsystem` from
 BullBotsLib) to get extra diagnostic information
 
+###### MotorController
+`MotorController` is an interface that extends WPILib's `MotorController`, adding functionality of a relative 
+encoder.  Basic implementations exist for the TalonFX, TalonSRX, and SparkMax already.  `MotorController` is used within
+all drivetrains, except swerve.
+
 ###### Swerve
 `SwerveDrivetrain` tries to make it as easy as possible to get started with Swerve.  Each `SwerveModule` holds a 
 `DriveController` and a `SteerController`, which separates the control over a drive motor and steer motor for easy 
@@ -71,10 +76,10 @@ the `AddressableLED` and `AddressableLEDBuffer` classes from WPILib.
 
 The `LEDStrip` can be divided up into smaller segments giving more complex control.  `LEDStripSegment` is the simplest, 
 as it just provides the same behavior applied to a subsection of the `LEDStrip`.  `LEDMatrix` allows for control
-over a grid of LEDs.  It can even take `org.opencv.core.Mat` (also provided in WPILib) as an input.
+over a grid of LEDs.  Finally, `LEDMatrixSegment` allows control over a specific section of a parent `LEDMatrix`.  It can even take `org.opencv.core.Mat` (also provided in WPILib) as an input.
 
-The `LEDPattern` interfaces within each class help you create complex animations without messy code.  Within each class 
-there is also an `LEDPatterns` class, which just holds a few example patterns that you can easily use.
+The `LEDPattern` and `LedMatrixPattern` interfaces help you create complex animations without messy code.  There is also
+an `LEDPatterns` and `LEDMatrixPatterns` classes, which just holds a few example patterns that you can easily use.
 
 ### Logging ([frc.team1891.common.logger](https://github.com/bullbots/BullBotsLib/tree/main/src/main/java/frc/team1891/common/logger))
 The `BullLogger` is a logger class that uses the `DataLog` class.  It exports its logs to a USB drive plugged into the
@@ -104,3 +109,50 @@ done by calling `HolonomicTrajectoryCommandGenerator.setTranslationalPID(double 
 ###### Limelight
 The `Limelight` class wraps the NetworkTables used by Limelight into a more intuitive structure, adding features such as
 `isConnected()`, `getLatencyMs()`, and `setPipeline(int pipeline)`
+
+## How to Maintain this Repository - Instructions for Future Bullbots
+### Creating a New Build
+I've run this project using IntelliJ.  To make a build, first select the build version inside `build.gradle`.
+```
+group 'frc.team1891'
+version 'YEAR.AA.BB'
+```
+I've been pretty messy in what I decide is a major release, and what is a minor release.  But generally you increase `AA`
+for major releases, and `BB` for bug fixes and minor releases.
+
+Next, just run the gradle build.  The first time, you'll have to find the task inside the Gradle sidebar, but once you 
+run it the first time, it will appear at the top near the play button.
+
+![build.png](readme/build.png)
+
+After the task runs, you'll find 3 `.jar` files inside `build/libs`:
+- `BullBotsLib-**version**.jar`
+  
+    This is the main file, technically this is the only one you need in order to have functional code, since it includes
+the compiled code.
+- `BullBotsLib-**version**-javadoc.jar`
+
+    This file creates an HTML project that includes the documentation of the code project.  To be honest I don't 
+actually know if this is necessary, but I _think_ this is how you're able to see the code documentation within a code 
+editor.
+- `BullBotsLib-**version**-sources.jar`
+
+  This file contains the source code.  If the above file doesn't provide the code documentation, this one does.  Either 
+way, this file also allows you to view the code when you ctrl+click from another project.
+
+Since we only want to publish one `.jar` file, we need to unzip these, and repackage them into a single file.  In a file
+explorer, we can highlight these three files, and using 7-Zip, unzip them.  When you do this, a prompt will come up, 
+asking to confirm the file replacement of `MANIFEST.MF`.  Click "No to All".
+
+![unzip.png](readme/unzip.png)
+
+Once the files are unzipped, we need to re-zip them into a single file.  Highlight all the contents, and use 7-Zip to
+"Add to zipper.zip".  You can now rename this file.  Technically the name can be whatever you want, but name it to 
+`BullBotsLib-**version**`.  When you rename it, change the file type from `.zip` to `.jar`.  This new file can now be 
+published to GitHub. 
+
+### Managing Dependencies
+Unlike an FRC project, we can't use vendordeps for our dependencies.  We need to manually add and update our dependencies 
+in `build.gradle`.  The easiest way to see when dependencies need to be updated, is to run "Manage vendordeps" in an FRC
+project, check for updates, then copy those version numbers into this project.  If you find that you need a new 
+dependency from WPILib, they can be accessed [here](https://frcmaven.wpi.edu/ui/native/release/edu/wpi/first/).

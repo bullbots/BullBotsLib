@@ -13,6 +13,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.team1891.common.LazyDashboard;
+import frc.team1891.common.drivetrains.motorcontrollers.MotorController;
 import frc.team1891.common.drivetrains.motorcontrollers.TalonFXController;
 
 /** Drivetrain base for a differential drivetrain. */
@@ -23,7 +24,7 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
 
   protected final DifferentialDrive differentialDrive;
 
-  private final TalonFXController left, right;
+  private final MotorController left, right;
 
   /**
    * Creates a new differential drivetrain.
@@ -64,7 +65,13 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
     WPI_TalonFX leftMaster,
     WPI_TalonFX rightMaster
   ) {
-    this(config, kinematics, gyro, new TalonFXController(leftMaster, config), new TalonFXController(rightMaster, config));
+    this(
+      config,
+      kinematics,
+      gyro,
+      new TalonFXController(leftMaster, config),
+      new TalonFXController(rightMaster, config)
+    );
   }
 
   /**
@@ -79,8 +86,8 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
     DrivetrainConfig config,
     double trackWidthMeters,
     Gyro gyro,
-    TalonFXController leftMaster,
-    TalonFXController rightMaster
+    MotorController leftMaster,
+    MotorController rightMaster
   ) {
     this(
       config,
@@ -103,8 +110,8 @@ public abstract class DifferentialDrivetrain extends Drivetrain {
     DrivetrainConfig config,
     DifferentialDriveKinematics kinematics,
     Gyro gyro,
-    TalonFXController leftMaster,
-    TalonFXController rightMaster
+    MotorController leftMaster,
+    MotorController rightMaster
   ) {
     super(config, gyro);
 

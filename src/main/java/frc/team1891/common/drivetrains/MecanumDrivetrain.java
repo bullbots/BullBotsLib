@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.team1891.common.LazyDashboard;
+import frc.team1891.common.drivetrains.motorcontrollers.MotorController;
 import frc.team1891.common.drivetrains.motorcontrollers.TalonFXController;
 
 /** Drivetrain base for a mecanum drivetrain. */
@@ -22,7 +23,7 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
   protected final MecanumDrivePoseEstimator poseEstimator;
   protected final MecanumDriveKinematics kinematics;
 
-  private final TalonFXController frontLeft, frontRight, backLeft, backRight;
+  private final MotorController frontLeft, frontRight, backLeft, backRight;
 
   /**
    * Creates a new MecanumDrivetrain, assuming the center of the robot is the center of the drivebase.
@@ -113,10 +114,10 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
     double driveBaseWidth,
     double driveBaseLength,
     Gyro gyro,
-    TalonFXController frontLeft,
-    TalonFXController frontRight,
-    TalonFXController backLeft,
-    TalonFXController backRight
+    MotorController frontLeft,
+    MotorController frontRight,
+    MotorController backLeft,
+    MotorController backRight
   ) {
     this(
       config,
@@ -152,10 +153,10 @@ public abstract class MecanumDrivetrain extends HolonomicDrivetrain {
     Translation2d backLeftLocation,
     Translation2d backRightLocation,
     Gyro gyro,
-    TalonFXController frontLeft,
-    TalonFXController frontRight,
-    TalonFXController backLeft,
-    TalonFXController backRight
+    MotorController frontLeft,
+    MotorController frontRight,
+    MotorController backLeft,
+    MotorController backRight
   ) {
     super(config, gyro);
 

@@ -11,12 +11,12 @@ public class LazySolenoid extends Solenoid {
 
     public LazySolenoid(PneumaticsModuleType moduleType, int channel) {
         super(moduleType, channel);
-        set(false);
+        super.set(false);
     }
 
     public LazySolenoid(int module, PneumaticsModuleType moduleType, int channel) {
         super(module, moduleType, channel);
-        set(false);
+        super.set(false);
     }
 
 
