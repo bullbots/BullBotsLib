@@ -43,13 +43,21 @@ public class DriverStationSpoofer {
             }
 
             thread = new Thread(() -> {
-                DatagramSocket socket;
-                try {
-                    socket = new DatagramSocket();
-                } catch (SocketException e1) {
-                    e1.printStackTrace();
+                DatagramSocket socket = null;
+                boolean success = false;
+                while (!Thread.currentThread().isInterrupted() && !success) {
+                    try {
+                        socket = new DatagramSocket();
+                        success = true;
+                    } catch (SocketException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+
+                if (!success) {
                     return;
                 }
+
                 InetSocketAddress address = new InetSocketAddress("127.0.0.1", 1110);
                 byte[] sendData = new byte[6];
                 DatagramPacket packet = new DatagramPacket(sendData, 0, 6, address);

@@ -3,7 +3,7 @@ plugins {
 }
 
 group 'frc.team1891'
-version '2023.6.1'
+version '2025.0.0'
 
 repositories {
     mavenCentral()
