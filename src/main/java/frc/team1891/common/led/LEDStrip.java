@@ -8,6 +8,17 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
  */
 @SuppressWarnings("unused")
 public class LEDStrip implements LEDStripInterface {
+    public enum LEDMode {
+        RGB,
+        RBG,
+        GRB,
+        GBR,
+        BGR,
+        BRG
+    }
+
+    protected final LEDMode ledMode;
+
     protected final AddressableLED leds;
     protected final AddressableLEDBuffer buffer;
     private final int length;
@@ -20,10 +31,21 @@ public class LEDStrip implements LEDStripInterface {
      * @param length number of LEDs
      */
     public LEDStrip(int port, int length) {
+        this(port, length, LEDMode.RGB);
+    }
+
+    /**
+     * Creates a new {@link LEDStrip} with control over an LED strip plugged into the given port.
+     * @param port target PWM port
+     * @param length number of LEDs
+     * @param ledMode mode
+     */
+    public LEDStrip(int port, int length, LEDMode ledMode) {
         leds = new AddressableLED(port);
         buffer = new AddressableLEDBuffer(length);
         leds.setLength(buffer.getLength());
         this.length = length;
+        this.ledMode = ledMode;
     }
 
     @Override
@@ -65,22 +87,72 @@ public class LEDStrip implements LEDStripInterface {
 
     @Override
     public void setHue(int index, int hue) {
-        if (indexCheck(index)) {
+        if (checkValidIndex(index)) {
             setHSV(index, hue, 255, maxValue);
         }
     }
 
     @Override
     public void setHSV(int index, int hue, int sat, int val) {
-        if (indexCheck(index)) {
+        if (checkValidIndex(index)) {
             buffer.setHSV(index, hue, sat, Math.min(val, maxValue));
+        }
+
+        if (sat == 0) {
+            setRGB(index, val, val, val);
+            return;
+        }
+
+        // The below algorithm is copied from Color.fromHSV and moved here for
+        // performance reasons.
+
+        // Loosely based on
+        // https://en.wikipedia.org/wiki/HSL_and_HSV#HSV_to_RGB
+        // The hue range is split into 60 degree regions where in each region there
+        // is one rgb component at a low value (m), one at a high value (v) and one
+        // that changes (X) from low to high (X+m) or high to low (v-X)
+
+        // Difference between highest and lowest value of any rgb component
+        final int chroma = (sat * val) / 255;
+
+        // Because hue is 0-180 rather than 0-360 use 30 not 60
+        final int region = (hue / 30) % 6;
+
+        // Remainder converted from 0-30 to 0-255
+        final int remainder = (int) Math.round((hue % 30) * (255 / 30.0));
+
+        // Value of the lowest rgb component
+        final int m = val - chroma;
+
+        // Goes from 0 to chroma as hue increases
+        final int X = (chroma * remainder) >> 8;
+
+        switch (region) {
+            case 0:
+                setRGB(index, val, X + m, m);
+                break;
+            case 1:
+                setRGB(index, val - X, val, m);
+                break;
+            case 2:
+                setRGB(index, m, val, X + m);
+                break;
+            case 3:
+                setRGB(index, m, val - X, val);
+                break;
+            case 4:
+                setRGB(index, X + m, m, val);
+                break;
+            default:
+                setRGB(index, val, m, val - X);
+                break;
         }
     }
 
     @Override
     public void setRGB(int index, int r, int g, int b) {
-        if (indexCheck(index)) {
-            int[] rgb = limitRGBBrightness(r, g, b);
+        if (checkValidIndex(index)) {
+            int[] rgb = limitRGBBrightness(fromRGBToCustomMode(r, g, b));
             buffer.setRGB(index, rgb[0], rgb[1], rgb[2]);
         }
     }
@@ -92,13 +164,25 @@ public class LEDStrip implements LEDStripInterface {
         }
     }
 
-    private int[] limitRGBBrightness(int r, int g, int b) {
-        int[] rgb = new int[] {r, g, b};
-        if (r + g + b > maxBrightness) {
-            rgb[0] = r / ((r + g + b) / maxBrightness);
-            rgb[1] = g / ((r + g + b) / maxBrightness);
-            rgb[2] = b / ((r + g + b) / maxBrightness);
+//    private int[] limitRGBBrightness(int r, int g, int b) {
+    private int[] limitRGBBrightness(int[] rgb) {
+        int sum = rgb[0] + rgb[1] + rgb[2];
+        if (sum > maxBrightness) {
+            rgb[0] = rgb[0] / (sum / maxBrightness);
+            rgb[1] = rgb[1] / (sum / maxBrightness);
+            rgb[2] = rgb[2] / (sum / maxBrightness);
         }
         return rgb;
+    }
+
+    private int[] fromRGBToCustomMode(int r, int g, int b) {
+        return switch (ledMode) {
+            case RGB -> new int[] {r, g, b};
+            case RBG -> new int[] {r, b, g};
+            case GRB -> new int[] {g, r, b};
+            case GBR -> new int[] {g, b, r};
+            case BGR -> new int[] {b, g, r};
+            case BRG -> new int[] {b, r, g};
+        };
     }
 }
