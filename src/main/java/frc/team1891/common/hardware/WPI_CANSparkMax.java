@@ -1,11 +1,11 @@
 package frc.team1891.common.hardware;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 
-public class WPI_CANSparkMax extends CANSparkMax implements Sendable {
+public class WPI_CANSparkMax extends SparkMax implements Sendable {
     /**
      * Create a new object to control a SPARK MAX motor Controller
      *

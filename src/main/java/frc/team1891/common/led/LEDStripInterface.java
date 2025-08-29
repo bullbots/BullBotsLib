@@ -10,7 +10,7 @@ public interface LEDStripInterface {
      */
     int length();
 
-    default boolean indexCheck(int index) {
+    default boolean checkValidIndex(int index) {
         return 0 <= index && index < length();
     }
 
