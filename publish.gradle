@@ -7,7 +7,7 @@ ext.licenseFile = files("$rootDir/LICENSE.txt")
 
 def templateVendorFile = "BullBotsLib.json"
 
-def pubVersion = '2025.0.0'
+def pubVersion = project.version
 
 def outputsFolder = file("$buildDir/outputs")
 
