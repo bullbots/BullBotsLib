@@ -22,6 +22,7 @@ public interface LEDStripPattern {
 
     /**
      * If an implemented pattern has an end to it this should return true
+     * @return true if the pattern is finished
      */
     default boolean isFinished() {
         return false;

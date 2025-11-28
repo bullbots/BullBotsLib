@@ -9,16 +9,33 @@ import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
 
+/**
+ * A wrapper for the NavX IMU providing additional convenience methods.
+ */
 @SuppressWarnings("unused")
 public class NavX extends AHRS {
+    /**
+     * Constructs a NavX with the specified communication type.
+     * @param comType the communication type
+     */
     public NavX(NavXComType comType) {
         super(comType);
     }
 
+    /**
+     * Constructs a NavX with the specified communication type and update rate.
+     * @param comType the communication type
+     * @param updateRate the update rate
+     */
     public NavX(NavXComType comType, NavXUpdateRate updateRate) {
         super(comType, updateRate);
     }
 
+    /**
+     * Constructs a NavX with the specified communication type and custom update rate.
+     * @param comType the communication type
+     * @param customRateHz the custom update rate in Hz
+     */
     public NavX(NavXComType comType, int customRateHz) {
         super(comType, customRateHz);
     }

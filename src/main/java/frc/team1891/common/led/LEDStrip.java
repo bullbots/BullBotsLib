@@ -8,18 +8,28 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
  */
 @SuppressWarnings("unused")
 public class LEDStrip implements LEDStripInterface {
+    /** The color channel ordering mode for the LED strip. */
     public enum LEDMode {
+        /** Red, Green, Blue ordering. */
         RGB,
+        /** Red, Blue, Green ordering. */
         RBG,
+        /** Green, Red, Blue ordering. */
         GRB,
+        /** Green, Blue, Red ordering. */
         GBR,
+        /** Blue, Green, Red ordering. */
         BGR,
+        /** Blue, Red, Green ordering. */
         BRG
     }
 
+    /** The color channel ordering mode for this LED strip. */
     protected final LEDMode ledMode;
 
+    /** The WPILib LED controller. */
     protected final AddressableLED leds;
+    /** The LED data buffer. */
     protected final AddressableLEDBuffer buffer;
     private final int length;
     private int maxBrightness = (255 * 3) / 2;

@@ -5,9 +5,12 @@ package frc.team1891.common.led;
  */
 @SuppressWarnings("unused")
 public class LEDStripSegment implements LEDStripInterface {
+    /** The starting index of this segment on the parent strip. */
     public final int startIndex;
     private final int length;
+    /** The parent LED strip that this segment is part of. */
     public final LEDStrip parentStrip;
+    /** Whether this segment's indexing is reversed. */
     protected boolean isReversed = false;
 
     /**
@@ -24,8 +27,8 @@ public class LEDStripSegment implements LEDStripInterface {
 
     /**
      * Combines two segments to behave as one
-     * @param segmentA
-     * @param segmentB
+     * @param segmentA the first segment
+     * @param segmentB the second segment
      * @return the combined segment
      */
     public static LEDStripSegment combine(LEDStripSegment segmentA, LEDStripSegment segmentB) {

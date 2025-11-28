@@ -9,7 +9,10 @@ public class LEDStripPatterns {
     public static final LEDStripPattern NONE = leds -> {};
     /** Turns the LEDs off */
     public static final LEDStripPattern OFF = LEDStripInterface::off;
-    /** Animates a simple rainbow moving along the LED strip. */
+    /**
+     * Animates a simple rainbow moving along the LED strip.
+     * @return the rainbow pattern
+     */
     public static LEDStripPattern RAINBOW() {
         return new LEDStripPattern() {
             private int firstHue = 0;
@@ -29,11 +32,18 @@ public class LEDStripPatterns {
         };
     }
 
-    /** Flashes between red and bright red. */
+    /**
+     * Flashes between red and bright red.
+     * @return the error pattern
+     */
     public static LEDStripPattern ERROR() {
         return new LEDStripPattern.AlternatingPattern(.25, LEDStripPattern.setRGB(200, 0, 0), LEDStripPattern.setRGB(150, 0, 0));
     }
-    /** Flashes yellow. */
+
+    /**
+     * Flashes yellow.
+     * @return the warning pattern
+     */
     public static LEDStripPattern WARNING() {
         return new LEDStripPattern.AlternatingPattern(.25, LEDStripPattern.setRGB(160, 160, 50));
     }

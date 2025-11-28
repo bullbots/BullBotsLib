@@ -12,6 +12,12 @@ import java.util.function.DoubleSupplier;
 @SuppressWarnings("unused")
 public class JoystickRotation2d {
     DoubleSupplier xAxis, yAxis;
+
+    /**
+     * Constructs a JoystickRotation2d from two axis suppliers.
+     * @param xAxis the x-axis supplier
+     * @param yAxis the y-axis supplier
+     */
     public JoystickRotation2d(DoubleSupplier xAxis, DoubleSupplier yAxis) {
         this.xAxis = xAxis;
         this.yAxis = yAxis;
@@ -19,6 +25,7 @@ public class JoystickRotation2d {
 
     /**
      * Get the {@link Rotation2d} created by the pair of axis.
+     * @return the rotation created from the joystick axes
      */
     public Rotation2d get() {
         return new Rotation2d(xAxis.getAsDouble(), yAxis.getAsDouble());

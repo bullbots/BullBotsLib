@@ -22,14 +22,30 @@ public class LEDMatrixPatterns {
 
         private final BooleanSupplier up, down, left, right;
 
+        /** The number of frames between game updates. */
         protected int updateRate;
 
         private SnakeGame game;
 
+        /**
+         * Constructs a SnakeGamePattern with default update rate.
+         * @param up supplier for up input
+         * @param down supplier for down input
+         * @param left supplier for left input
+         * @param right supplier for right input
+         */
         public SnakeGamePattern(BooleanSupplier up, BooleanSupplier down, BooleanSupplier left, BooleanSupplier right) {
             this(7, up, down, left, right);
         }
 
+        /**
+         * Constructs a SnakeGamePattern.
+         * @param updateRate the number of frames between game updates
+         * @param up supplier for up input
+         * @param down supplier for down input
+         * @param left supplier for left input
+         * @param right supplier for right input
+         */
         public SnakeGamePattern(int updateRate, BooleanSupplier up, BooleanSupplier down, BooleanSupplier left, BooleanSupplier right) {
             this.updateRate = updateRate;
 
@@ -183,10 +199,15 @@ public class LEDMatrixPatterns {
             }
         }
 
+        /** Represents a direction in the snake game. */
         public enum Direction {
+            /** Up direction. */
             UP(0, -1),
+            /** Down direction. */
             DOWN(0, 1),
+            /** Left direction. */
             LEFT(-1, 0),
+            /** Right direction. */
             RIGHT(1, 0);
 
             private final int x;
@@ -197,20 +218,33 @@ public class LEDMatrixPatterns {
                 this.y = y;
             }
 
+            /**
+             * Gets the x component of this direction.
+             * @return the x component
+             */
             public int getX() {
                 return this.x;
             }
 
+            /**
+             * Gets the y component of this direction.
+             * @return the y component
+             */
             public int getY() {
                 return this.y;
             }
         }
 
+        /** Represents the snake in the snake game. */
         public static class Snake {
             private Direction direction;
             private final List<Point> body;
             private int length;
 
+            /**
+             * Constructs a Snake at the given starting point.
+             * @param startPoint the starting position
+             */
             public Snake(Point startPoint) {
                 this.direction = Direction.RIGHT;
                 this.body = new ArrayList<>();
@@ -218,6 +252,10 @@ public class LEDMatrixPatterns {
                 this.length = 1;
             }
 
+            /**
+             * Sets the direction the snake is moving.
+             * @param direction the new direction
+             */
             public void setDirection(Direction direction) {
                 // prevent moving back on itself
                 if (this.direction.getX() + direction.getX() == 0 &&
@@ -227,18 +265,33 @@ public class LEDMatrixPatterns {
                 this.direction = direction;
             }
 
+            /**
+             * Gets the head position of the snake.
+             * @return the head position
+             */
             public Point getHead() {
                 return this.body.get(0);
             }
 
+            /**
+             * Gets the body segments of the snake.
+             * @return the list of body segments
+             */
             public List<Point> getBody() {
                 return this.body;
             }
 
+            /**
+             * Gets the length of the snake.
+             * @return the length
+             */
             public int getLength() {
                 return this.length;
             }
 
+            /**
+             * Moves the snake in its current direction.
+             */
             public void move() {
                 Point head = this.getHead();
                 Point newHead = new Point(head.x + this.direction.getX(), head.y + this.direction.getY());
@@ -248,10 +301,17 @@ public class LEDMatrixPatterns {
                 }
             }
 
+            /**
+             * Increases the snake's length by one.
+             */
             public void grow() {
                 this.length++;
             }
 
+            /**
+             * Checks if the snake has collided with its own body.
+             * @return true if the snake has collided with itself
+             */
             public boolean hasCollidedWithBody() {
                 Point head = this.getHead();
                 for (int i = 1; i < this.body.size(); i++) {
@@ -299,10 +359,18 @@ public class LEDMatrixPatterns {
             }
         }
 
+        /** Represents a point in 2D space. */
         public static class Point {
+            /** The x coordinate. */
             public int x;
+            /** The y coordinate. */
             public int y;
 
+            /**
+             * Constructs a Point at the given coordinates.
+             * @param x the x coordinate
+             * @param y the y coordinate
+             */
             public Point(int x, int y) {
                 this.x = x;
                 this.y = y;
@@ -334,7 +402,10 @@ public class LEDMatrixPatterns {
     public static final LEDMatrixPattern NONE = leds -> {};
     /** Turns the LEDs off */
     public static final LEDMatrixPattern OFF = LEDMatrixInterface::off;
-    /** Animates a simple rainbow moving diagonally along the LED grid. */
+    /**
+     * Animates a simple rainbow moving diagonally along the LED grid.
+     * @return the rainbow pattern
+     */
     public static LEDMatrixPattern RAINBOW() {
         return new LEDMatrixPattern() {
             private int rainbowFirstPixelHue = 0;
@@ -355,11 +426,18 @@ public class LEDMatrixPatterns {
         };
     }
 
-    /** Flashes between red and bright red. */
+    /**
+     * Flashes between red and bright red.
+     * @return the error pattern
+     */
     public static LEDMatrixPattern ERROR() {
         return new LEDMatrixPattern.AlternatingPattern(.25, LEDMatrixPattern.setRGB(200, 0, 0), LEDMatrixPattern.setRGB(150, 0, 0));
     }
-    /** Flashes yellow. */
+
+    /**
+     * Flashes yellow.
+     * @return the warning pattern
+     */
     public static LEDMatrixPattern WARNING() {
         return new LEDMatrixPattern.AlternatingPattern(.25, LEDMatrixPattern.setRGB(160, 160, 50));
     }

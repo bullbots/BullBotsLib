@@ -10,12 +10,21 @@ import edu.wpi.first.wpilibj.motorcontrol.Talon;
  */
 @SuppressWarnings("unused")
 public class LazyTalon extends Talon {
+    /** The last speed value set to the motor controller. */
     protected double lastSet = Double.NaN;
 
+    /**
+     * Constructs a LazyTalon.
+     * @param deviceNumber the device number
+     */
     public LazyTalon(int deviceNumber) {
         super(deviceNumber);
     }
 
+    /**
+     * Gets the last speed value set to the motor controller.
+     * @return the last speed value
+     */
     public double getLastSet() {
         return lastSet;
     }

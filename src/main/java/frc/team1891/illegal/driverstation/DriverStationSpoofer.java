@@ -9,6 +9,13 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 
+/**
+ * Spoofs a DriverStation connection to enable the robot without an actual DriverStation.
+ * <p>
+ * <b>WARNING:</b> This class is NOT FRC legal. Do not use in competition matches.
+ * Use with caution and only for testing purposes.
+ * </p>
+ */
 @SuppressWarnings("unused")
 public class DriverStationSpoofer {
     static {
