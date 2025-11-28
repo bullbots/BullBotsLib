@@ -1,2 +1,6 @@
-rootProject.name = 'BullBotsLib'
-
+pluginManagement {
+    repositories {
+        mavenLocal()
+        gradlePluginPortal()
+    }
+}

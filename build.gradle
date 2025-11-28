@@ -1,74 +1,213 @@
+import edu.wpi.first.toolchain.*
+
 plugins {
-    id 'java-library'
+  id 'cpp'
+  id 'java'
+  id 'google-test'
+  id 'edu.wpi.first.wpilib.repositories.WPILibRepositoriesPlugin' version '2025.0'
+  id 'edu.wpi.first.NativeUtils' version '2025.9.0'
+  id 'edu.wpi.first.GradleJni' version '1.1.0'
+  id 'edu.wpi.first.GradleVsCode' version '2.1.0'
 }
 
 group 'frc.team1891'
 version '2025.0.0'
 
+// WPILib Version
+ext.wpilibVersion = "2025.3.2"
+
 repositories {
-    mavenCentral()
+  mavenCentral()
 
-    // WPI
-    maven { url = uri('https://frcmaven.wpi.edu/artifactory/release/') }
+  // CTRE
+  maven { url = uri('https://maven.ctr-electronics.com/release/') }
 
-    // CTRE
-    maven { url = uri('https://maven.ctr-electronics.com/release/') }
+  // REV
+  maven { url = uri('https://maven.revrobotics.com/') }
 
-    // REV
-    maven { url = uri('https://maven.revrobotics.com/') }
-
-    // Studica (KauaiLabs)
-    maven { url = uri('https://dev.studica.com/maven/release/2025/')}
-
-    // TODO YAGSL
+  // Studica (KauaiLabs)
+  maven { url = uri('https://dev.studica.com/maven/release/2025/')}
 }
 
+if (project.hasProperty('releaseMode')) {
+  wpilibRepositories.addAllReleaseRepositories(project)
+} else {
+  wpilibRepositories.addAllDevelopmentRepositories(project)
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+var javaVersion = "17"
+
+// Apply C++ configuration
+apply from: 'config.gradle'
+
+// Apply Java configuration
 dependencies {
     // WPI
-    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2025.3.2'
-    implementation 'edu.wpi.first.wpimath:wpimath-java:2025.3.2'
-    implementation 'edu.wpi.first.wpiutil:wpiutil-java:2025.3.2'
-    implementation 'edu.wpi.first.wpilibNewCommands:wpilibNewCommands-java:2025.3.2'
-
-    implementation 'edu.wpi.first.ntcore:ntcore-java:2025.3.2'
-
-    implementation 'edu.wpi.first.hal:hal-java:2025.3.2'
+    implementation "edu.wpi.first.cscore:cscore-java:$wpilibVersion"
+    implementation "edu.wpi.first.cameraserver:cameraserver-java:$wpilibVersion"
+    implementation "edu.wpi.first.ntcore:ntcore-java:$wpilibVersion"
+    implementation "edu.wpi.first.wpilibj:wpilibj-java:$wpilibVersion"
+    implementation "edu.wpi.first.wpiutil:wpiutil-java:$wpilibVersion"
+    implementation "edu.wpi.first.wpimath:wpimath-java:$wpilibVersion"
+    implementation "edu.wpi.first.wpiunits:wpiunits-java:$wpilibVersion"
+    implementation "edu.wpi.first.wpilibNewCommands:wpilibNewCommands-java:$wpilibVersion"
+    implementation "edu.wpi.first.hal:hal-java:$wpilibVersion"
 
     // WPI Third Party
-    implementation 'edu.wpi.first.thirdparty.frc2025.opencv:opencv-java:4.10.0-3'
+    implementation "edu.wpi.first.thirdparty.frc2025.opencv:opencv-java:4.10.0-3"
 
-    // CTRE is implementation because it is not a hard requirement
-    // Phoenix 6
-//    implementation 'com.ctre.phoenix6:api-java:25.4.0'
+    // CTRE Phoenix 6
     implementation 'com.ctre.phoenix6:wpiapi-java:25.4.0'
 
-    // REV is implementation because it is not a hard requirement
+    // REV
     implementation 'com.revrobotics.frc:REVLib-java:2025.0.3'
 
     // KauaiLabs
     implementation 'com.studica.frc:Studica-java:2025.0.1'
 
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.19.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    // Jackson
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.19.2"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.19.2"
+
+    implementation "org.ejml:ejml-simple:0.44.0"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.13.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
+// Set up java tests
 test {
     useJUnitPlatform()
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
+    testLogging {
+        events "failed"
+        exceptionFormat = "full"
+    }
+}
+
+if (project.hasProperty('onlylinuxathena') || project.hasProperty('onlylinuxarm32') || project.hasProperty('onlylinuxarm64') || project.hasProperty('onlywindowsarm64') || project.hasProperty('onlylinuxsystemcore')) {
+    test.enabled = false
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add '-XDstringConcat=inline'
+    options.encoding = 'UTF-8'
+}
+
+// Setup Javadocs to link back to WPILib docs
+javadoc {
+    options {
+        links "https://docs.oracle.com/en/java/javase/$javaVersion/docs/api/", 'https://github.wpilib.org/allwpilib/docs/release/java/'
+    }
+}
+
+// Set up exports properly
+nativeUtils {
+  exportsConfigs {
+    // Main library is just default empty. This will export everything
+    BullBotsLib {
+    }
+  }
+  privateExportsConfigs {
+    // Only export explicit symbols from driver library
+    BullBotsLibDriver {
+      exportsFile = project.file("src/main/driver/symbols.txt")
+    }
+  }
+}
+
+ext.getCurrentArch = {
+    return NativePlatforms.desktop
+}
+
+def systemArch = getCurrentArch()
+
+model {
+  components {
+    BullBotsLib(NativeLibrarySpec) {
+      sources {
+        cpp {
+          source {
+            srcDirs 'src/main/native/cpp'
+            include '**/*.cpp'
+          }
+          exportedHeaders {
+            srcDirs 'src/main/native/include'
+          }
+        }
+      }
+      binaries.all {
+        lib library: 'BullBotsLibDriver', linkage: 'shared'
+      }
+      nativeUtils.useRequiredLibrary(it, 'wpilib_shared')
+    }
+
+    BullBotsLibDriver(JniNativeLibrarySpec) {
+      enableCheckTask true
+      javaCompileTasks << compileJava
+      jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.roborio)
+      // Leave these for future proofing
+      jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.linuxarm32)
+      jniCrossCompileOptions << JniCrossCompileOptions(nativeUtils.wpi.platforms.linuxarm64)
+      sources {
+        cpp {
+          source {
+            srcDirs 'src/main/driver/cpp'
+            include '**/*.cpp'
+          }
+          exportedHeaders {
+            srcDirs 'src/main/driver/include'
+          }
+        }
+      }
+
+      nativeUtils.useRequiredLibrary(it, "driver_shared")
+    }
+  }
+  testSuites {
+    BullBotsLibTest {
+        sources.cpp {
+            source {
+                srcDir 'src/test/native/cpp'
+                include '**/*.cpp'
+            }
+        }
+
+        binaries.all {
+          lib library: 'BullBotsLibDriver', linkage: 'shared'
+
+          def arch = it.targetPlatform.name
+          if (systemArch == arch && it.buildType.name == 'debug') {
+            def filePath = it.tasks.install.installDirectory.get().toString() + File.separatorChar + 'lib'
+            test.dependsOn it.tasks.install
+            test.systemProperty 'java.library.path', filePath
+            test.environment 'LD_LIBRARY_PATH', filePath
+            test.workingDir filePath
+          }
+        }
+
+        nativeUtils.useRequiredLibrary(it, "wpilib_executable_shared", "googletest_static")
+    }
+
+    BullBotsLibDriverTest {
+        sources.cpp {
+            source {
+                srcDir 'src/test/driver/cpp'
+                include '**/*.cpp'
+            }
+        }
+        nativeUtils.useRequiredLibrary(it, "wpilib_executable_shared", "googletest_static")
+    }
+  }
+}
+
+apply from: 'publish.gradle'
+
+wrapper {
+  gradleVersion = '8.14.3'
 }
