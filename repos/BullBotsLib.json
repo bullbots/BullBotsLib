@@ -5,7 +5,7 @@
     "frcYear": "2025",
     "uuid": "7a8c0651-a0cd-4c12-b17a-c64f58a89d55",
     "mavenUrls": [
-        "https://bullbots.github.io/BullBotsLib/repos"
+        "https://bullbots.github.io/BullBotsLib/repos/releases"
     ],
     "jsonUrl": "https://bullbots.github.io/BullBotsLib/repos/BullBotsLib.json",
     "javaDependencies": [
