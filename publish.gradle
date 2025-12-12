@@ -196,6 +196,24 @@ task cleanReleaseRepo(type: Delete) {
 
 tasks.matching {it != cleanReleaseRepo}.all {it.dependsOn cleanReleaseRepo}
 
+task publishToRepo(type: Copy) {
+    description = 'Publishes artifacts and copies them to the root repos directory for GitHub Pages'
+    group = 'Publishing'
+
+    dependsOn publish
+
+    from "$buildDir/repos"
+    into "$rootDir/repos"
+
+    doLast {
+        println "Published version $pubVersion to repos/ directory"
+        println "Next steps:"
+        println "  1. git add repos/"
+        println "  2. git commit -m \"Publish BullBotsLib $pubVersion vendor dependency artifacts\""
+        println "  3. git push"
+    }
+}
+
 model {
     publishing {
         def taskList = createComponentZipTasks($.components, ['BullBotsLib'], zipBaseName, Zip, project, includeStandardZipFormat)
