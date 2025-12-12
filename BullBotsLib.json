@@ -15,5 +15,6 @@
             "version": "${version}"
         }
     ],
-    "jniDependencies": []
+    "jniDependencies": [],
+    "cppDependencies": []
 }
