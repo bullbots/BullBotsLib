@@ -111,8 +111,55 @@ The `Limelight` class wraps the NetworkTables used by Limelight into a more intu
 `isConnected()`, `getLatencyMs()`, and `setPipeline(int pipeline)`
 
 ## How to Maintain this Repository - Instructions for Future Bullbots
-### Creating a New Build
-I've run this project using IntelliJ.  To make a build, first select the build version inside `build.gradle`.
+### Publishing a New Release
+
+#### 1. Update the Version
+First, update the version in `build.gradle`:
+```gradle
+group 'frc.team1891'
+version 'YEAR.AA.BB'
+```
+Generally, increase `AA` for major releases and `BB` for bug fixes and minor releases.
+
+#### 2. Build and Publish to Repository
+Run the publish task from the command line:
+```bash
+./gradlew publishToRepo
+```
+
+This will:
+- Build all Java, C++, and JNI artifacts
+- Generate the vendordep JSON file
+- Publish to the local `build/repos/` directory
+- Copy everything to the root `repos/` directory for GitHub Pages
+
+After it completes, you'll see next steps printed:
+```
+Published version YEAR.AA.BB to repos/ directory
+Next steps:
+  1. git add repos/
+  2. git commit -m "Publish BullBotsLib YEAR.AA.BB vendor dependency artifacts"
+  3. git push
+```
+
+#### 3. Commit and Push
+Follow the instructions to commit and push the changes:
+```bash
+git add repos/
+git commit -m "Publish BullBotsLib YEAR.AA.BB vendor dependency artifacts"
+git push
+```
+
+GitHub Pages will automatically serve the updated artifacts from the `repos/` directory.
+
+#### 4. (Optional) Create a GitHub Release
+You can also create a GitHub Release and attach the standalone JAR file from `build/libs/BullBotsLib-**version**.jar` for teams that prefer to use the library without the vendordep system.
+
+### Legacy Build Process (Manual JAR Creation)
+<details>
+<summary>Click to expand the old manual build process</summary>
+
+To make a build, first select the build version inside `build.gradle`.
 ```
 group 'frc.team1891'
 version 'YEAR.AA.BB'
@@ -120,36 +167,37 @@ version 'YEAR.AA.BB'
 I've been pretty messy in what I decide is a major release, and what is a minor release.  But generally you increase `AA`
 for major releases, and `BB` for bug fixes and minor releases.
 
-Next, just run the gradle build.  The first time, you'll have to find the task inside the Gradle sidebar, but once you 
+Next, just run the gradle build.  The first time, you'll have to find the task inside the Gradle sidebar, but once you
 run it the first time, it will appear at the top near the play button.
 
 ![build.png](readme/build.png)
 
 After the task runs, you'll find 3 `.jar` files inside `build/libs`:
 - `BullBotsLib-**version**.jar`
-  
+
     This is the main file, technically this is the only one you need in order to have functional code, since it includes
 the compiled code.
 - `BullBotsLib-**version**-javadoc.jar`
 
-    This file creates an HTML project that includes the documentation of the code project.  To be honest I don't 
-actually know if this is necessary, but I _think_ this is how you're able to see the code documentation within a code 
+    This file creates an HTML project that includes the documentation of the code project.  To be honest I don't
+actually know if this is necessary, but I _think_ this is how you're able to see the code documentation within a code
 editor.
 - `BullBotsLib-**version**-sources.jar`
 
-  This file contains the source code.  If the above file doesn't provide the code documentation, this one does.  Either 
+  This file contains the source code.  If the above file doesn't provide the code documentation, this one does.  Either
 way, this file also allows you to view the code when you ctrl+click from another project.
 
 Since we only want to publish one `.jar` file, we need to unzip these, and repackage them into a single file.  In a file
-explorer, we can highlight these three files, and using 7-Zip, unzip them.  When you do this, a prompt will come up, 
+explorer, we can highlight these three files, and using 7-Zip, unzip them.  When you do this, a prompt will come up,
 asking to confirm the file replacement of `MANIFEST.MF`.  Click "No to All".
 
 ![unzip.png](readme/unzip.png)
 
 Once the files are unzipped, we need to re-zip them into a single file.  Highlight all the contents, and use 7-Zip to
-"Add to zipper.zip".  You can now rename this file.  Technically the name can be whatever you want, but name it to 
-`BullBotsLib-**version**`.  When you rename it, change the file type from `.zip` to `.jar`.  This new file can now be 
-published to GitHub. 
+"Add to zipper.zip".  You can now rename this file.  Technically the name can be whatever you want, but name it to
+`BullBotsLib-**version**`.  When you rename it, change the file type from `.zip` to `.jar`.  This new file can now be
+published to GitHub.
+</details> 
 
 ### Managing Dependencies
 Unlike an FRC project, we can't use vendordeps for our dependencies.  We need to manually add and update our dependencies 

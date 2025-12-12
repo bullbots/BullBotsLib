@@ -3,6 +3,9 @@ package frc.team1891.common.led;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 
+/**
+ * An interface to handle control over an LED matrix.
+ */
 @SuppressWarnings("unused")
 public interface LEDMatrixInterface extends LEDStripInterface {
     /**
@@ -101,6 +104,8 @@ public interface LEDMatrixInterface extends LEDStripInterface {
 
     /**
      * Checks whether matrix is the correct size.
+     * @param matrix the matrix to check
+     * @return true if the matrix has the correct dimensions and type
      */
     default boolean checkMatrix(Mat matrix) {
         return matrix.depth() == 0 && matrix.rows() == rows() && matrix.cols() == cols() && matrix.channels() == 3;
@@ -108,6 +113,8 @@ public interface LEDMatrixInterface extends LEDStripInterface {
 
     /**
      * Checks whether x coordinate is within bounds.
+     * @param x the x coordinate to check
+     * @return true if the x coordinate is valid
      */
     default boolean checkX(int x) {
         return 0 <= x && x < cols();
@@ -115,6 +122,8 @@ public interface LEDMatrixInterface extends LEDStripInterface {
 
     /**
      * Checks whether y coordinate is within bounds.
+     * @param y the y coordinate to check
+     * @return true if the y coordinate is valid
      */
     default boolean checkY(int y) {
         return 0 <= y && y < rows();
@@ -123,12 +132,14 @@ public interface LEDMatrixInterface extends LEDStripInterface {
     /**
      * Sets the LEDs according to the given matrix
      * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
+     * @return true if the operation was successful
      */
     boolean setMatrixHSV(Mat matrix);
 
     /**
      * Sets the LEDs according to the given matrix
      * @param matrix {@link Mat} of {@link CvType}.CV_8UC3.
+     * @return true if the operation was successful
      */
     boolean setMatrixRGB(Mat matrix);
 }

@@ -249,6 +249,7 @@ public abstract class LazyDashboard {
 
 
     private final String entryString;
+    /** The NetworkTable entry for this dashboard item. */
     protected final NetworkTableEntry entry;
     private int count;
     private int updateInterval;

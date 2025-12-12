@@ -26,6 +26,7 @@ public interface LEDMatrixPattern {
 
     /**
      * If an implemented pattern has an end to it this should return true
+     * @return true if the pattern is finished
      */
     default boolean isFinished() {
         return false;
@@ -39,6 +40,8 @@ public interface LEDMatrixPattern {
 
     /**
      * Creates a basic {@link LEDMatrixPattern} that sets all the pixels according to a {@link Mat}.
+     * @param matrix the RGB matrix to display
+     * @return the created {@link LEDMatrixPattern}
      */
     static LEDMatrixPattern setFromRGBMatrix(Mat matrix) {
         return new LEDMatrixPattern() {
@@ -56,6 +59,8 @@ public interface LEDMatrixPattern {
 
     /**
      * Creates a basic {@link LEDMatrixPattern} that sets all the pixels according to a {@link Mat}.
+     * @param matrix the HSV matrix to display
+     * @return the created {@link LEDMatrixPattern}
      */
     static LEDMatrixPattern setFromHSVMatrix(Mat matrix) {
         return new LEDMatrixPattern() {
@@ -175,8 +180,11 @@ public interface LEDMatrixPattern {
      * An {@link LEDMatrixPattern} plays through a list of {@link Mat} frames at a given FPS.
      */
     class AnimatedLEDMatrixPattern implements LEDMatrixPattern {
+        /** Determines how the animation plays. */
         public enum RunType {
+            /** Play the animation once and stop. */
             ONCE,
+            /** Loop the animation continuously. */
             CONTINUOUS
         }
 

@@ -1,0 +1,20 @@
+{
+    "fileName": "BullBotsLib.json",
+    "name": "BullBotsLib",
+    "version": "2025.0.0",
+    "frcYear": "2025",
+    "uuid": "7a8c0651-a0cd-4c12-b17a-c64f58a89d55",
+    "mavenUrls": [
+        "https://bullbots.github.io/BullBotsLib/repos/releases"
+    ],
+    "jsonUrl": "https://bullbots.github.io/BullBotsLib/repos/BullBotsLib.json",
+    "javaDependencies": [
+        {
+            "groupId": "frc.team1891",
+            "artifactId": "BullBotsLib-java",
+            "version": "2025.0.0"
+        }
+    ],
+    "jniDependencies": [],
+    "cppDependencies": []
+}

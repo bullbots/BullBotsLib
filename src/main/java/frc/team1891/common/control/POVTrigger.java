@@ -16,15 +16,24 @@ import java.util.function.BooleanSupplier;
 public class POVTrigger extends Trigger {
     /** Controller POV directions */
     public enum POV {
+        /** North (0 degrees). */
         NORTH(0),
+        /** Northeast (45 degrees). */
         NORTHEAST(45),
+        /** East (90 degrees). */
         EAST(90),
+        /** Southeast (135 degrees). */
         SOUTHEAST(135),
+        /** South (180 degrees). */
         SOUTH(180),
+        /** Southwest (225 degrees). */
         SOUTHWEST(225),
+        /** West (270 degrees). */
         WEST(270),
+        /** Northwest (315 degrees). */
         NORTHWEST(315),
 
+        /** No POV pressed. */
         NONE(-1);
 
         private final int value;
@@ -32,11 +41,20 @@ public class POVTrigger extends Trigger {
             this.value = value;
         }
 
+        /**
+         * Gets the numerical value of this POV direction.
+         * @return the POV value in degrees
+         */
         public int getValue() {
             return value;
         }
     }
-    
+
+    /**
+     * Constructs a POVTrigger for the specified joystick and POV direction.
+     * @param joystick the joystick to monitor
+     * @param pov the POV direction to trigger on
+     */
     public POVTrigger(GenericHID joystick, POV pov) {
         super(() -> (joystick.getPOV() == pov.getValue()));
     }
@@ -60,9 +78,13 @@ public class POVTrigger extends Trigger {
      * Simplifing POVm allowing triggers to work when two directions are pressed at the same time (a diagonal POV).
      */
     public enum Direction {
+        /** Up direction. */
         UP(POV.NORTH),
+        /** Down direction. */
         DOWN(POV.SOUTH),
+        /** Left direction. */
         LEFT(POV.WEST),
+        /** Right direction. */
         RIGHT(POV.EAST);
 
         private POV pov;
@@ -75,6 +97,8 @@ public class POVTrigger extends Trigger {
          * Returns the {@link Direction} corresponding to the given {@link POV}.
          *
          * <p>Returns null if a diagonal POV is given</p>
+         * @param pov the POV to convert
+         * @return the corresponding direction, or null if diagonal
          */
         public static Direction fromPOV(POV pov) {
             for(Direction direction: Direction.values()) {

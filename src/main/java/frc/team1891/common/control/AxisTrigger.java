@@ -22,8 +22,11 @@ public class AxisTrigger extends Trigger {
      * The direction the axis must move in order to trigger.
      */
     public enum Direction {
+        /** Trigger activates in both positive and negative directions. */
         BOTH_WAYS,
+        /** Trigger activates only in the positive direction. */
         POSITIVE_ONLY,
+        /** Trigger activates only in the negative direction. */
         NEGATIVE_ONLY
     }
 

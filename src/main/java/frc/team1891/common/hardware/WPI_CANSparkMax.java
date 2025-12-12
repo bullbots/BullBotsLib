@@ -5,6 +5,9 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
 
+/**
+ * A WPILib-compatible version of the REV SparkMax motor controller with Sendable support.
+ */
 public class WPI_CANSparkMax extends SparkMax implements Sendable {
     /**
      * Create a new object to control a SPARK MAX motor Controller

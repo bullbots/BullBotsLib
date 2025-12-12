@@ -7,9 +7,15 @@ package frc.team1891.common.led;
 public interface LEDStripInterface {
     /**
      * Returns the length of the leds
+     * @return the number of LEDs
      */
     int length();
 
+    /**
+     * Checks if the given index is valid for this LED strip.
+     * @param index the index to check
+     * @return true if the index is valid
+     */
     default boolean checkValidIndex(int index) {
         return 0 <= index && index < length();
     }
